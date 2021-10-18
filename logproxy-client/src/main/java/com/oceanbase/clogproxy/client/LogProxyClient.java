@@ -18,7 +18,6 @@ import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.clogproxy.client.listener.StatusListener;
 import com.oceanbase.clogproxy.client.util.ClientIdGenerator;
 import com.oceanbase.clogproxy.client.util.Validator;
-import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import io.netty.handler.ssl.SslContext;
 

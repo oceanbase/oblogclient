@@ -1,7 +1,10 @@
 OceanBase Log Client
 ---------------
 
-OceanBase Log Client is a Java client for [oblogproxy](https://github.com/oceanbase/oblogproxy). It uses [netty](https://github.com/netty/netty) to connect to the log proxy server and receive the incremental change log in real time.
+OceanBase Log Client is a library for obtaining log of [OceanBase](https://github.com/oceanbase/oceanbase). There are modules as following:
+
+- `common`: some common utils
+- `logproxy-client`: the client for [oblogproxy](https://github.com/oceanbase/oblogproxy)
 
 Communication
 ---------------
@@ -19,9 +22,9 @@ Example for Maven:
 
 ```xml
 <dependency>
-    <groupId>com.oceanbase.logproxy.client</groupId>
-    <artifactId>client</artifactId>
-    <version>x.y.z</version>
+  <groupId>com.oceanbase.logclient</groupId>
+  <artifactId>logproxy-client</artifactId>
+  <version>x.y.z</version>
 </dependency>
 ```
 
@@ -29,16 +32,16 @@ If you'd rather like the latest snapshots of the upcoming major version, use our
 
 ```xml
 <dependency>
-    <groupId>com.oceanbase.logproxy.client</groupId>
-    <artifactId>client</artifactId>
-    <version>x.y.z-SNAPSHOT</version>
+  <groupId>com.oceanbase.logclient</groupId>
+  <artifactId>logproxy-client</artifactId>
+  <version>x.y.z-SNAPSHOT</version>
 </dependency>
 
 <repositories>
   <repository>
     <id>sonatype-snapshots</id>
     <name>Sonatype Snapshot Repository</name>
-    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
     <snapshots>
       <enabled>true</enabled>
     </snapshots>
@@ -68,13 +71,13 @@ LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config);
 
 // add handler
 client.addListener(new RecordListener() {
-    
-    @Override 
+
+    @Override
     public void notify(LogMessage message){
         // process
     }
-    
-    @Override 
+
+    @Override
     public void onException(LogProxyClientException e) {
         if (e.needStop()) {
             // handle error and stop client
