@@ -16,10 +16,14 @@ import com.oceanbase.clogproxy.common.config.ShareConf;
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.CryptoUtil;
 import com.oceanbase.clogproxy.common.util.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 public class ObReaderConfig extends AbstractConnectionConfig {
+    private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
+
     private static final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
     private static final ConfigItem<String> CLUSTER_USER = new ConfigItem<>("cluster_user", "");
     private static final ConfigItem<String> CLUSTER_PASSWORD = new ConfigItem<>("cluster_password", "");
@@ -50,6 +54,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             }
             return true;
         } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage());
             return false;
         }
     }
