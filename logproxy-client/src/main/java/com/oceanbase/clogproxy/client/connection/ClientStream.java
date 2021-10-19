@@ -221,7 +221,7 @@ public class ClientStream {
                 return ReconnectState.RETRY;
 
             } catch (Exception e) {
-                logger.error("failed to reconnect, retry count: {}, max: {}, message: {}", ++retryTimes, ClientConf.MAX_RECONNECT_TIMES, e.getMessage());
+                logger.error("failed to reconnect, retry count: {}, max: {}, message: {}", ++retryTimes, ClientConf.MAX_RECONNECT_TIMES, e);
                 // not success, retry next time
                 reconnect.set(true);
                 return ReconnectState.RETRY;
