@@ -159,7 +159,7 @@ public class ClientStream {
                         return;
 
                     } catch (Exception e) {
-                        // if exception occured, we exit
+                        // if exception occurred, we exit
                         triggerStop();
                         triggerException(new LogProxyClientException(ErrorCode.E_USER, e));
                         return;
@@ -221,7 +221,7 @@ public class ClientStream {
                 return ReconnectState.RETRY;
 
             } catch (Exception e) {
-                logger.error("failed to reconnect, retry count: {}, max: {}", ++retryTimes, ClientConf.MAX_RECONNECT_TIMES);
+                logger.error("failed to reconnect, retry count: {}, max: {}, message: {}", ++retryTimes, ClientConf.MAX_RECONNECT_TIMES, e.getMessage());
                 // not success, retry next time
                 reconnect.set(true);
                 return ReconnectState.RETRY;
