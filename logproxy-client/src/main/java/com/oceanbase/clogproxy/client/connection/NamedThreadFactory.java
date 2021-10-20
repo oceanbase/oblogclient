@@ -13,13 +13,31 @@ package com.oceanbase.clogproxy.client.connection;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This is a factory class for {@link ThreadFactory}
+ */
 public class NamedThreadFactory implements ThreadFactory {
 
+    /**
+     * pool number
+     */
     private static final AtomicInteger POOL_NUMBER = new AtomicInteger(1);
-    private final AtomicInteger        threadNumber = new AtomicInteger(1);
-    private final ThreadGroup          group;
-    private final String               namePrefix;
-    private final boolean              isDaemon;
+    /**
+     * thread number
+     */
+    private final AtomicInteger threadNumber = new AtomicInteger(1);
+    /**
+     * thread group
+     */
+    private final ThreadGroup group;
+    /**
+     * prefix of thread name
+     */
+    private final String namePrefix;
+    /**
+     * flag of whether the thread is daemon
+     */
+    private final boolean isDaemon;
 
     public NamedThreadFactory() {
         this("ThreadPool");

@@ -25,6 +25,9 @@ import io.netty.util.AttributeKey;
 
 import java.net.InetSocketAddress;
 
+/**
+ * This is a factory class of {@link Connection}.
+ */
 public class ConnectionFactory {
 
     private static class Singleton {

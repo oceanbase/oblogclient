@@ -13,6 +13,9 @@ package com.oceanbase.clogproxy.common.packet;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Log type enumeration.
+ */
 public enum LogType {
 
     /**

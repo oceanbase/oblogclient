@@ -22,6 +22,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+/**
+ * Utils class for network.
+ */
 public class NetworkUtil {
 
     private static String IP;

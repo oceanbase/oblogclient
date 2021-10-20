@@ -20,10 +20,23 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.RuntimeStatus;
 
+/**
+ * This class represents the context of client stream.
+ */
 public class StreamContext {
+
     public static class TransferPacket {
-        private HeaderType type;
+        /**
+         * packet header type
+         */
+        private final HeaderType type;
+        /**
+         * log message record
+         */
         private LogMessage record;
+        /**
+         * log proxy runtime status
+         */
         private RuntimeStatus status;
 
         public TransferPacket(LogMessage record) {
@@ -49,10 +62,23 @@ public class StreamContext {
         }
     }
 
+    /**
+     * blocking queue which stores {@link TransferPacket}
+     */
     private final BlockingQueue<TransferPacket> recordQueue = new LinkedBlockingQueue<>(ClientConf.TRANSFER_QUEUE_SIZE);
 
+    /**
+     * client stream
+     */
     private final ClientStream stream;
+    /**
+     * connection params
+     */
     ConnectionParams params;
+    /**
+     * netty ssl context
+     * @see SslContext
+     */
     private final SslContext sslContext;
 
     public StreamContext(ClientStream stream, ConnectionParams params, SslContext sslContext) {

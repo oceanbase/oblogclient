@@ -22,17 +22,41 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Utils class for crypto.
+ */
 public class CryptoUtil {
 
+    /**
+     * default cipher key
+     */
     private static final String KEY = "LogProxy123*";
 
+    /**
+     * AES key length
+     */
     private static final int AES_KEY_SIZE = 256;
+
+    /**
+     * GCM tag length
+     */
     private static final int GCM_TAG_LENGTH = 16;
 
+    /**
+     * create an Encryptor instance using given cipher key
+     *
+     * @param key cipher key
+     * @return an Encryptor instance
+     */
     public static Encryptor newEncryptor(String key) {
         return new Encryptor(key);
     }
 
+    /**
+     * create an Encryptor instance using default cipher key
+     *
+     * @return an Encryptor instance
+     */
     public static Encryptor newEncryptor() {
         return new Encryptor(KEY);
     }
@@ -55,6 +79,12 @@ public class CryptoUtil {
             }
         }
 
+        /**
+         * encrypt given text
+         *
+         * @param text original text
+         * @return encrypted data
+         */
         public byte[] encrypt(String text) {
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
@@ -68,6 +98,12 @@ public class CryptoUtil {
             }
         }
 
+        /**
+         * decrypt given data
+         *
+         * @param cipherText encrypted data
+         * @return the original string
+         */
         public String decrypt(byte[] cipherText) {
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
@@ -82,10 +118,22 @@ public class CryptoUtil {
         }
     }
 
+    /**
+     * Compute hash value of given array of bytes
+     *
+     * @param bytes origin array of bytes
+     * @return the array of bytes for the resulting hash value
+     */
     public static byte[] sha1(byte[] bytes) {
         return DigestUtils.sha1(bytes);
     }
 
+    /**
+     * Compute hash value of given string
+     *
+     * @param text origin string
+     * @return the array of bytes for the resulting hash value
+     */
     public static byte[] sha1(String text) {
         return DigestUtils.sha1(text);
     }

@@ -26,25 +26,59 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class represents a stream of log client. Stream means a channel of log transmission here.
+ */
 public class ClientStream {
     private static final Logger logger = LoggerFactory.getLogger(ClientStream.class);
 
-    // routine
+    /**
+     * flag of whether the stream is started
+     */
     private final AtomicBoolean started = new AtomicBoolean(false);
+    /**
+     * the process thread
+     */
     private Thread thread = null;
 
-    // status
+    /**
+     * context of stream
+     */
     private StreamContext context = null;
+
+    /**
+     * checkpoint string used to resume writing into the queue
+     */
     private String checkpointString;
 
-    // reconnection
+    /**
+     * number of reconnections
+     */
     private int retryTimes = 0;
+
+    /**
+     * connection to log proxy with netty channel
+     */
     private Connection connection = null;
+
+    /**
+     * flag of whether the stream is reconnecting now
+     */
     private final AtomicBoolean reconnecting = new AtomicBoolean(true);
+
+    /**
+     * flag of whether the stream need reconnect
+     */
     private final AtomicBoolean reconnect = new AtomicBoolean(true);
 
-    // user callbacks
+    /**
+     * list of {@link RecordListener}
+     */
     private final List<RecordListener> listeners = new ArrayList<>();
+
+    /**
+     * list of {@link StatusListener}
+     */
     private final List<StatusListener> statusListeners = new ArrayList<>();
 
     private enum ReconnectState {

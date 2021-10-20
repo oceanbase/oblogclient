@@ -14,11 +14,14 @@ import com.oceanbase.clogproxy.common.util.NetworkUtil;
 
 import java.lang.management.ManagementFactory;
 
+/**
+ * The class used to generate client id.
+ */
 public class ClientIdGenerator {
     /**
      * LocalIP_PID_currentTimestamp
      * pattern may be change, never depend on the content of this
-
+     *
      * @return client id string
      */
     public static String generate() {

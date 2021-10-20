@@ -21,7 +21,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Utils class for binary message.
+ */
 public class BinaryMessageUtils {
 
     private static final int PREFIX_LENGTH = 12;

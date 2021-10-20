@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * This is an abstract implementation class of the interface {@link ConnectionConfig}.
+ */
 public abstract class AbstractConnectionConfig implements ConnectionConfig {
 
     /**

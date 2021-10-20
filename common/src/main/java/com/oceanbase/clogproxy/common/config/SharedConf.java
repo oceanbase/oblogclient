@@ -10,6 +10,9 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.config;
 
-public class ShareConf {
+/**
+ * The class that defines the shared constants.
+ */
+public class SharedConf {
     public static boolean AUTH_PASSWORD_HASH = true;
 }

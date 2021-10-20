@@ -20,20 +20,25 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * Utils class for netty.
+ */
 public class NettyEventLoopUtil {
 
-    /** check whether epoll enabled, and it would not be changed during runtime. */
-    private static boolean epollEnabled = Epoll.isAvailable();
+    /**
+     * check whether epoll enabled, and it would not be changed during runtime.
+     */
+    private static final boolean EPOLL_ENABLED = Epoll.isAvailable();
 
     /**
      * Create the right event loop according to current platform and system property, fallback to NIO when epoll not enabled.
      *
-     * @param nThreads number of threads
+     * @param nThreads      number of threads
      * @param threadFactory ThreadFactory
      * @return an EventLoopGroup suitable for the current platform
      */
     public static EventLoopGroup newEventLoopGroup(int nThreads, ThreadFactory threadFactory) {
-        return epollEnabled ? new EpollEventLoopGroup(nThreads, threadFactory)
+        return EPOLL_ENABLED ? new EpollEventLoopGroup(nThreads, threadFactory)
             : new NioEventLoopGroup(nThreads, threadFactory);
     }
 
@@ -41,6 +46,6 @@ public class NettyEventLoopUtil {
      * @return a SocketChannel class suitable for the given EventLoopGroup implementation
      */
     public static Class<? extends SocketChannel> getClientSocketChannelClass() {
-        return epollEnabled ? EpollSocketChannel.class : NioSocketChannel.class;
+        return EPOLL_ENABLED ? EpollSocketChannel.class : NioSocketChannel.class;
     }
 }

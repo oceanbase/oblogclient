@@ -21,26 +21,48 @@ import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import io.netty.handler.ssl.SslContext;
 
+/**
+ * A client that makes it easy to connect to log proxy and start a {@link ClientStream}.
+ */
 public class LogProxyClient {
 
+    /**
+     * a {@link ClientStream}
+     */
     private final ClientStream stream;
 
     /**
-     * @param host       server hostname name or ip
-     * @param port       server port
-     * @param config     real config object according to what-you-expected
-     * @param sslContext ssl context to create netty handler
+     * Create a {@link LogProxyClient}
+     *
+     * @param host       log proxy hostname name or ip
+     * @param port       log proxy port
+     * @param config     {@link AbstractConnectionConfig} used to create the {@link ClientStream}
+     * @param sslContext {@link SslContext} to create netty handler
      */
     public LogProxyClient(String host, int port, AbstractConnectionConfig config, SslContext sslContext) {
-        Validator.notNull(config.getLogType(), "log type cannot be null");
-        Validator.notNull(host, "server cannot be null");
-        Validator.validatePort(port, "port is not valid");
+        try {
+            Validator.notNull(config.getLogType(), "log type cannot be null");
+            Validator.notEmpty(host, "server cannot be null");
+            Validator.validatePort(port, "port is not valid");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Illegal argument for LogProxyClient");
+        }
+        if (!config.valid()) {
+            throw new IllegalArgumentException("Illegal argument for LogProxyClient");
+        }
         String clientId = ClientConf.USER_DEFINED_CLIENTID.isEmpty() ? ClientIdGenerator.generate() : ClientConf.USER_DEFINED_CLIENTID;
         ConnectionParams connectionParams = new ConnectionParams(config.getLogType(), clientId, host, port, config);
         connectionParams.setProtocolVersion(ProtocolVersion.V2);
         this.stream = new ClientStream(connectionParams, sslContext);
     }
 
+    /**
+     * Create a {@link LogProxyClient} without {@link SslContext}
+     *
+     * @param host   log proxy hostname name or ip
+     * @param port   log proxy port
+     * @param config {@link AbstractConnectionConfig} used to create the {@link ClientStream}
+     */
     public LogProxyClient(String host, int port, AbstractConnectionConfig config) {
         this(host, port, config, null);
     }
@@ -57,10 +79,20 @@ public class LogProxyClient {
         stream.join();
     }
 
+    /**
+     * Add a {@link RecordListener} to {@link ClientStream}
+     *
+     * @param recordListener a {@link RecordListener}
+     */
     public synchronized void addListener(RecordListener recordListener) {
         stream.addListener(recordListener);
     }
 
+    /**
+     * Add a {@link StatusListener} to {@link ClientStream}
+     *
+     * @param statusListener a {@link StatusListener}
+     */
     public synchronized void addStatusListener(StatusListener statusListener) {
         stream.addStatusListener(statusListener);
     }

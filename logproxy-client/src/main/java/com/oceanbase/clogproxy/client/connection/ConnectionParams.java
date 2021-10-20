@@ -16,17 +16,49 @@ import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-
+/**
+ * This is a configuration class of connection parameters.
+ */
 public class ConnectionParams {
+
+    /**
+     * log type
+     */
     private final LogType logType;
+
+    /**
+     * client id
+     */
     private final String clientId;
+
+    /**
+     * log proxy host
+     */
     private final String host;
+
+    /**
+     * log proxy port
+     */
     private final int port;
 
+    /**
+     * connection config
+     */
     private final ConnectionConfig connectionConfig;
+
+    /**
+     * generated configuration string
+     */
     private String configurationString;
 
+    /**
+     * protocol version
+     */
     private ProtocolVersion protocolVersion;
+
+    /**
+     * flag of whether enable monitor
+     */
     private boolean enableMonitor;
 
     public ConnectionParams(LogType logType, String clientId, String host, int port, ConnectionConfig connectionConfig) {

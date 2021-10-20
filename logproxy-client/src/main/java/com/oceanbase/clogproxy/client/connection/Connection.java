@@ -18,6 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class represents a connection which contains a netty channel.
+ */
 public class Connection {
 
     private static final Logger logger = LoggerFactory.getLogger(Connection.class);
@@ -47,6 +50,7 @@ public class Connection {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private void logCloseResult(Future future) {
         if (future.isSuccess()) {
             if (logger.isInfoEnabled()) {

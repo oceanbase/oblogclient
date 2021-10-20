@@ -10,6 +10,9 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.packet;
 
+/**
+ * Header type enumeration. Used to identify the type of request or response in protobuf.
+ */
 public enum HeaderType {
     /**
      * error response
@@ -17,22 +20,22 @@ public enum HeaderType {
     ERROR_RESPONSE(-1),
 
     /**
-     * client request handshake
+     * client handshake request
      */
     HANDSHAKE_REQUEST_CLIENT(1),
 
     /**
-     * response to client handshake
+     * client handshake response
      */
     HANDSHAKE_RESPONSE_CLIENT(2),
 
     /**
-     * logreader request handshake
+     * logreader handshake request
      */
     HANDSHAKE_REQUEST_LOGREADER(3),
 
     /**
-     * logreader response handshake
+     * logreader handshake response
      */
     HANDSHAKE_RESPONSE_LOGREADER(4),
 
@@ -54,8 +57,7 @@ public enum HeaderType {
     /**
      * status info of LogReader
      */
-    STATUS_LOGREADER(8),
-    ;
+    STATUS_LOGREADER(8);
 
     private final int code;
 

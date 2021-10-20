@@ -11,9 +11,9 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.client.connection;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
-import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.message.LogMessage;
 import com.oceanbase.clogproxy.common.packet.CompressType;
 import com.oceanbase.clogproxy.common.packet.HeaderType;
@@ -35,23 +35,63 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * This is an implementation class of {@link ChannelInboundHandlerAdapter}.
+ */
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
+    /**
+     * magic string used to request log proxy
+     */
     private static final byte[] MAGIC_STRING = new byte[]{'x', 'i', '5', '3', 'g', ']', 'q'};
-    private static final String CLIENT_IP = NetworkUtil.getLocalIp();
-    private static final  int HEAD_LENGTH = 7;
 
+    /**
+     * client ip address
+     */
+    private static final String CLIENT_IP = NetworkUtil.getLocalIp();
+
+    /**
+     * length of packet header
+     */
+    private static final int HEAD_LENGTH = 7;
+
+    /**
+     * a client stream
+     */
     private ClientStream stream;
+
+    /**
+     * connection params
+     */
     private ConnectionParams params;
+
+    /**
+     * record queue, it's a {@link BlockingQueue} for storing {@link StreamContext.TransferPacket}
+     */
     private BlockingQueue<StreamContext.TransferPacket> recordQueue;
 
     enum HandshakeStateV1 {
+        /**
+         * state of parsing the packet header
+         */
         PB_HEAD,
+        /**
+         * state of handling handshake response
+         */
         CLIENT_HANDSHAKE_RESPONSE,
+        /**
+         * state of handling record
+         */
         RECORD,
+        /**
+         * state of handling error response
+         */
         ERROR_RESPONSE,
+        /**
+         * state of handling runtime status response
+         */
         STATUS
     }
 
@@ -69,7 +109,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     LZ4Factory factory = LZ4Factory.fastestInstance();
     LZ4FastDecompressor fastDecompressor = factory.fastDecompressor();
 
-    public ClientHandler() { }
+    public ClientHandler() {
+    }
 
     protected void resetState() {
         state = HandshakeStateV1.PB_HEAD;
@@ -133,13 +174,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             checkHeader(version, type, dataLength);
 
             HeaderType headerType = HeaderType.codeOf(type);
-            if(headerType == HeaderType.HANDSHAKE_RESPONSE_CLIENT) {
+            if (headerType == HeaderType.HANDSHAKE_RESPONSE_CLIENT) {
                 state = HandshakeStateV1.CLIENT_HANDSHAKE_RESPONSE;
-            } else if(headerType == HeaderType.ERROR_RESPONSE) {
+            } else if (headerType == HeaderType.ERROR_RESPONSE) {
                 state = HandshakeStateV1.ERROR_RESPONSE;
-            } else if(headerType == HeaderType.DATA_CLIENT) {
+            } else if (headerType == HeaderType.DATA_CLIENT) {
                 state = HandshakeStateV1.RECORD;
-            } else if(headerType == HeaderType.STATUS) {
+            } else if (headerType == HeaderType.STATUS) {
                 state = HandshakeStateV1.STATUS;
             }
         } else {
@@ -148,7 +189,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleHandshakeResponse() throws InvalidProtocolBufferException {
-        if(buffer.readableBytes() >= dataLength) {
+        if (buffer.readableBytes() >= dataLength) {
             byte[] bytes = new byte[dataLength];
             buffer.readBytes(bytes);
             LogProxyProto.ClientHandshakeResponse response = LogProxyProto.ClientHandshakeResponse.parseFrom(bytes);
@@ -160,7 +201,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleErrorResponse() throws InvalidProtocolBufferException {
-        if(buffer.readableBytes() >= dataLength) {
+        if (buffer.readableBytes() >= dataLength) {
             byte[] bytes = new byte[dataLength];
             buffer.readBytes(bytes);
             LogProxyProto.ErrorResponse response = LogProxyProto.ErrorResponse.parseFrom(bytes);
@@ -172,7 +213,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleServerStatus() throws InvalidProtocolBufferException {
-        if(buffer.readableBytes() >= dataLength) {
+        if (buffer.readableBytes() >= dataLength) {
             byte[] bytes = new byte[dataLength];
             buffer.readBytes(bytes);
             LogProxyProto.RuntimeStatus response = LogProxyProto.RuntimeStatus.parseFrom(bytes);
@@ -184,7 +225,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleRecord() {
-        if(buffer.readableBytes() >= dataLength) {
+        if (buffer.readableBytes() >= dataLength) {
             parseDataNew();
             state = HandshakeStateV1.PB_HEAD;
         } else {
@@ -221,7 +262,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 int decompress = fastDecompressor.decompress(rawData, 0, bytes, 0, compressedLen);
                 if (decompress != rawLen) {
                     throw new LogProxyClientException(ErrorCode.E_LEN, "decompressed length [" + decompress
-                            + "] is not expected [" + rawLen + "]");
+                        + "] is not expected [" + rawLen + "]");
                 }
                 parseRecord(bytes);
             } else {
@@ -233,7 +274,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
 
-
     private void parseRecord(byte[] bytes) throws LogProxyClientException {
         int offset = 0;
         while (offset < bytes.length) {
@@ -243,7 +283,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 /*
                  * We must copy a byte array and call parse after then,
                  * or got a !!!RIDICULOUS EXCEPTION!!!,
-                 * if we wrap a upooled buffer with offset and call setByteBuf just as same as `parse` function do.
+                 * if we wrap an unpooled buffer with offset and call setByteBuf just as same as `parse` function do.
                  */
                 drcRecord = new LogMessage(false);
                 byte[] data = new byte[dataLength + 8];

@@ -10,6 +10,9 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.enums;
 
+/**
+ * Error code enumeration.
+ */
 public enum ErrorCode {
     ////////// 0~499: process error ////////////
     /**
