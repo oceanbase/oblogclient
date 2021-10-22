@@ -27,17 +27,17 @@ import io.netty.handler.ssl.SslContext;
 public class LogProxyClient {
 
     /**
-     * a {@link ClientStream}
+     * A {@link ClientStream} instance.
      */
     private final ClientStream stream;
 
     /**
-     * Create a {@link LogProxyClient}
+     * Constructor with {@link SslContext}.
      *
-     * @param host       log proxy hostname name or ip
-     * @param port       log proxy port
-     * @param config     {@link AbstractConnectionConfig} used to create the {@link ClientStream}
-     * @param sslContext {@link SslContext} to create netty handler
+     * @param host       Log proxy hostname name or ip.
+     * @param port       Log proxy port.
+     * @param config     {@link AbstractConnectionConfig} used to create the {@link ClientStream}.
+     * @param sslContext {@link SslContext} to create netty handler.
      */
     public LogProxyClient(String host, int port, AbstractConnectionConfig config, SslContext sslContext) {
         try {
@@ -57,41 +57,50 @@ public class LogProxyClient {
     }
 
     /**
-     * Create a {@link LogProxyClient} without {@link SslContext}
+     * Constructor without {@link SslContext}.
      *
-     * @param host   log proxy hostname name or ip
-     * @param port   log proxy port
-     * @param config {@link AbstractConnectionConfig} used to create the {@link ClientStream}
+     * @param host   Log proxy hostname name or ip.
+     * @param port   Log proxy port.
+     * @param config {@link AbstractConnectionConfig} used to create the {@link ClientStream}.
      */
     public LogProxyClient(String host, int port, AbstractConnectionConfig config) {
         this(host, port, config, null);
     }
 
+    /**
+     * Start the client.
+     */
     public void start() {
         stream.start();
     }
 
+    /**
+     * Stop the client.
+     */
     public void stop() {
         stream.stop();
     }
 
+    /**
+     * Join and wait the client.
+     */
     public void join() {
         stream.join();
     }
 
     /**
-     * Add a {@link RecordListener} to {@link ClientStream}
+     * Add a {@link RecordListener} to {@link #stream}.
      *
-     * @param recordListener a {@link RecordListener}
+     * @param recordListener A {@link RecordListener}.
      */
     public synchronized void addListener(RecordListener recordListener) {
         stream.addListener(recordListener);
     }
 
     /**
-     * Add a {@link StatusListener} to {@link ClientStream}
+     * Add a {@link StatusListener} to {@link #stream}.
      *
-     * @param statusListener a {@link StatusListener}
+     * @param statusListener A {@link StatusListener}.
      */
     public synchronized void addStatusListener(StatusListener statusListener) {
         stream.addStatusListener(statusListener);

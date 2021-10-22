@@ -21,9 +21,9 @@ public class StringUtils {
      * Split a string by one separator character. The performance
      * is better than Java String split.
      *
-     * @param str           the string need be split.
-     * @param separatorChar the single separator character.
-     * @return the array of split items.
+     * @param str           The string need be split.
+     * @param separatorChar The single separator character.
+     * @return The array of split items.
      */
     public static String[] split(String str, char separatorChar) {
         if (str == null) {

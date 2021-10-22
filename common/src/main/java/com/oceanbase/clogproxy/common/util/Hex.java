@@ -22,8 +22,8 @@ public final class Hex {
     /**
      * Returns a multi-line hexadecimal dump of the array that is easy to read by humans.
      *
-     * @param array an array of bytes
-     * @return a multi-line hexadecimal dump string
+     * @param array An array of bytes
+     * @return A multi-line hexadecimal dump string
      */
     public static String dump(byte[] array) {
         return dump(array, 0, array.length);
@@ -32,10 +32,10 @@ public final class Hex {
     /**
      * Returns a multi-line hexadecimal dump of the specified sub-region of bytes that is easy to read by humans.
      *
-     * @param bytes  an array of bytes
-     * @param offset offset of the sub-region start position
-     * @param length length of the sub-region
-     * @return a multi-line hexadecimal dump string
+     * @param bytes  An array of bytes
+     * @param offset The offset of the sub-region start position
+     * @param length The length of the sub-region
+     * @return A multi-line hexadecimal dump string
      */
     public static String dump(byte[] bytes, int offset, int length) {
         return ByteBufUtil.prettyHexDump(Unpooled.wrappedBuffer(bytes, offset, length));
@@ -44,8 +44,8 @@ public final class Hex {
     /**
      * Converts an array of bytes into a string representing the hexadecimal values of each byte in order.
      *
-     * @param bytes an array of bytes
-     * @return a String containing uppercase hexadecimal characters
+     * @param bytes An array of bytes
+     * @return A String containing uppercase hexadecimal characters
      */
     public static String str(byte[] bytes) {
         return org.apache.commons.codec.binary.Hex.encodeHexString(bytes, false);
@@ -54,8 +54,8 @@ public final class Hex {
     /**
      * Converts a String representing hexadecimal values into an array of bytes of those same values.
      *
-     * @param hexStr a String representing hexadecimal values
-     * @return an array of bytes
+     * @param hexStr A String representing hexadecimal values
+     * @return An array of bytes
      */
     public static byte[] toBytes(String hexStr) {
         try {

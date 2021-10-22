@@ -15,56 +15,70 @@ package com.oceanbase.clogproxy.common.packet;
  */
 public enum HeaderType {
     /**
-     * error response
+     * Error response.
      */
     ERROR_RESPONSE(-1),
 
     /**
-     * client handshake request
+     * Client handshake request.
      */
     HANDSHAKE_REQUEST_CLIENT(1),
 
     /**
-     * client handshake response
+     * Client handshake response.
      */
     HANDSHAKE_RESPONSE_CLIENT(2),
 
     /**
-     * logreader handshake request
+     * LogReader handshake request.
      */
     HANDSHAKE_REQUEST_LOGREADER(3),
 
     /**
-     * logreader handshake response
+     * LogReader handshake response.
      */
     HANDSHAKE_RESPONSE_LOGREADER(4),
 
     /**
-     * logreader data stream
+     * LogReader data stream.
      */
     DATA_LOGREADER(5),
 
     /**
-     * client data stream
+     * Client data stream.
      */
     DATA_CLIENT(6),
 
     /**
-     * status info of server runtime
+     * Status info of server runtime.
      */
     STATUS(7),
 
     /**
-     * status info of LogReader
+     * Status info of LogReader.
      */
     STATUS_LOGREADER(8);
 
+    /**
+     * The ordinal of this enumeration constant.
+     */
     private final int code;
 
+    /**
+     * Constructor.
+     *
+     * @param code The ordinal of this enumeration constant.
+     */
     HeaderType(int code) {
         this.code = code;
     }
 
+    /**
+     * Returns the enum constant of HeaderType with the specified code.
+     *
+     * @param code The ordinal of this enumeration constant.
+     * @return The enum constant.
+     */
     public static HeaderType codeOf(int code) {
         for (HeaderType t : values()) {
             if (t.code == code) {
@@ -74,6 +88,11 @@ public enum HeaderType {
         return null;
     }
 
+    /**
+     * Get the ordinal of this enumeration constant.
+     *
+     * @return The ordinal of this enumeration constant.
+     */
     public int code() {
         return code;
     }

@@ -19,16 +19,20 @@ import java.lang.management.ManagementFactory;
  */
 public class ClientIdGenerator {
     /**
-     * LocalIP_PID_currentTimestamp
-     * pattern may be change, never depend on the content of this
+     * Generate a new client id in format "LocalIP"."PID"."currentTimestamp".
+     * Pattern may be changed, never depend on the content of this.
      *
-     * @return client id string
+     * @return Client id string.
      */
     public static String generate() {
-
         return NetworkUtil.getLocalIp() + "_" + getProcessId() + "_" + (System.currentTimeMillis() / 1000);
     }
 
+    /**
+     * Get the process id.
+     *
+     * @return Process id.
+     */
     private static String getProcessId() {
         // Note: may fail in some JVM implementations
         // therefore fallback has to be provided

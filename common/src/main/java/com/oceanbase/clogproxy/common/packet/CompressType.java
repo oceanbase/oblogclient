@@ -15,21 +15,35 @@ package com.oceanbase.clogproxy.common.packet;
  */
 public enum CompressType {
     /**
-     * no compress
+     * No compress.
      */
     NONE(0),
 
     /**
-     * lz4 compress
+     * LZ4 compress.
      */
     LZ4(1);
 
+    /**
+     * The ordinal of this enumeration constant.
+     */
     private final int code;
 
+    /**
+     * Constructor.
+     *
+     * @param code The ordinal of this enumeration constant.
+     */
     CompressType(int code) {
         this.code = code;
     }
 
+    /**
+     * Returns the enum constant of CompressType with the specified code.
+     *
+     * @param code The ordinal of this enumeration constant.
+     * @return The enum constant.
+     */
     public static CompressType codeOf(int code) {
         for (CompressType v : values()) {
             if (v.code == code) {
@@ -39,6 +53,11 @@ public enum CompressType {
         return null;
     }
 
+    /**
+     * Get the ordinal of this enumeration constant.
+     *
+     * @return The ordinal of this enumeration constant.
+     */
     public int code() {
         return code;
     }

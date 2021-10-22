@@ -18,21 +18,21 @@ public interface ConnectionConfig {
     /**
      * Generate a configuration string from connection parameters.
      *
-     * @return the configuration string
+     * @return The configuration string.
      */
     String generateConfigurationString();
 
     /**
      * Update the checkpoint.
      *
-     * @param checkpoint a checkpoint string
+     * @param checkpoint A checkpoint string.
      */
     void updateCheckpoint(String checkpoint);
 
     /**
      * Overrides {@link Object#toString()} to structure a string.
      *
-     * @return the structured string
+     * @return The structured string.
      */
     @Override
     String toString();

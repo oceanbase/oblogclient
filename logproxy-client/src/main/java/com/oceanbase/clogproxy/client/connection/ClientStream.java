@@ -33,54 +33,57 @@ public class ClientStream {
     private static final Logger logger = LoggerFactory.getLogger(ClientStream.class);
 
     /**
-     * flag of whether the stream is started
+     * Flag of whether the stream is started.
      */
     private final AtomicBoolean started = new AtomicBoolean(false);
     /**
-     * the process thread
+     * The process thread.
      */
     private Thread thread = null;
 
     /**
-     * context of stream
+     * Context of stream.
      */
     private StreamContext context = null;
 
     /**
-     * checkpoint string used to resume writing into the queue
+     * Checkpoint string used to resume writing into the queue.
      */
     private String checkpointString;
 
     /**
-     * number of reconnections
+     * Number of reconnections
      */
     private int retryTimes = 0;
 
     /**
-     * connection to log proxy with netty channel
+     * Connection to log proxy with netty channel.
      */
     private Connection connection = null;
 
     /**
-     * flag of whether the stream is reconnecting now
+     * Flag of whether the stream is reconnecting now.
      */
     private final AtomicBoolean reconnecting = new AtomicBoolean(true);
 
     /**
-     * flag of whether the stream need reconnect
+     * Flag of whether the stream need reconnect.
      */
     private final AtomicBoolean reconnect = new AtomicBoolean(true);
 
     /**
-     * list of {@link RecordListener}
+     * The list of {@link RecordListener}.
      */
     private final List<RecordListener> listeners = new ArrayList<>();
 
     /**
-     * list of {@link StatusListener}
+     * The list of {@link StatusListener}
      */
     private final List<StatusListener> statusListeners = new ArrayList<>();
 
+    /**
+     * Reconnect state type enumeration.
+     */
     private enum ReconnectState {
         /**
          * success
@@ -96,10 +99,19 @@ public class ClientStream {
         EXIT;
     }
 
+    /**
+     * Sole constructor.
+     *
+     * @param connectionParams Connection params.
+     * @param sslContext       A {@link SslContext} for encrypted communication.
+     */
     public ClientStream(ConnectionParams connectionParams, SslContext sslContext) {
         context = new StreamContext(this, connectionParams, sslContext);
     }
 
+    /**
+     * Close and wait the connection.
+     */
     public void stop() {
         if (!started.compareAndSet(true, false)) {
             logger.info("stopping LogProxy Client....");
@@ -115,6 +127,9 @@ public class ClientStream {
         logger.info("stopped LogProxy Client");
     }
 
+    /**
+     * Call {@link Thread#join()} method of process thread.
+     */
     public void join() {
         if (thread != null) {
             try {
@@ -125,10 +140,18 @@ public class ClientStream {
         }
     }
 
+    /**
+     * Call {@link #stop()} asynchronously.
+     */
     public void triggerStop() {
         new Thread(this::stop).start();
     }
 
+    /**
+     * Call {@link RecordListener#onException(LogProxyClientException)} asynchronously.
+     *
+     * @param e An exception.
+     */
     public void triggerException(LogProxyClientException e) {
         // use thread make sure non-blocking
         new Thread(() -> {
@@ -138,6 +161,9 @@ public class ClientStream {
         }).start();
     }
 
+    /**
+     * Start the process thread.
+     */
     public void start() {
         // if status listener exist, enable monitor
         context.params.setEnableMonitor(CollectionUtils.isNotEmpty(statusListeners));
@@ -216,10 +242,20 @@ public class ClientStream {
         }
     }
 
+    /**
+     * Get the flag of whether the stream is started.
+     *
+     * @return The flag of whether the stream is started.
+     */
     public boolean isRunning() {
         return started.get();
     }
 
+    /**
+     * Reconnect to log proxy. It is also used for first time connecting.
+     *
+     * @return A {@link ReconnectState}.
+     */
     private ReconnectState reconnect() {
         // reconnect flag mark, tiny load for checking
         if (reconnect.compareAndSet(true, false)) {
@@ -267,6 +303,9 @@ public class ClientStream {
         return ReconnectState.SUCCESS;
     }
 
+    /**
+     * Reset the flags for reconnection.
+     */
     public void triggerReconnect() {
         // reconnection action guard, avoid concurrent or multiple invoke
         if (reconnecting.compareAndSet(false, true)) {
@@ -274,10 +313,20 @@ public class ClientStream {
         }
     }
 
+    /**
+     * Add a {@link RecordListener} to {@link #listeners}.
+     *
+     * @param recordListener A {@link RecordListener}.
+     */
     public synchronized void addListener(RecordListener recordListener) {
         listeners.add(recordListener);
     }
 
+    /**
+     * Add a {@link StatusListener} to {@link #statusListeners}.
+     *
+     * @param statusListener A {@link StatusListener}.
+     */
     public synchronized void addStatusListener(StatusListener statusListener) {
         statusListeners.add(statusListener);
     }

@@ -23,8 +23,8 @@ public class Validator {
     /**
      * Validate the object is not null, otherwise throws an {@link NullPointerException}.
      *
-     * @param obj     object to be verified
-     * @param message message in the NullPointerException
+     * @param obj     Object to be verified.
+     * @param message Message in the NullPointerException.
      */
     public static void notNull(Object obj, String message) {
         if (obj == null) {
@@ -35,8 +35,8 @@ public class Validator {
     /**
      * Validate the port number is valid, otherwise throws an {@link IllegalArgumentException}.
      *
-     * @param port    port number to be verified
-     * @param message message in the IllegalArgumentException
+     * @param port    Port number to be verified.
+     * @param message Message in the IllegalArgumentException.
      */
     public static void validatePort(int port, String message) {
         if (port < MINIMAL_VALID_PORT || port >= MAXIMAL_VALID_PORT) {
@@ -47,8 +47,8 @@ public class Validator {
     /**
      * Validate the string is not null or empty, otherwise throws an {@link IllegalArgumentException}.
      *
-     * @param val     string to be verified
-     * @param message message in the IllegalArgumentException
+     * @param val     String to be verified.
+     * @param message Message in the IllegalArgumentException.
      */
     public static void notEmpty(String val, String message) {
         if (val == null || val.isEmpty()) {
@@ -59,8 +59,8 @@ public class Validator {
     /**
      * Validate the map is not null or empty, otherwise throws an {@link IllegalArgumentException}.
      *
-     * @param map     map to be verified
-     * @param message message in the IllegalArgumentException
+     * @param map     Map to be verified.
+     * @param message Message in the IllegalArgumentException.
      */
     public static void notEmpty(Map<String, String> map, String message) {
         if (map == null || map.isEmpty()) {

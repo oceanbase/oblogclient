@@ -26,16 +26,19 @@ import java.util.List;
  */
 public class BinaryMessageUtils {
 
+    /**
+     *
+     */
     private static final int PREFIX_LENGTH = 12;
 
     /**
-     * get string begin with offset
+     * Get string begin with offset.
      *
-     * @param data bytes array
-     * @param offset read offset
-     * @param encoding string encoding
-     * @return result string
-     * @throws UnsupportedEncodingException when the encoding is not supported
+     * @param data     A bytes array.
+     * @param offset   Reading offset.
+     * @param encoding String encoding.
+     * @return Result string.
+     * @throws UnsupportedEncodingException When the encoding is not supported.
      */
     public static String getString(byte[] data, int offset, String encoding) throws UnsupportedEncodingException {
         ByteBuf wrapByteBuf = Unpooled.wrappedBuffer(data).order(ByteOrder.LITTLE_ENDIAN);
@@ -49,12 +52,12 @@ public class BinaryMessageUtils {
     }
 
     /**
-     * get list begin with offset
+     * Get list begin with offset.
      *
-     * @param data bytes array
-     * @param offset read offset
-     * @return result list
-     * @throws IOException if data type is unsigned long
+     * @param data   A bytes array.
+     * @param offset Reading offset.
+     * @return Result list.
+     * @throws IOException If data type is unsigned long.
      */
     public static List getArray(byte[] data, int offset) throws IOException {
         ByteBuf wrapByteBuf = Unpooled.wrappedBuffer(data).order(ByteOrder.LITTLE_ENDIAN);
@@ -109,11 +112,11 @@ public class BinaryMessageUtils {
     }
 
     /**
-     * get ByteString begin with offset
+     * Get ByteString begin with offset.
      *
-     * @param data bytes array
-     * @param offset read offset
-     * @return list of ByteString
+     * @param data   A bytes array.
+     * @param offset Reading offset.
+     * @return A list of {@link ByteString}.
      */
     public static List<ByteString> getByteStringList(byte[] data, long offset) {
         if (offset == -1) {
@@ -140,8 +143,8 @@ public class BinaryMessageUtils {
                 lists.add(null);
             } else {
                 lists.add(new ByteString(wrapByteBuf.array(),
-                        PREFIX_LENGTH + currentOffset + readBytes + (int) offset,
-                        nextOffset - currentOffset - 1));
+                    PREFIX_LENGTH + currentOffset + readBytes + (int) offset,
+                    nextOffset - currentOffset - 1));
             }
             currentOffset = nextOffset;
         }

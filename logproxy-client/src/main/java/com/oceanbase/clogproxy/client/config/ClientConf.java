@@ -17,32 +17,32 @@ import com.oceanbase.clogproxy.common.config.SharedConf;
  */
 public class ClientConf extends SharedConf {
     /**
-     * client version
+     * Client version.
      */
-    public static final String VERSION = "1.1.0";
+    public static final String VERSION = "1.0.1";
 
     /**
-     * queue size for storing records received from log proxy
+     * Queue size for storing records received from log proxy.
      */
     public static int TRANSFER_QUEUE_SIZE = 20000;
 
     /**
-     * connection timeout in milliseconds
+     * Connection timeout in milliseconds.
      */
     public static int CONNECT_TIMEOUT_MS = 5000;
 
     /**
-     * read queue timeout in milliseconds
+     * Reading queue timeout in milliseconds.
      */
     public static int READ_WAIT_TIME_MS = 2000;
 
     /**
-     * time to sleep in seconds when retrying
+     * Time to sleep in seconds when retrying.
      */
     public static int RETRY_INTERVAL_S = 2;
 
     /**
-     * maximum number of retries after disconnect, if not data income lasting {@link #IDLE_TIMEOUT_S}, a reconnection will be triggered
+     * Maximum number of retries after disconnect, if not data income lasting {@link #IDLE_TIMEOUT_S}, a reconnection will be triggered.
      */
     public static int MAX_RECONNECT_TIMES = -1;
 

@@ -13,13 +13,7 @@ package com.oceanbase.clogproxy.common.util;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Enumeration;
 
 /**
@@ -27,6 +21,9 @@ import java.util.Enumeration;
  */
 public class NetworkUtil {
 
+    /**
+     * Local ip.
+     */
     private static String IP;
 
     static {
@@ -53,9 +50,9 @@ public class NetworkUtil {
     }
 
     /**
-     * get local ip
+     * Get local ip.
      *
-     * @return local ip
+     * @return Local ip.
      */
     public static String getLocalIp() {
         return IP;
@@ -63,6 +60,9 @@ public class NetworkUtil {
 
     /**
      * Parse the remote address of the channel.
+     *
+     * @param channel A channel
+     * @return The address string.
      */
     public static String parseRemoteAddress(final Channel channel) {
         if (null == channel) {
@@ -73,9 +73,10 @@ public class NetworkUtil {
     }
 
     /**
+     * Parse the address with rules:
      * <ol>
-     * <li>if an address starts with a '/', skip it.
-     * <li>if an address contains a '/', substring it.
+     * <li>If an address starts with a '/', skip it.
+     * <li>If an address contains a '/', substring it.
      * </ol>
      */
     private static String doParse(String addr) {

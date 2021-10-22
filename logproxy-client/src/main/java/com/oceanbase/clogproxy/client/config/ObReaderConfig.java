@@ -28,34 +28,42 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
 
     /**
-     * root server list
+     * Root server list.
      */
     private static final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
 
     /**
-     * cluster username
+     * Cluster username.
      */
     private static final ConfigItem<String> CLUSTER_USER = new ConfigItem<>("cluster_user", "");
 
     /**
-     * cluster password
+     * Cluster password.
      */
     private static final ConfigItem<String> CLUSTER_PASSWORD = new ConfigItem<>("cluster_password", "");
 
     /**
-     * table whitelist
+     * Table whitelist.
      */
     private static final ConfigItem<String> TABLE_WHITE_LIST = new ConfigItem<>("tb_white_list", "");
 
     /**
-     * start timestamp
+     * Start timestamp.
      */
     private static final ConfigItem<Long> START_TIMESTAMP = new ConfigItem<>("first_start_timestamp", 0L);
 
+    /**
+     * Constructor with empty arguments.
+     */
     public ObReaderConfig() {
         super(Maps.newHashMap());
     }
 
+    /**
+     * Constructor with a config map.
+     *
+     * @param allConfigs Config map.
+     */
     public ObReaderConfig(Map<String, String> allConfigs) {
         super(allConfigs);
     }
@@ -114,9 +122,9 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     }
 
     /**
-     * Set root server list
+     * Set root server list.
      *
-     * @param rsList root server list
+     * @param rsList Root server list.
      */
     public void setRsList(String rsList) {
         RS_LIST.set(rsList);
@@ -125,7 +133,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     /**
      * Set cluster username
      *
-     * @param clusterUser cluster username
+     * @param clusterUser Cluster username.
      */
     public void setUsername(String clusterUser) {
         CLUSTER_USER.set(clusterUser);
@@ -134,7 +142,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     /**
      * Set cluster password
      *
-     * @param clusterPassword cluster password
+     * @param clusterPassword Cluster password.
      */
     public void setPassword(String clusterPassword) {
         CLUSTER_PASSWORD.set(clusterPassword);
@@ -144,7 +152,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * Set table whitelist. It is composed of three dimensions: tenant, library, and table.
      * Asterisk means any, such as: "A.foo.bar", "B.foo.*", "C.*.*", "*.*.*".
      *
-     * @param tableWhiteList table whitelist
+     * @param tableWhiteList Table whitelist.
      */
     public void setTableWhiteList(String tableWhiteList) {
         TABLE_WHITE_LIST.set(tableWhiteList);
@@ -153,7 +161,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     /**
      * Set start timestamp, zero means from now on.
      *
-     * @param startTimestamp start timestamp
+     * @param startTimestamp Start timestamp.
      */
     public void setStartTimestamp(Long startTimestamp) {
         START_TIMESTAMP.set(startTimestamp);

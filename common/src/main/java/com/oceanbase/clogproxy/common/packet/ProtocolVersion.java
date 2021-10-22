@@ -16,26 +16,40 @@ package com.oceanbase.clogproxy.common.packet;
 public enum ProtocolVersion {
 
     /**
-     * protocol version 0
+     * Protocol version 0.
      */
     V0(0),
 
     /**
-     * protocol version 1
+     * Protocol version 1.
      */
     V1(1),
 
     /**
-     * protocol version 2
+     * Protocol version 2.
      */
     V2(2);
 
+    /**
+     * The ordinal of this enumeration constant.
+     */
     private final int code;
 
+    /**
+     * Constructor.
+     *
+     * @param code The ordinal of this enumeration constant.
+     */
     ProtocolVersion(int code) {
         this.code = code;
     }
 
+    /**
+     * Returns the enum constant of ProtocolVersion with the specified code.
+     *
+     * @param code The ordinal of this enumeration constant.
+     * @return The enum constant.
+     */
     public static ProtocolVersion codeOf(int code) {
         for (ProtocolVersion v : values()) {
             if (v.code == code) {
@@ -45,6 +59,11 @@ public enum ProtocolVersion {
         return null;
     }
 
+    /**
+     * Get the ordinal of this enumeration constant.
+     *
+     * @return The ordinal of this enumeration constant.
+     */
     public int code() {
         return code;
     }

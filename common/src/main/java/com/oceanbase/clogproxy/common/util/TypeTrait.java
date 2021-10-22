@@ -22,8 +22,8 @@ public class TypeTrait {
     /**
      * Checks if it is a number type object.
      *
-     * @param obj an object to check
-     * @return true if it is a number type object, false otherwise
+     * @param obj An object to check.
+     * @return True if it is a number type object, false otherwise.
      */
     public static boolean isNumber(Object obj) {
         return (obj instanceof Byte) || (obj instanceof Short) ||
@@ -33,8 +33,8 @@ public class TypeTrait {
     /**
      * Checks if it is a number type {@link Field}.
      *
-     * @param field a field to check
-     * @return true if it is a number type field, false otherwise
+     * @param field A field to check.
+     * @return True if it is a number type field, false otherwise.
      */
     public static boolean isNumber(Field field) {
         String typeName = field.getGenericType().getTypeName();
@@ -47,8 +47,8 @@ public class TypeTrait {
     /**
      * Checks if it is a real number type object.
      *
-     * @param obj an object to check
-     * @return true if it is a real number type object, false otherwise
+     * @param obj An object to check.
+     * @return True if it is a real number type object, false otherwise.
      */
     public static boolean isReal(Object obj) {
         return (obj instanceof Float) || (obj instanceof Double);
@@ -57,8 +57,8 @@ public class TypeTrait {
     /**
      * Checks if it is a real number type {@link Field}.
      *
-     * @param field a field to check
-     * @return true if it is a real number type field, false otherwise
+     * @param field A field to check.
+     * @return True if it is a real number type field, false otherwise.
      */
     public static boolean isReal(Field field) {
         String typeName = field.getGenericType().getTypeName();
@@ -69,8 +69,8 @@ public class TypeTrait {
     /**
      * Checks if it is a boolean type object.
      *
-     * @param obj an object to check
-     * @return true if it is a boolean type object, false otherwise
+     * @param obj An object to check.
+     * @return True if it is a boolean type object, false otherwise.
      */
     public static boolean isBool(Object obj) {
         return obj instanceof Boolean;
@@ -79,8 +79,8 @@ public class TypeTrait {
     /**
      * Checks if it is a boolean type {@link Field}.
      *
-     * @param field a field to check
-     * @return true if it is a boolean type field, false otherwise
+     * @param field A field to check.
+     * @return True if it is a boolean type field, false otherwise.
      */
     public static boolean isBool(Field field) {
         String typeName = field.getGenericType().getTypeName();
@@ -90,8 +90,8 @@ public class TypeTrait {
     /**
      * Checks if it is a string type object.
      *
-     * @param obj an object to check
-     * @return true if it is a string type object, false otherwise
+     * @param obj An object to check.
+     * @return True if it is a string type object, false otherwise.
      */
     public static boolean isString(Object obj) {
         return (obj instanceof Character) || (obj instanceof String);
@@ -100,8 +100,8 @@ public class TypeTrait {
     /**
      * Checks if it is a string type {@link Field}.
      *
-     * @param field a field to check
-     * @return true if it is a string type field, false otherwise
+     * @param field A field to check.
+     * @return True if it is a string type field, false otherwise.
      */
     public static boolean isString(Field field) {
         String typeName = field.getGenericType().getTypeName();
@@ -112,9 +112,9 @@ public class TypeTrait {
     /**
      * Checks if the object and field are the same loose type.
      *
-     * @param object an object to check
-     * @param field  a field to check
-     * @return true if the object and field are the same loose type, false otherwise
+     * @param object An object to check.
+     * @param field  A field to check.
+     * @return True if the object and field are the same loose type, false otherwise.
      */
     public static boolean isSameLooseType(Object object, Field field) {
         return (isNumber(object) && isNumber(field)) ||
@@ -126,10 +126,10 @@ public class TypeTrait {
     /**
      * Convert a value from string type.
      *
-     * @param value the source string
-     * @param clazz value class
-     * @param <T>   expected value Type
-     * @return the value converted from string
+     * @param value The source string.
+     * @param clazz Value class.
+     * @param <T>   Expected value type.
+     * @return The value converted from string.
      */
     @SuppressWarnings("unchecked")
     public static <T> T fromString(String value, Class<?> clazz) {

@@ -10,48 +10,51 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.packet;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Log type enumeration.
  */
 public enum LogType {
 
     /**
-     * LogProxy OceanBase LogReader
+     * LogProxy OceanBase LogReader.
      */
     OCEANBASE(0);
 
+    /**
+     * The ordinal of this enumeration constant.
+     */
     private final int code;
 
-    private static final Map<Integer, LogType> CODE_TYPES = new HashMap<>(values().length);
-
-    static {
-        for (LogType logCaptureType : values()) {
-            CODE_TYPES.put(logCaptureType.code, logCaptureType);
-        }
-    }
-
+    /**
+     * Constructor.
+     *
+     * @param code The ordinal of this enumeration constant.
+     */
     LogType(int code) {
         this.code = code;
     }
 
-    public int getCode() {
-        return this.code;
-    }
-
-    public static LogType fromString(String string) {
-        if (string == null) {
-            throw new NullPointerException("logTypeString is null");
-        }
-        return valueOf(string.toUpperCase());
-    }
-
-    public static LogType fromCode(int code) {
-        if (CODE_TYPES.containsKey(code)) {
-            return CODE_TYPES.get(code);
+    /**
+     * Returns the enum constant of LogType with the specified code.
+     *
+     * @param code The ordinal of this enumeration constant.
+     * @return The enum constant.
+     */
+    public static LogType codeOf(int code) {
+        for (LogType t : values()) {
+            if (t.code == code) {
+                return t;
+            }
         }
         return null;
+    }
+
+    /**
+     * Get the ordinal of this enumeration constant.
+     *
+     * @return The ordinal of this enumeration constant.
+     */
+    public int code() {
+        return this.code;
     }
 }
