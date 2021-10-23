@@ -47,21 +47,21 @@ public class ClientConf extends SharedConf {
     public static int MAX_RECONNECT_TIMES = -1;
 
     /**
-     * idle timeout in seconds for netty handler
+     * Idle timeout in seconds for netty handler.
      */
     public static int IDLE_TIMEOUT_S = 15;
 
     /**
-     * maximum number of reads, after which data will be discarded
+     * Maximum number of reads, after which data will be discarded.
      */
     public static int NETTY_DISCARD_AFTER_READS = 16;
     /**
-     * user defined client id
+     * User defined client id.
      */
     public static String USER_DEFINED_CLIENTID = "";
 
     /**
-     * ignore unknown or unsupported record type with a warning log instead of throwing an exception
+     * Ignore unknown or unsupported record type with a warning log instead of throwing an exception.
      */
     public static boolean IGNORE_UNKNOWN_RECORD_TYPE = false;
 }

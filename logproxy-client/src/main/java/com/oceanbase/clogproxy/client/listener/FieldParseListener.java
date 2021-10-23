@@ -12,7 +12,17 @@ package com.oceanbase.clogproxy.client.listener;
 
 import com.oceanbase.clogproxy.client.message.DataMessage;
 
+/**
+ * This interface defined a kind of listener for field parsing.
+ */
 public interface FieldParseListener {
-    public void parseNotify(DataMessage.Record.Field prev, DataMessage.Record.Field next) throws Exception;
 
+    /**
+     * Handle the filed parsing result.
+     *
+     * @param prev The original field.
+     * @param next The field after parsing.
+     * @throws Exception When exception occurs.
+     */
+    void parseNotify(DataMessage.Record.Field prev, DataMessage.Record.Field next) throws Exception;
 }
