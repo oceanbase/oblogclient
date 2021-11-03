@@ -8,16 +8,15 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.exception;
+package com.oceanbase.clogproxy.common.config;
 
-public class DRCClientException extends Exception {
+/**
+ * The class that defines the shared constants.
+ */
+public class SharedConf {
 
-    private static final long serialVersionUID = 1L;
-
-    public DRCClientException() {
-    }
-
-    public DRCClientException(final String message) {
-        super(message);
-    }
+    /**
+     * Flag of whether to use the hash function to process password.
+     */
+    public static boolean AUTH_PASSWORD_HASH = true;
 }

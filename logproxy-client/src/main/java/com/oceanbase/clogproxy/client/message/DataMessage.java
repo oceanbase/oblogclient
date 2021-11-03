@@ -10,7 +10,6 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.message;
 
-import com.oceanbase.clogproxy.client.config.DRCConfig;
 import com.oceanbase.clogproxy.client.enums.DBType;
 import com.oceanbase.clogproxy.client.listener.FieldParseListener;
 import com.oceanbase.clogproxy.client.util.StringUtils;
@@ -852,25 +851,6 @@ public class DataMessage extends Message {
      */
     public List<Record> getRecordList() {
         return records;
-    }
-
-    /**
-     * Construct the message from DataInputStream.
-     *
-     * @param reader is the DataInputStream.
-     * @param drcConfig DRCConfig
-     * @throws IOException if an I/O error occurs
-     */
-    public void mergeFrom(final DataInputStream reader, DRCConfig drcConfig) throws IOException {
-        do {
-            Record record = new Record();
-            record.mergeFrom(reader);
-            record.setRegionId(drcConfig.getRegionId());
-            if (record.isEnding()) {
-                break;
-            }
-            records.add(record);
-        } while (true);
     }
 
     @Override

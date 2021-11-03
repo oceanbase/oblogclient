@@ -17,33 +17,57 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * This is an abstract implementation class of the interface {@link ConnectionConfig}.
+ */
 public abstract class AbstractConnectionConfig implements ConnectionConfig {
 
     /**
-     * defined structure configurations
+     * Defined configurations map.
      */
     protected static Map<String, ConfigItem<Object>> configs = new HashMap<>();
 
     /**
-     * extra configurations
+     * Extra configurations map.
      */
     protected final Map<String, String> extraConfigs = new HashMap<>();
 
+    /**
+     * This class is used to define configuration with a default value.
+     *
+     * @param <T> The type of stored value.
+     */
     @SuppressWarnings("unchecked")
     protected static class ConfigItem<T> {
         protected String key;
         protected T val;
 
+        /**
+         * Sole constructor.
+         *
+         * @param key Config key.
+         * @param val Config value.
+         */
         public ConfigItem(String key, T val) {
             this.key = key;
             this.val = val;
             configs.put(key, (ConfigItem<Object>) this);
         }
 
+        /**
+         * Set value to config item.
+         *
+         * @param val Value of specific type.
+         */
         public void set(T val) {
             this.val = val;
         }
 
+        /**
+         * Set value of specific type from string.
+         *
+         * @param val Value of string type.
+         */
         public void fromString(String val) {
             this.val = TypeTrait.fromString(val, this.val.getClass());
         }
@@ -54,6 +78,11 @@ public abstract class AbstractConnectionConfig implements ConnectionConfig {
         }
     }
 
+    /**
+     * Sole constructor.
+     *
+     * @param allConfigs The map of configurations.
+     */
     public AbstractConnectionConfig(Map<String, String> allConfigs) {
         if (allConfigs != null) {
             for (Entry<String, String> entry : allConfigs.entrySet()) {
@@ -66,12 +95,28 @@ public abstract class AbstractConnectionConfig implements ConnectionConfig {
         }
     }
 
+    /**
+     * Get log type set in configurations.
+     *
+     * @return The enum constant of {@link LogType}.
+     */
     public abstract LogType getLogType();
 
+    /**
+     * Add configurations to {@link #extraConfigs}
+     *
+     * @param extraConfigs A map of configurations.
+     */
     public void setExtraConfigs(Map<String, String> extraConfigs) {
         this.extraConfigs.putAll(extraConfigs);
     }
 
+    /**
+     * Update value into define configurations map.
+     *
+     * @param key Config key.
+     * @param val New config value.
+     */
     void set(String key, String val) {
         ConfigItem<Object> cs = configs.get(key);
         if (cs != null) {
@@ -80,9 +125,9 @@ public abstract class AbstractConnectionConfig implements ConnectionConfig {
     }
 
     /**
-     * validate if defined configurations
+     * Validate defined configurations.
      *
-     * @return True or False
+     * @return Flag of whether all the defined configurations are valid.
      */
     public abstract boolean valid();
 }

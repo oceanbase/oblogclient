@@ -10,29 +10,58 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.config;
 
-import com.oceanbase.clogproxy.common.config.ShareConf;
+import com.oceanbase.clogproxy.common.config.SharedConf;
 
-public class ClientConf extends ShareConf {
-    public static final String VERSION = "1.1.0";
-
-    public static int TRANSFER_QUEUE_SIZE = 20000;
-    public static int CONNECT_TIMEOUT_MS = 5000;
-    public static int READ_WAIT_TIME_MS = 2000;
-    public static int RETRY_INTERVAL_S = 2;
+/**
+ * The class that defines the constants that are used to generate the connection.
+ */
+public class ClientConf extends SharedConf {
     /**
-     * max retry time after disconnect, if not data income lasting IDLE_TIMEOUT_S, a reconnect we be trigger
+     * Client version.
+     */
+    public static final String VERSION = "1.0.1";
+
+    /**
+     * Queue size for storing records received from log proxy.
+     */
+    public static int TRANSFER_QUEUE_SIZE = 20000;
+
+    /**
+     * Connection timeout in milliseconds.
+     */
+    public static int CONNECT_TIMEOUT_MS = 5000;
+
+    /**
+     * Reading queue timeout in milliseconds.
+     */
+    public static int READ_WAIT_TIME_MS = 2000;
+
+    /**
+     * Time to sleep in seconds when retrying.
+     */
+    public static int RETRY_INTERVAL_S = 2;
+
+    /**
+     * Maximum number of retries after disconnect, if not data income lasting {@link #IDLE_TIMEOUT_S}, a reconnection will be triggered.
      */
     public static int MAX_RECONNECT_TIMES = -1;
+
+    /**
+     * Idle timeout in seconds for netty handler.
+     */
     public static int IDLE_TIMEOUT_S = 15;
+
+    /**
+     * Maximum number of reads, after which data will be discarded.
+     */
     public static int NETTY_DISCARD_AFTER_READS = 16;
     /**
-     * set user defined userid,
-     * for inner use only
+     * User defined client id.
      */
     public static String USER_DEFINED_CLIENTID = "";
 
     /**
-     * ignore unknown or unsupported record type with a warning log instead throwing an exception
+     * Ignore unknown or unsupported record type with a warning log instead of throwing an exception.
      */
     public static boolean IGNORE_UNKNOWN_RECORD_TYPE = false;
 }

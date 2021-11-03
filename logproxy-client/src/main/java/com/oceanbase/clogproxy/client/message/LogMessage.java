@@ -12,7 +12,7 @@ package com.oceanbase.clogproxy.client.message;
 
 import com.oceanbase.clogproxy.client.constants.DataType;
 import com.oceanbase.clogproxy.client.enums.DBType;
-import com.oceanbase.clogproxy.client.exception.DRCClientRunTimeException;
+import com.oceanbase.clogproxy.client.exception.LogMessageException;
 import com.oceanbase.clogproxy.client.listener.FieldParseListener;
 import com.oceanbase.clogproxy.client.util.BinaryMessageUtils;
 import io.netty.buffer.ByteBuf;
@@ -224,7 +224,7 @@ public class LogMessage extends DataMessage.Record {
                 try {
                     dbName = BinaryMessageUtils.getString(byteBuf.array(), (int) dbNameOffset, UTF8_ENCODING);
                 } catch (Exception e) {
-                    throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+                    throw new LogMessageException(e.getMessage(), e.getCause());
                 }
             }
         }
@@ -240,7 +240,7 @@ public class LogMessage extends DataMessage.Record {
                 try {
                     tableName = BinaryMessageUtils.getString(byteBuf.array(), (int) tbNameOffset, UTF8_ENCODING);
                 } catch (Exception e) {
-                    throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+                    throw new LogMessageException(e.getMessage(), e.getCause());
                 }
             }
         }
@@ -267,7 +267,7 @@ public class LogMessage extends DataMessage.Record {
                     serverId = BinaryMessageUtils.getString(byteBuf.array(), (int) instanceOffset,
                         DEFAULT_ENCODING);
                 } catch (Exception e) {
-                    throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+                    throw new LogMessageException(e.getMessage(), e.getCause());
                 }
             }
         }
@@ -634,7 +634,7 @@ public class LogMessage extends DataMessage.Record {
 
         } catch (Exception e) {
             fields = null;
-            throw new DRCClientRunTimeException(e.getMessage(), e);
+            throw new LogMessageException(e.getMessage(), e);
         }
 
         return fields;
@@ -660,7 +660,7 @@ public class LogMessage extends DataMessage.Record {
                 }
             }
         } catch (Exception e) {
-            throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+            throw new LogMessageException(e.getMessage(), e.getCause());
         }
         return primaryKeyIndexList;
     }
@@ -1014,7 +1014,7 @@ public class LogMessage extends DataMessage.Record {
             return pkValues;
 
         } catch (Exception e) {
-            throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+            throw new LogMessageException(e.getMessage(), e.getCause());
         }
     }
 
@@ -1076,7 +1076,7 @@ public class LogMessage extends DataMessage.Record {
                 }
             }
         } catch (Exception e) {
-            throw new DRCClientRunTimeException(e);
+            throw new LogMessageException(e);
         }
 
         return tuples;
@@ -1092,7 +1092,7 @@ public class LogMessage extends DataMessage.Record {
             }
 
         } catch (Exception e) {
-            throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+            throw new LogMessageException(e.getMessage(), e.getCause());
         }
     }
 
@@ -1157,7 +1157,7 @@ public class LogMessage extends DataMessage.Record {
                 }
             }
         } catch (Exception e) {
-            throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+            throw new LogMessageException(e.getMessage(), e.getCause());
         }
         return uniqueKeyList;
     }
@@ -1234,7 +1234,7 @@ public class LogMessage extends DataMessage.Record {
             return BinaryMessageUtils.getString(byteBuf.array(), (int) encoding,
                     DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            throw new DRCClientRunTimeException(e.getMessage(), e.getCause());
+            throw new LogMessageException(e.getMessage(), e.getCause());
         }
     }
 

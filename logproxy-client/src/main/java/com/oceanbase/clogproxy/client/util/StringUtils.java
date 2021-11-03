@@ -13,14 +13,17 @@ package com.oceanbase.clogproxy.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utils class for string.
+ */
 public class StringUtils {
     /**
      * Split a string by one separator character. The performance
      * is better than Java String split.
-     * 
-     * @param str is the string need be split.
-     * @param separatorChar the single separator character.
-     * @return the array of split items.
+     *
+     * @param str           The string need be split.
+     * @param separatorChar The single separator character.
+     * @return The array of split items.
      */
     public static String[] split(String str, char separatorChar) {
         if (str == null) {
@@ -57,6 +60,6 @@ public class StringUtils {
             list.add(str.substring(start, i));
         }
 
-        return (String[]) list.toArray(new String[list.size()]);
+        return list.toArray(new String[list.size()]);
     }
 }

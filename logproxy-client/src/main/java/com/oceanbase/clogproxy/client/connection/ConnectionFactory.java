@@ -25,31 +25,60 @@ import io.netty.util.AttributeKey;
 
 import java.net.InetSocketAddress;
 
+/**
+ * This is a factory class of {@link Connection}.
+ */
 public class ConnectionFactory {
 
+    /**
+     * A static class that holds the singleton instance of {@link ConnectionFactory}.
+     */
     private static class Singleton {
 
+        /**
+         * The singleton instance of {@link ConnectionFactory}.
+         */
         private static final ConnectionFactory INSTANCE = new ConnectionFactory();
     }
 
+    /**
+     * Get the singleton instance of {@link ConnectionFactory}.
+     *
+     * @return The singleton instance of {@link ConnectionFactory}.
+     */
     public static ConnectionFactory instance() {
         return Singleton.INSTANCE;
     }
 
+    /**
+     * Sole constructor. It can only be used in {@link Singleton} class.
+     */
     private ConnectionFactory() {
     }
 
+    /**
+     * Context key.
+     */
     public static final AttributeKey<StreamContext> CONTEXT_KEY = AttributeKey.valueOf("context");
 
+    /**
+     * Worker group in type of {@link EventLoopGroup}.
+     */
     private static final EventLoopGroup WORKER_GROUP = NettyEventLoopUtil.newEventLoopGroup(1,
-            new NamedThreadFactory("log-proxy-client-worker", true));
+        new NamedThreadFactory("log-proxy-client-worker", true));
 
+    /**
+     * Create a {@link Bootstrap} instance.
+     *
+     * @param sslContext The {@link SslContext} used for encrypted communication.
+     * @return A {@link Bootstrap} instance.
+     */
     private Bootstrap initBootstrap(SslContext sslContext) {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(WORKER_GROUP)
-                .channel(NettyEventLoopUtil.getClientSocketChannelClass())
-                .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.SO_KEEPALIVE, true);
+            .channel(NettyEventLoopUtil.getClientSocketChannelClass())
+            .option(ChannelOption.TCP_NODELAY, true)
+            .option(ChannelOption.SO_KEEPALIVE, true);
 
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
@@ -65,6 +94,13 @@ public class ConnectionFactory {
         return bootstrap;
     }
 
+    /**
+     * Create a {@link Connection} with specific {@link StreamContext}.
+     *
+     * @param context Stream context.
+     * @return A {@link Connection}.
+     * @throws LogProxyClientException If exception occurs.
+     */
     public Connection createConnection(StreamContext context) throws LogProxyClientException {
         Bootstrap bootstrap = initBootstrap(context.getSslContext());
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, ClientConf.CONNECT_TIMEOUT_MS);

@@ -10,6 +10,9 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.constants;
 
+/**
+ * The class that defines the constants that are used to identify data types.
+ */
 public class DataType {
 
     public static final byte DT_UNKNOWN = 0x00;

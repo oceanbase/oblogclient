@@ -10,6 +10,9 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.enums;
 
+/**
+ * Database type enumeration.
+ */
 public enum DBType {
     MYSQL,
 

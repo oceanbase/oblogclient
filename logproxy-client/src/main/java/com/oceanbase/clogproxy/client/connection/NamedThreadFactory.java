@@ -13,22 +13,54 @@ package com.oceanbase.clogproxy.client.connection;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This is a factory class for {@link ThreadFactory}.
+ */
 public class NamedThreadFactory implements ThreadFactory {
 
+    /**
+     * Pool number.
+     */
     private static final AtomicInteger POOL_NUMBER = new AtomicInteger(1);
-    private final AtomicInteger        threadNumber = new AtomicInteger(1);
-    private final ThreadGroup          group;
-    private final String               namePrefix;
-    private final boolean              isDaemon;
+    /**
+     * Thread number.
+     */
+    private final AtomicInteger threadNumber = new AtomicInteger(1);
+    /**
+     * Thread group.
+     */
+    private final ThreadGroup group;
+    /**
+     * Prefix of thread name.
+     */
+    private final String namePrefix;
+    /**
+     * Flag of whether the thread is daemon.
+     */
+    private final boolean isDaemon;
 
+    /**
+     * Constructor with no arguments. It will take "ThreadPool" as its name.
+     */
     public NamedThreadFactory() {
         this("ThreadPool");
     }
 
+    /**
+     * Constructor with name.
+     *
+     * @param name Name of thread factory.
+     */
     public NamedThreadFactory(String name) {
         this(name, false);
     }
 
+    /**
+     * Constructor with name prefix and daemon flag.
+     *
+     * @param prefix Name prefix of thread factory.
+     * @param daemon A flag of whether starting the thread on daemon mode.
+     */
     public NamedThreadFactory(String prefix, boolean daemon) {
         SecurityManager s = System.getSecurityManager();
         group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
@@ -36,11 +68,6 @@ public class NamedThreadFactory implements ThreadFactory {
         isDaemon = daemon;
     }
 
-    /**
-     * Create a thread.
-     *
-     * @see ThreadFactory#newThread(Runnable)
-     */
     @Override
     public Thread newThread(Runnable r) {
         Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);

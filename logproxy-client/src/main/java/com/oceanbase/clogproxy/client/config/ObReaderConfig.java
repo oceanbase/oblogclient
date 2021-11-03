@@ -12,7 +12,7 @@ package com.oceanbase.clogproxy.client.config;
 
 import com.google.common.collect.Maps;
 import com.oceanbase.clogproxy.client.util.Validator;
-import com.oceanbase.clogproxy.common.config.ShareConf;
+import com.oceanbase.clogproxy.common.config.SharedConf;
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.CryptoUtil;
 import com.oceanbase.clogproxy.common.util.Hex;
@@ -21,19 +21,49 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+/**
+ * This is a configuration class for connection to log proxy.
+ */
 public class ObReaderConfig extends AbstractConnectionConfig {
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
 
+    /**
+     * Root server list.
+     */
     private static final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
+
+    /**
+     * Cluster username.
+     */
     private static final ConfigItem<String> CLUSTER_USER = new ConfigItem<>("cluster_user", "");
+
+    /**
+     * Cluster password.
+     */
     private static final ConfigItem<String> CLUSTER_PASSWORD = new ConfigItem<>("cluster_password", "");
+
+    /**
+     * Table whitelist.
+     */
     private static final ConfigItem<String> TABLE_WHITE_LIST = new ConfigItem<>("tb_white_list", "");
+
+    /**
+     * Start timestamp.
+     */
     private static final ConfigItem<Long> START_TIMESTAMP = new ConfigItem<>("first_start_timestamp", 0L);
 
+    /**
+     * Constructor with empty arguments.
+     */
     public ObReaderConfig() {
         super(Maps.newHashMap());
     }
 
+    /**
+     * Constructor with a config map.
+     *
+     * @param allConfigs Config map.
+     */
     public ObReaderConfig(Map<String, String> allConfigs) {
         super(allConfigs);
     }
@@ -64,7 +94,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, ConfigItem<Object>> entry : configs.entrySet()) {
             String value = entry.getValue().val.toString();
-            if (CLUSTER_PASSWORD.key.equals(entry.getKey()) && ShareConf.AUTH_PASSWORD_HASH) {
+            if (CLUSTER_PASSWORD.key.equals(entry.getKey()) && SharedConf.AUTH_PASSWORD_HASH) {
                 value = Hex.str(CryptoUtil.sha1(value));
             }
             sb.append(entry.getKey()).append("=").append(value).append(" ");
@@ -88,49 +118,50 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     @Override
     public String toString() {
         return "rootserver_list=" + RS_LIST + ", cluster_user=" + CLUSTER_USER + ", cluster_password=******, " +
-                "tb_white_list=" + TABLE_WHITE_LIST + ", start_timestamp=" + START_TIMESTAMP;
+            "tb_white_list=" + TABLE_WHITE_LIST + ", start_timestamp=" + START_TIMESTAMP;
     }
 
     /**
-     * 设置管控服务列表
+     * Set root server list.
      *
-     * @param rsList 管控服务列表
+     * @param rsList Root server list.
      */
     public void setRsList(String rsList) {
         RS_LIST.set(rsList);
     }
 
     /**
-     * 设置连接OB用户名
+     * Set cluster username
      *
-     * @param clusterUser 用户名
+     * @param clusterUser Cluster username.
      */
     public void setUsername(String clusterUser) {
         CLUSTER_USER.set(clusterUser);
     }
 
     /**
-     * 设置连接OB密码
+     * Set cluster password
      *
-     * @param clusterPassword 密码
+     * @param clusterPassword Cluster password.
      */
     public void setPassword(String clusterPassword) {
         CLUSTER_PASSWORD.set(clusterPassword);
     }
 
     /**
-     * 配置过滤规则，由租户.库.表3个维度组成，每一段 * 表示任意，如：A.foo.bar，B.foo.*，C.*.*，*.*.*
+     * Set table whitelist. It is composed of three dimensions: tenant, library, and table.
+     * Asterisk means any, such as: "A.foo.bar", "B.foo.*", "C.*.*", "*.*.*".
      *
-     * @param tableWhiteList 监听表的过滤规则
+     * @param tableWhiteList Table whitelist.
      */
     public void setTableWhiteList(String tableWhiteList) {
         TABLE_WHITE_LIST.set(tableWhiteList);
     }
 
     /**
-     * 设置起始订阅的 UNIX时间戳，0表示从当前，通常不要早于1小时
+     * Set start timestamp, zero means from now on.
      *
-     * @param startTimestamp 起始时间戳
+     * @param startTimestamp Start timestamp.
      */
     public void setStartTimestamp(Long startTimestamp) {
         START_TIMESTAMP.set(startTimestamp);

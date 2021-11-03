@@ -14,9 +14,22 @@ package com.oceanbase.clogproxy.client.listener;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.message.LogMessage;
 
+/**
+ * This interface defined a kind of listener for record response.
+ */
 public interface RecordListener {
 
-    void notify(LogMessage record);
+    /**
+     * Handle the {@link LogMessage}.
+     *
+     * @param logMessage A {@link LogMessage} instance.
+     */
+    void notify(LogMessage logMessage);
 
+    /**
+     * Handle the exception.
+     *
+     * @param e An exception.
+     */
     void onException(LogProxyClientException e);
 }

@@ -22,26 +22,73 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Utils class for crypto.
+ */
 public class CryptoUtil {
 
+    /**
+     * Default cipher key.
+     */
     private static final String KEY = "LogProxy123*";
 
+    /**
+     * AES key length.
+     */
     private static final int AES_KEY_SIZE = 256;
+
+    /**
+     * GCM tag length.
+     */
     private static final int GCM_TAG_LENGTH = 16;
 
+    /**
+     * Create an {@link Encryptor} instance using given cipher key.
+     *
+     * @param key Cipher key.
+     * @return An {@link Encryptor} instance.
+     */
     public static Encryptor newEncryptor(String key) {
         return new Encryptor(key);
     }
 
+    /**
+     * Create an Encryptor instance using default cipher key.
+     *
+     * @return An {@link Encryptor} instance.
+     */
     public static Encryptor newEncryptor() {
         return new Encryptor(KEY);
     }
 
+    /**
+     * This class provides the functionality of encryption and decryption with a specific cipher key.
+     */
     public static class Encryptor {
+        /**
+         * The cipher instance.
+         */
         private Cipher cipher = null;   // not thread-safe
-        private byte[] key = new byte[AES_KEY_SIZE / 16];
-        private byte[] iv = new byte[12];
 
+        /**
+         * The key material of the secret key.
+         *
+         * @see SecretKeySpec#SecretKeySpec(byte[], String)
+         */
+        private final byte[] key = new byte[AES_KEY_SIZE / 16];
+
+        /**
+         * The IV source buffer.
+         *
+         * @see GCMParameterSpec#GCMParameterSpec(int, byte[])
+         */
+        private final byte[] iv = new byte[12];
+
+        /**
+         * Constructor.
+         *
+         * @param cipherKey The cipher key used to generate {@link Encryptor#key} and {@link Encryptor#iv}.
+         */
         private Encryptor(String cipherKey) {
             try {
                 cipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -55,6 +102,12 @@ public class CryptoUtil {
             }
         }
 
+        /**
+         * Encrypt given text.
+         *
+         * @param text The original text.
+         * @return Encrypted data.
+         */
         public byte[] encrypt(String text) {
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
@@ -68,6 +121,12 @@ public class CryptoUtil {
             }
         }
 
+        /**
+         * Decrypt given data.
+         *
+         * @param cipherText Encrypted data.
+         * @return The original string.
+         */
         public String decrypt(byte[] cipherText) {
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
@@ -82,10 +141,22 @@ public class CryptoUtil {
         }
     }
 
+    /**
+     * Compute hash value of given array of bytes.
+     *
+     * @param bytes The origin array of bytes.
+     * @return The array of bytes for the resulting hash value.
+     */
     public static byte[] sha1(byte[] bytes) {
         return DigestUtils.sha1(bytes);
     }
 
+    /**
+     * Compute hash value of given string.
+     *
+     * @param text The origin string.
+     * @return The array of bytes for the resulting hash value.
+     */
     public static byte[] sha1(String text) {
         return DigestUtils.sha1(text);
     }

@@ -18,18 +18,35 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class represents a connection which contains a netty channel.
+ */
 public class Connection {
 
     private static final Logger logger = LoggerFactory.getLogger(Connection.class);
 
+    /**
+     * A netty channel.
+     */
     private Channel channel;
 
+    /**
+     * A flag of whether the channel is closed.
+     */
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
+    /**
+     * Sole constructor.
+     *
+     * @param channel A netty channel.
+     */
     public Connection(Channel channel) {
         this.channel = channel;
     }
 
+    /**
+     * Close this connection.
+     */
     public void close() {
         if (!closed.compareAndSet(false, true)) {
             logger.warn("connection already closed");
@@ -40,13 +57,19 @@ public class Connection {
                     channel.close().addListener(this::logCloseResult).syncUninterruptibly();
                 } catch (Exception e) {
                     logger.warn("close connection to remote address {} exception",
-                            NetworkUtil.parseRemoteAddress(channel), e);
+                        NetworkUtil.parseRemoteAddress(channel), e);
                 }
             }
             channel = null;
         }
     }
 
+    /**
+     * A callback that will logging the result of {@link Channel#close()}.
+     *
+     * @param future The source {@link Future} which called this callback.
+     */
+    @SuppressWarnings("rawtypes")
     private void logCloseResult(Future future) {
         if (future.isSuccess()) {
             if (logger.isInfoEnabled()) {
