@@ -56,20 +56,21 @@ Basic usage
 
 ```java
 ObReaderConfig config = new ObReaderConfig();
-// set root server list in format [ip:rpc_port:sql_port]
+// Set root server list in format [ip1:rpc_port1:sql_port1;ip2:rpc_port2:sql_port2],
+// while multiple servers are seperated by ';'.
 config.setRsList("127.0.0.1:2882:2881");
-// username and password
+// Set username and password.
 config.setUsername("root@sys");
 config.setPassword("root@sys");
-// timestamp of start point, zero means starting from now
+// Set timestamp of start point in seconds, and zero means starting from now.
 config.setStartTimestamp(0L);
-// whitelist in format [tenant.db.table]
+// Set table whitelist in format [tenant.db.table], and '*' indicates any value.
 config.setTableWhiteList("sys.*.*");
 
-// create a client
+// Create a client instance.
 LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config);
 
-// add handler
+// Add a RecordListener to handle log messages.
 client.addListener(new RecordListener() {
 
     @Override
@@ -86,7 +87,7 @@ client.addListener(new RecordListener() {
     }
 });
 
-// start and wait
+// Start and wait the Netty channel.
 client.start();
 client.join();
 ```
