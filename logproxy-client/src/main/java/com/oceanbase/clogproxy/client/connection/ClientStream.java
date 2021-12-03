@@ -135,7 +135,8 @@ public class ClientStream {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                logger.warn("exception occurred when join LogProxy exit: ", e);
+                logger.warn("ClientStream thread is interrupted: " + e.getMessage());
+                stop();
             }
         }
     }
