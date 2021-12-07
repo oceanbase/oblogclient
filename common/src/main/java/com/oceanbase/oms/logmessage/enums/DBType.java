@@ -8,10 +8,10 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.enums;
+package com.oceanbase.oms.logmessage.enums;
 
 /**
- * Database type enumeration.
+ * Database type enumeration for open source.
  */
 public enum DBType {
     MYSQL,

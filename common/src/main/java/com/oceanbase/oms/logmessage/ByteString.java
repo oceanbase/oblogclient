@@ -8,10 +8,14 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.message;
+package com.oceanbase.oms.logmessage;
 
 import java.io.UnsupportedEncodingException;
 
+/**
+ * ByteString store an array of bytes and take over all related transfers,
+ * such as judge if it should be null, empty or in some an encoding.
+ */
 public class ByteString {
     private int    len;
 

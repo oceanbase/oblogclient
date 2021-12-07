@@ -8,9 +8,7 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.listener;
-
-import com.oceanbase.clogproxy.client.message.DataMessage;
+package com.oceanbase.oms.logmessage;
 
 /**
  * This interface defined a kind of listener for field parsing.

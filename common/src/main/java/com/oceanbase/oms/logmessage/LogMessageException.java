@@ -8,10 +8,10 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.exception;
+package com.oceanbase.oms.logmessage;
 
 /**
- * This is a subclasses of {@link RuntimeException} primarily used in process of parsing {@link com.oceanbase.clogproxy.client.message.LogMessage}.
+ * This is a subclasses of {@link RuntimeException} primarily used in process of parsing {@link LogMessage}.
  */
 public class LogMessageException extends RuntimeException {
 

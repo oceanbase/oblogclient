@@ -13,7 +13,7 @@ package com.oceanbase.clogproxy.client;
 import com.oceanbase.clogproxy.client.config.ObReaderConfig;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
-import com.oceanbase.clogproxy.client.message.LogMessage;
+import com.oceanbase.oms.logmessage.LogMessage;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import org.junit.Ignore;

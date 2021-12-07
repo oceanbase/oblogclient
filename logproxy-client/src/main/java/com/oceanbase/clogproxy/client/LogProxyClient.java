@@ -19,6 +19,8 @@ import com.oceanbase.clogproxy.client.listener.StatusListener;
 import com.oceanbase.clogproxy.client.util.ClientIdGenerator;
 import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
+import com.oceanbase.oms.logmessage.LogMessage;
+import com.oceanbase.oms.logmessage.typehelper.OBLogTypeHelper;
 import io.netty.handler.ssl.SslContext;
 
 /**
@@ -50,6 +52,7 @@ public class LogProxyClient {
         if (!config.valid()) {
             throw new IllegalArgumentException("Illegal argument for LogProxyClient");
         }
+        LogMessage.logTypeHelper = OBLogTypeHelper.OB_LOG_TYPE_HELPER;
         String clientId = ClientConf.USER_DEFINED_CLIENTID.isEmpty() ? ClientIdGenerator.generate() : ClientConf.USER_DEFINED_CLIENTID;
         ConnectionParams connectionParams = new ConnectionParams(config.getLogType(), clientId, host, port, config);
         connectionParams.setProtocolVersion(ProtocolVersion.V2);
