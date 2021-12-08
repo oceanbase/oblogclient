@@ -19,12 +19,6 @@ public abstract class LogTypeHelperFactory {
             case OCEANBASE:
             case OCEANBASE1:
                 return OBLogTypeHelper.OB_LOG_TYPE_HELPER;
-            case MYSQL:
-                return MySQLLogTypeHelper.MYSQL_LOG_TYPE_HELPER;
-            case ORACLE:
-                return OracleLogTypeHelper.ORACLE_LOG_TYPE_HELPER;
-            case DB2:
-                return DB2LogTypeHelper.DB2_LOG_TYPE_HELPER;
             default:
                 throw new RuntimeException("unsupported dbtype");
         }

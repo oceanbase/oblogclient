@@ -12,7 +12,7 @@ package com.oceanbase.oms.logmessage;
 
 import com.oceanbase.oms.logmessage.enums.DBType;
 import com.oceanbase.oms.logmessage.typehelper.LogTypeHelper;
-import com.oceanbase.oms.logmessage.typehelper.MySQLLogTypeHelper;
+import com.oceanbase.oms.logmessage.typehelper.OBLogTypeHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.DataInputStream;
@@ -35,7 +35,7 @@ public class DataMessage extends Message {
      * Record contains data of one record.
      */
     public static class Record {
-        public static LogTypeHelper logTypeHelper = MySQLLogTypeHelper.MYSQL_LOG_TYPE_HELPER;
+        public static LogTypeHelper logTypeHelper = OBLogTypeHelper.OB_LOG_TYPE_HELPER;
 
         public static final String            UTF8MB4_ENCODING        = "utf8mb4";
         public static final String            TRACEID_STRING          = "traceid";
