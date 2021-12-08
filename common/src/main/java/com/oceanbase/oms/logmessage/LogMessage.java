@@ -8,13 +8,11 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.message;
+package com.oceanbase.oms.logmessage;
 
-import com.oceanbase.clogproxy.client.constants.DataType;
-import com.oceanbase.clogproxy.client.enums.DBType;
-import com.oceanbase.clogproxy.client.exception.LogMessageException;
-import com.oceanbase.clogproxy.client.listener.FieldParseListener;
-import com.oceanbase.clogproxy.client.util.BinaryMessageUtils;
+import com.oceanbase.oms.logmessage.enums.DBType;
+import com.oceanbase.oms.logmessage.enums.DataType;
+import com.oceanbase.oms.logmessage.utils.BinaryMessageUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.commons.lang3.StringUtils;
@@ -32,14 +30,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.CRC32;
 
-
-
 public class LogMessage extends DataMessage.Record {
     private static final Logger log                      = LoggerFactory.getLogger(LogMessage.class);
 
-    private static final String DEFAULT_ENCODING         = "ASCII";
+    public static final String DEFAULT_ENCODING         = "ASCII";
 
-    private static final String UTF8_ENCODING            = "UTF-8";
+    public static final String UTF8_ENCODING            = "UTF-8";
 
     private static final String SEP                      = System.getProperty("line.separator");
     //old version header length
@@ -244,7 +240,7 @@ public class LogMessage extends DataMessage.Record {
                 }
             }
         }
-        return tableName == null || "".endsWith(tableName) ? null : tableName;
+        return "".endsWith(tableName) ? null : tableName;
     }
 
     @Override
@@ -271,7 +267,7 @@ public class LogMessage extends DataMessage.Record {
                 }
             }
         }
-        return serverId == null || "".endsWith(serverId) ? null : serverId;
+        return "".endsWith(serverId) ? null : serverId;
     }
 
     @Override
@@ -323,8 +319,6 @@ public class LogMessage extends DataMessage.Record {
             currentNewColOffset = (int) wrapByteBuf.readUnsignedInt();
         }
 
-        DBType dbType = getDbType();
-
         //start loop
         for (int i = 0; i < count; i++) {
             //get pk boolean
@@ -357,37 +351,21 @@ public class LogMessage extends DataMessage.Record {
                                         + i * elementSize);
                 flag = wrapByteBuf.readUnsignedByte();
             }
-            Field.Type fieldType = Field.MYSQL_TYPES[type];
             //get real encoding
             String realEncoding = encodingStr;
-            wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colsEncodingOffset + BYTE_SIZE
-                                           + INT_SIZE + (i + 1) * INT_SIZE));
             if (colEncodingsCount > 0) {
+                wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colsEncodingOffset + BYTE_SIZE
+                        + INT_SIZE + (i + 1) * INT_SIZE));
                 int nextEncodingOffset = (int) wrapByteBuf.readUnsignedInt();
                 ByteString encodingByteString = new ByteString(wrapByteBuf.array(),
                     PREFIX_LENGTH + currentEncodingOffset + BYTE_SIZE + INT_SIZE + (count + 1)
                             * INT_SIZE + (int) colsEncodingOffset, nextEncodingOffset
                                                                    - currentEncodingOffset - 1);
                 realEncoding = encodingByteString.toString();
-                if (realEncoding.isEmpty()) {
-                    if ((type == 253 || type == 254)
-                        && Field.MYSQL_TYPES[type] == Field.Type.STRING) {
-                        realEncoding = "binary";
-                    } else if (Field.MYSQL_TYPES[type] == Field.Type.BLOB) {
-                        realEncoding = "";
-                    } else if (type == 245) {
-                        realEncoding = UTF8MB4_ENCODING;
-                    } else {
-                        realEncoding = DEFAULT_ENCODING;
-                    }
-                }
                 currentEncodingOffset = nextEncodingOffset;
-            } else if (dbType == DBType.DB2 && (fieldType == Field.Type.BLOB || fieldType == Field.Type.BINARY)) {
-                realEncoding = "";
             }
-            if (this.getDbType() == DBType.MYSQL && realEncoding != null && !realEncoding.isEmpty() && Field.MYSQL_TYPES[type] == Field.Type.BLOB) {
-                type = 15;
-            }
+            realEncoding = logTypeHelper.correctEncoding(type, realEncoding);
+            type = logTypeHelper.correctCode(type, realEncoding);
             //colName
             wrapByteBuf
                 .readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE + INT_SIZE + (i + 1)
@@ -468,9 +446,20 @@ public class LogMessage extends DataMessage.Record {
                     || newColsOffset < 0) {
                     return fields;
                 }
-                //global encoding
-                String encodingStr = BinaryMessageUtils.getString(byteBuf.array(), (int) encoding,
-                    DEFAULT_ENCODING);
+
+                /*
+                 * global encoding
+                 *
+                 * 对于 DDL 的默认编码改动， DDL DrcMessage 不携带编码信息，只能使用默认编码，但是 ASCII 对于中文处理出错
+                 * 对于 DDL 默认编码改为 UTF-8，不改变除 DDL 之外其他行为
+                 */
+                String encodingStr = null;
+                if (this.getOpt() == Type.DDL) {
+                    encodingStr = UTF8_ENCODING;
+                } else {
+                    encodingStr = BinaryMessageUtils.getString(byteBuf.array(), (int) encoding,
+                        DEFAULT_ENCODING);
+                }
                 //pk info
                 List<Integer> pks = null;
                 if ((int) pkKeysOffset > 0) {
@@ -513,7 +502,6 @@ public class LogMessage extends DataMessage.Record {
                 if (0 != newColCount) {
                     currentNewColOffset = (int) wrapByteBuf.readUnsignedInt();
                 }
-                DBType dbType = getDbType();
                 //start loop
                 for (int i = 0; i < count; i++) {
                     //get pk boolean
@@ -546,39 +534,28 @@ public class LogMessage extends DataMessage.Record {
                                                 + INT_SIZE + i * elementSize);
                         flag = wrapByteBuf.readUnsignedByte();
                     }
-                    Field.Type fieldType = Field.MYSQL_TYPES[type];
                     //get real encoding
                     String realEncoding = encodingStr;
-                    wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colsEncodingOffset + BYTE_SIZE
-                                                   + INT_SIZE + (i + 1) * INT_SIZE));
+
+                    // now deliver have fix encoding offset bug, encoding has been decoded correctly
+                    // add db2 compatible code for new version db2 reader
+                    // old else will also saved for old version store
+                    // this code will deprecated in future release
+                    // correct oracle code if oralce reader has update delivier version or correct type code
                     if (colEncodingsCount > 0) {
+                        wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colsEncodingOffset + BYTE_SIZE
+                                + INT_SIZE + (i + 1) * INT_SIZE));
                         int nextEncodingOffset = (int) wrapByteBuf.readUnsignedInt();
                         ByteString encodingByteString = new ByteString(wrapByteBuf.array(),
                             PREFIX_LENGTH + currentEncodingOffset + BYTE_SIZE + INT_SIZE
                                     + (count + 1) * INT_SIZE + (int) colsEncodingOffset,
                             nextEncodingOffset - currentEncodingOffset - 1);
                         realEncoding = encodingByteString.toString();
-                        if (realEncoding.isEmpty()) {
-                            if ((type == 253 || type == 254)
-                                && Field.MYSQL_TYPES[type] == Field.Type.STRING) {
-                                realEncoding = "binary";
-                            } else if (Field.MYSQL_TYPES[type] == Field.Type.BLOB) {
-                                realEncoding = "";
-                            } else if (type == 245) {
-                                realEncoding = UTF8MB4_ENCODING;
-                            } else {
-                                realEncoding = DEFAULT_ENCODING;
-                            }
-                        }
                         currentEncodingOffset = nextEncodingOffset;
-                    } else if (dbType == DBType.DB2 && (fieldType == Field.Type.BLOB || fieldType == Field.Type.BINARY)) {
-                        // TODO: DB2 的 BLOB 类型, 等 Store 改好之后删
-                        realEncoding = "";
                     }
+                    realEncoding = logTypeHelper.correctEncoding(type, realEncoding);
+                    type = logTypeHelper.correctCode(type, realEncoding);
 
-                    if (this.getDbType() == DBType.MYSQL && !realEncoding.isEmpty() && Field.MYSQL_TYPES[type] == Field.Type.BLOB) {
-                        type = 15;
-                    }
                     //colName
                     wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE
                                                    + INT_SIZE + (i + 1) * INT_SIZE));
@@ -670,7 +647,6 @@ public class LogMessage extends DataMessage.Record {
         ByteBuf inner = Unpooled.wrappedBuffer(data, 0, data.length).order(ByteOrder.LITTLE_ENDIAN);
         setByteBuf(inner);
     }
-
 
     /**
      * Get the primary data to avoid parsing
@@ -858,11 +834,11 @@ public class LogMessage extends DataMessage.Record {
             String keyStr = key.toString();
             int m = 0;
             while (true) {
-                int i = keyStr.indexOf("(", m);
+                int i = keyStr.indexOf('(', m);
                 if (i == -1) {
                     break;
                 }
-                int j = keyStr.indexOf(")", i);
+                int j = keyStr.indexOf(')', i);
                 if (j == -1) {
                     log.error("parse key error");
                     return null;
@@ -1043,11 +1019,11 @@ public class LogMessage extends DataMessage.Record {
                             if (StringUtils.isNotEmpty(rawConstraintString)) {
                                 int m = 0;
                                 while (m < rawConstraintString.length()) {
-                                    int leftIndex = rawConstraintString.indexOf("(", m);
+                                    int leftIndex = rawConstraintString.indexOf('(', m);
                                     if (leftIndex == -1) {
                                         break;
                                     }
-                                    int rightIndex = rawConstraintString.indexOf(")", leftIndex);
+                                    int rightIndex = rawConstraintString.indexOf(')', leftIndex);
                                     if (rightIndex == -1) {
                                         if (rawConstraintString.length() == 1) {
                                             throw new IOException(
@@ -1244,5 +1220,17 @@ public class LogMessage extends DataMessage.Record {
 
     public long getFileOffset() {
         return fileOffset;
+    }
+
+    public ByteBuf getByteBuff() {
+        return byteBuf;
+    }
+
+    public void releaseContents() {
+        // release reference to let gc collect mem
+        this.fields = null;
+        this.pkValues = null;
+        this.keysValue = null;
+        this.primaryKeyIndexList = null;
     }
 }

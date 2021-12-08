@@ -8,9 +8,9 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.message;
+package com.oceanbase.oms.logmessage;
 
-import com.oceanbase.clogproxy.client.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.DataInputStream;
 import java.io.IOException;

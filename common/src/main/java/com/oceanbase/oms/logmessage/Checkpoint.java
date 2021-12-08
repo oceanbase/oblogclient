@@ -8,7 +8,7 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.message;
+package com.oceanbase.oms.logmessage;
 
 public class Checkpoint {
 
@@ -60,8 +60,8 @@ public class Checkpoint {
     public void setPosition(final String position) {
         String cp = position;
         if (cp.contains("@mysql-bin.")) {
-            int m = cp.indexOf("@");
-            int p = cp.indexOf(".");
+            int m = cp.indexOf('@');
+            int p = cp.indexOf('.');
             String cp1 = cp.substring(0, m);
             String cp2 = cp.substring(p + 1);
             long lcp2 = Long.parseLong(cp2);
@@ -105,7 +105,7 @@ public class Checkpoint {
             builder.append(db).append(DELIMITER).append(dbport).append(DELIMITER);
         }
 
-        if (cp1 != null) {
+        if (cp1 != null && cp2 != null) {
             builder.append(cp1).append(DELIMITER).append(cp2).append(DELIMITER);
         } else {
             builder.append(DELIMITER).append(DELIMITER);

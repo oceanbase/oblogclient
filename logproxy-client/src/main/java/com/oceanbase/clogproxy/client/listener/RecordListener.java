@@ -12,7 +12,7 @@ package com.oceanbase.clogproxy.client.listener;
 
 
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
-import com.oceanbase.clogproxy.client.message.LogMessage;
+import com.oceanbase.oms.logmessage.LogMessage;
 
 /**
  * This interface defined a kind of listener for record response.

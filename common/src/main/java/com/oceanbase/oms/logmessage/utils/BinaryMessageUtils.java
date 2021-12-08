@@ -8,10 +8,10 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.util;
+package com.oceanbase.oms.logmessage.utils;
 
-import com.oceanbase.clogproxy.client.constants.DataType;
-import com.oceanbase.clogproxy.client.message.ByteString;
+import com.oceanbase.oms.logmessage.ByteString;
+import com.oceanbase.oms.logmessage.enums.DataType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -26,9 +26,6 @@ import java.util.List;
  */
 public class BinaryMessageUtils {
 
-    /**
-     *
-     */
     private static final int PREFIX_LENGTH = 12;
 
     /**

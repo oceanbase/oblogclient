@@ -11,8 +11,8 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.client.connection;
 
 import com.oceanbase.clogproxy.client.config.ClientConf;
-import com.oceanbase.clogproxy.client.message.LogMessage;
 import com.oceanbase.clogproxy.common.packet.HeaderType;
+import com.oceanbase.oms.logmessage.LogMessage;
 import io.netty.handler.ssl.SslContext;
 
 import java.util.concurrent.BlockingQueue;

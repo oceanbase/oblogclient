@@ -8,15 +8,15 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.clogproxy.client.message;
+package com.oceanbase.oms.logmessage;
 
-import com.oceanbase.clogproxy.client.enums.DBType;
-import com.oceanbase.clogproxy.client.listener.FieldParseListener;
-import com.oceanbase.clogproxy.client.util.StringUtils;
+import com.oceanbase.oms.logmessage.enums.DBType;
+import com.oceanbase.oms.logmessage.typehelper.LogTypeHelper;
+import com.oceanbase.oms.logmessage.typehelper.OBLogTypeHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,14 +26,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+/**
+ * Message contains database updating data.
+ */
 public class DataMessage extends Message {
 
     /**
      * Record contains data of one record.
-     *
-     * @author erbai.qzc
      */
     public static class Record {
+        public static LogTypeHelper logTypeHelper = OBLogTypeHelper.OB_LOG_TYPE_HELPER;
+
         public static final String            UTF8MB4_ENCODING        = "utf8mb4";
         public static final String            TRACEID_STRING          = "traceid";
 
@@ -97,14 +100,12 @@ public class DataMessage extends Message {
             return isConnectionFirstRecord;
         }
 
-        public Long getLogSeqNum() throws UnsupportedEncodingException {
+        public Long getLogSeqNum() {
             return 0L;
         }
 
         /**
          * Field contains data of one field
-         *
-         * @author erbai.qzc
          */
         public static class Field {
 
@@ -170,6 +171,10 @@ public class DataMessage extends Message {
                 return primaryKey;
             }
 
+            public final int getRawType() {
+                return type;
+            }
+
             public void setPrimary(boolean primary) {
                 primaryKey = primary;
             }
@@ -226,6 +231,7 @@ public class DataMessage extends Message {
                 MYSQL_TYPES[206] = Type.FLOAT;
                 MYSQL_TYPES[207] = Type.STRING;
                 MYSQL_TYPES[208] = Type.STRING;
+                MYSQL_TYPES[209] = Type.STRING;
 
                 MYSQL_TYPES[255] = Type.GEOMETRY;
                 MYSQL_TYPES[254] = Type.STRING;
@@ -254,13 +260,11 @@ public class DataMessage extends Message {
              * @return the enumerated type of the field.
              */
             public final Type getType() {
-
-                if ((type > 16 && type < 199) || (type > 208 && type < 245)) {
+                if ((type > 16 && type < 199) || (type > 209 && type < 245)) {
                     return Type.UNKOWN;
                 } else {
                     return MYSQL_TYPES[type];
                 }
-
             }
 
             public boolean isChangeValue() {
@@ -395,7 +399,7 @@ public class DataMessage extends Message {
                 if (2 != kv.length) {
                     //Bug fix:trace id may contains ':'. Split by ':' and drop tuple contains more than 2 content lead to the miss of trace id.
                     if (kv.length > 2
-                        && org.apache.commons.lang3.StringUtils.equals(kv[0], TRACEID_STRING)) {
+                        && StringUtils.equals(kv[0], TRACEID_STRING)) {
                         kv[1] = line.substring(line.indexOf(':') + 1);
                     } else {
                         continue;
@@ -461,45 +465,15 @@ public class DataMessage extends Message {
                     for (int i = 0; i < encodings.length; i++) {
                         String enc = encodings[i];
                         Field field = fields.get(i);
-                        if (enc.isEmpty()) {
-                            if (field.getType() == Field.Type.STRING) {
-                                field.encoding = "binary";
-                            } else if (field.getType() == Field.Type.JSON) {
-                                field.encoding = UTF8MB4_ENCODING;
-                            } else {
-                                field.encoding = "";
-                            }
-                        } else {
-                            if (field.getType() == Field.Type.BLOB) {
-                                field.type = 15;
-                            }
-                            field.encoding = enc;
-                        }
+                        logTypeHelper.correctField(field, enc);
                     }
                 } else if (encodings.length * 2 == fields.size()) {
                     for (int i = 0; i < encodings.length; i++) {
                         String enc = encodings[i];
                         Field field1 = fields.get(i * 2);
                         Field field2 = fields.get(i * 2 + 1);
-                        if (enc.isEmpty()) {
-                            if (field1.getType() == Field.Type.STRING) {
-                                field1.encoding = "binary";
-                                field2.encoding = "binary";
-                            } else if (field1.getType() == Field.Type.JSON) {
-                                field1.encoding = UTF8MB4_ENCODING;
-                                field2.encoding = UTF8MB4_ENCODING;
-                            } else {
-                                field1.encoding = "";
-                                field2.encoding = "";
-                            }
-                        } else {
-                            if (field1.getType() == Field.Type.BLOB) {
-                                field1.type = 15;
-                                field2.type = 15;
-                            }
-                            field1.encoding = enc;
-                            field2.encoding = enc;
-                        }
+                        logTypeHelper.correctField(field1, enc);
+                        logTypeHelper.correctField(field2, enc);
                     }
                 }
                 // ignore if mistake
@@ -508,16 +482,38 @@ public class DataMessage extends Message {
 
         /* Record type. */
         public enum Type {
-            INSERT(0), UPDATE(1), DELETE(2), REPLACE(3), HEARTBEAT(4), CONSISTENCY_TEST(5), BEGIN(6), COMMIT(
-                                                                                                             7), DDL(
-                                                                                                                     8), ROLLBACK(
-                                                                                                                                  9), DML(
-                                                                                                                                          10), UNKNOWN(
-                                                                                                                                                       11), INDEX_INSERT(
-                                                                                                                                                                         128), INDEX_UPDATE(
-                                                                                                                                                                                            129), INDEX_DELETE(
-                                                                                                                                                                                                               130), INDEX_REPLACE(
-                                                                                                                                                                                                                                   131);
+            // INSERT
+            INSERT(0),
+            // UPDATE
+            UPDATE(1),
+            // DELETE
+            DELETE(2),
+            // REPLACE
+            REPLACE(3),
+            // HEARTBEAT
+            HEARTBEAT(4),
+            // CONSISTENCY_TEST
+            CONSISTENCY_TEST(5),
+            // BEGIN
+            BEGIN(6),
+            // COMMIT
+            COMMIT(7),
+            // DDL
+            DDL(8),
+            // ROLLBACK
+            ROLLBACK(9),
+            // DML
+            DML(10),
+            // UNKNOWN
+            UNKNOWN(11),
+            // INDEX_INSERT
+            INDEX_INSERT(128),
+            // INDEX_UPDATE
+            INDEX_UPDATE(129),
+            // INDEX_DELETE
+            INDEX_DELETE(130),
+            // INDEX_REPLACE
+            INDEX_REPLACE(131);
 
             final int _value;
 
@@ -638,6 +634,9 @@ public class DataMessage extends Message {
 
         public DBType getDbType() {
             String type = getAttribute("source_type");
+            if (StringUtils.isEmpty(type)) {
+                return DBType.UNKNOWN;
+            }
             if ("mysql".equalsIgnoreCase(type)) {
                 return DBType.MYSQL;
             } else if ("oceanbase".equalsIgnoreCase(type)) {
@@ -851,6 +850,24 @@ public class DataMessage extends Message {
      */
     public List<Record> getRecordList() {
         return records;
+    }
+
+    /**
+     * Construct the message from DataInputStream.
+     *
+     * @param reader is the DataInputStream.
+     * @throws IOException
+     */
+    public void mergeFrom(final DataInputStream reader, String regionId) throws IOException {
+        do {
+            Record record = new Record();
+            record.mergeFrom(reader);
+            record.setRegionId(regionId);
+            if (record.isEnding()) {
+                break;
+            }
+            records.add(record);
+        } while (true);
     }
 
     @Override
