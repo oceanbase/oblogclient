@@ -221,6 +221,52 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.12</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludeSubProjects>false</excludeSubProjects>
+          <numUnapprovedLicenses>0</numUnapprovedLicenses>
+          <licenses>
+            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+              <licenseFamilyCategory>MulanPSL2</licenseFamilyCategory>
+              <licenseFamilyName>Mulan Public License，Version 2</licenseFamilyName>
+              <notes/>
+              <patterns>
+                <pattern>Mulan PSL v2</pattern>
+              </patterns>
+            </license>
+          </licenses>
+          <licenseFamilies>
+            <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+              <familyName>Mulan Public License，Version 2</familyName>
+            </licenseFamily>
+          </licenseFamilies>
+          <excludes>
+            <!-- Additional files like .gitignore etc.-->
+            <exclude>**/.*/**</exclude>
+            <!-- Generated content -->
+            <exclude>**/target/**</exclude>
+            <!-- Build files -->
+            <exclude>**/*.iml</exclude>
+            <!-- Docs -->
+            <exclude>**/*.md</exclude>
+            <!-- Tests -->
+            <exclude>**/*.key</exclude>
+            <exclude>**/*.crt</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
