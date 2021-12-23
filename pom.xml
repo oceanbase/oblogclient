@@ -239,7 +239,7 @@ See the Mulan PSL v2 for more details.
         <inherited>false</inherited>
         <executions>
           <execution>
-            <phase>verify</phase>
+            <phase>validate</phase>
             <goals>
               <goal>check</goal>
             </goals>
