@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2021 OceanBase and/or its affiliates. All rights reserved.
+oblogclient is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -220,6 +231,52 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.12</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludeSubProjects>false</excludeSubProjects>
+          <numUnapprovedLicenses>0</numUnapprovedLicenses>
+          <licenses>
+            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+              <licenseFamilyCategory>MulanPSL2</licenseFamilyCategory>
+              <licenseFamilyName>Mulan Public License，Version 2</licenseFamilyName>
+              <notes/>
+              <patterns>
+                <pattern>Mulan PSL v2</pattern>
+              </patterns>
+            </license>
+          </licenses>
+          <licenseFamilies>
+            <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+              <familyName>Mulan Public License，Version 2</familyName>
+            </licenseFamily>
+          </licenseFamilies>
+          <excludes>
+            <!-- Additional files like .gitignore etc.-->
+            <exclude>**/.*/**</exclude>
+            <!-- Generated content -->
+            <exclude>**/target/**</exclude>
+            <!-- Build files -->
+            <exclude>**/*.iml</exclude>
+            <!-- Docs -->
+            <exclude>**/*.md</exclude>
+            <!-- Tests -->
+            <exclude>**/*.key</exclude>
+            <exclude>**/*.crt</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>
