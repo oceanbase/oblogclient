@@ -10,9 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage;
 
-/**
- * This interface defined a kind of listener for field parsing.
- */
+/** This interface defined a kind of listener for field parsing. */
 public interface FieldParseListener {
 
     /**

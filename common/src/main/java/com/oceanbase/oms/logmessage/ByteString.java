@@ -10,16 +10,17 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage;
 
+
 import java.io.UnsupportedEncodingException;
 
 /**
- * ByteString store an array of bytes and take over all related transfers,
- * such as judge if it should be null, empty or in some an encoding.
+ * ByteString store an array of bytes and take over all related transfers, such as judge if it
+ * should be null, empty or in some an encoding.
  */
 public class ByteString {
-    private int    len;
+    private int len;
 
-    private int    offset;
+    private int offset;
 
     private byte[] bytes;
 
@@ -48,7 +49,7 @@ public class ByteString {
 
         if ("binary".equalsIgnoreCase(encoding)) {
             throw new IllegalArgumentException(
-                "field encoding: binary, use getBytes() instead of toString()");
+                    "field encoding: binary, use getBytes() instead of toString()");
         }
 
         String realEncoding = encoding;

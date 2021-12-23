@@ -12,10 +12,10 @@ package com.oceanbase.oms.logmessage;
 
 public class Checkpoint {
 
-    private String              recordId;
-    private String              position;
-    private String              timestamp;
-    private String              serverId;
+    private String recordId;
+    private String position;
+    private String timestamp;
+    private String serverId;
 
     private static final String DELIMITER = ":";
 
@@ -23,8 +23,11 @@ public class Checkpoint {
         recordId = position = serverId = timestamp = null;
     }
 
-    public Checkpoint(final String recordId, final String position, final String serverId,
-                      final String timestamp) {
+    public Checkpoint(
+            final String recordId,
+            final String position,
+            final String serverId,
+            final String timestamp) {
         this.recordId = recordId;
         this.position = position;
         this.serverId = serverId;
@@ -123,5 +126,4 @@ public class Checkpoint {
 
         return builder.toString();
     }
-
 }

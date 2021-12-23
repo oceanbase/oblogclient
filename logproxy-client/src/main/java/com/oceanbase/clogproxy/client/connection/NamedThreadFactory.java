@@ -10,38 +10,25 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.connection;
 
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * This is a factory class for {@link ThreadFactory}.
- */
+/** This is a factory class for {@link ThreadFactory}. */
 public class NamedThreadFactory implements ThreadFactory {
 
-    /**
-     * Pool number.
-     */
+    /** Pool number. */
     private static final AtomicInteger POOL_NUMBER = new AtomicInteger(1);
-    /**
-     * Thread number.
-     */
+    /** Thread number. */
     private final AtomicInteger threadNumber = new AtomicInteger(1);
-    /**
-     * Thread group.
-     */
+    /** Thread group. */
     private final ThreadGroup group;
-    /**
-     * Prefix of thread name.
-     */
+    /** Prefix of thread name. */
     private final String namePrefix;
-    /**
-     * Flag of whether the thread is daemon.
-     */
+    /** Flag of whether the thread is daemon. */
     private final boolean isDaemon;
 
-    /**
-     * Constructor with no arguments. It will take "ThreadPool" as its name.
-     */
+    /** Constructor with no arguments. It will take "ThreadPool" as its name. */
     public NamedThreadFactory() {
         this("ThreadPool");
     }
@@ -77,5 +64,4 @@ public class NamedThreadFactory implements ThreadFactory {
         }
         return t;
     }
-
 }

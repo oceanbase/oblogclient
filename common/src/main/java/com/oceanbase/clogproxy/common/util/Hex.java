@@ -10,13 +10,12 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.util;
 
+
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.apache.commons.codec.DecoderException;
 
-/**
- * This class is used to convert hexadecimal strings.
- */
+/** This class is used to convert hexadecimal strings. */
 public final class Hex {
 
     /**
@@ -30,9 +29,10 @@ public final class Hex {
     }
 
     /**
-     * Returns a multi-line hexadecimal dump of the specified sub-region of bytes that is easy to read by humans.
+     * Returns a multi-line hexadecimal dump of the specified sub-region of bytes that is easy to
+     * read by humans.
      *
-     * @param bytes  An array of bytes
+     * @param bytes An array of bytes
      * @param offset The offset of the sub-region start position
      * @param length The length of the sub-region
      * @return A multi-line hexadecimal dump string
@@ -42,7 +42,8 @@ public final class Hex {
     }
 
     /**
-     * Converts an array of bytes into a string representing the hexadecimal values of each byte in order.
+     * Converts an array of bytes into a string representing the hexadecimal values of each byte in
+     * order.
      *
      * @param bytes An array of bytes
      * @return A String containing uppercase hexadecimal characters
@@ -52,7 +53,8 @@ public final class Hex {
     }
 
     /**
-     * Converts a String representing hexadecimal values into an array of bytes of those same values.
+     * Converts a String representing hexadecimal values into an array of bytes of those same
+     * values.
      *
      * @param hexStr A String representing hexadecimal values
      * @return An array of bytes

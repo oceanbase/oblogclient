@@ -10,6 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client;
 
+
 import com.oceanbase.clogproxy.client.config.AbstractConnectionConfig;
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.connection.ClientStream;
@@ -21,25 +22,22 @@ import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import io.netty.handler.ssl.SslContext;
 
-/**
- * A client that makes it easy to connect to log proxy and start a {@link ClientStream}.
- */
+/** A client that makes it easy to connect to log proxy and start a {@link ClientStream}. */
 public class LogProxyClient {
 
-    /**
-     * A {@link ClientStream} instance.
-     */
+    /** A {@link ClientStream} instance. */
     private final ClientStream stream;
 
     /**
      * Constructor with {@link SslContext}.
      *
-     * @param host       Log proxy hostname name or ip.
-     * @param port       Log proxy port.
-     * @param config     {@link AbstractConnectionConfig} used to create the {@link ClientStream}.
+     * @param host Log proxy hostname name or ip.
+     * @param port Log proxy port.
+     * @param config {@link AbstractConnectionConfig} used to create the {@link ClientStream}.
      * @param sslContext {@link SslContext} to create netty handler.
      */
-    public LogProxyClient(String host, int port, AbstractConnectionConfig config, SslContext sslContext) {
+    public LogProxyClient(
+            String host, int port, AbstractConnectionConfig config, SslContext sslContext) {
         try {
             Validator.notNull(config.getLogType(), "log type cannot be null");
             Validator.notEmpty(host, "server cannot be null");
@@ -50,8 +48,12 @@ public class LogProxyClient {
         if (!config.valid()) {
             throw new IllegalArgumentException("Illegal argument for LogProxyClient");
         }
-        String clientId = ClientConf.USER_DEFINED_CLIENTID.isEmpty() ? ClientIdGenerator.generate() : ClientConf.USER_DEFINED_CLIENTID;
-        ConnectionParams connectionParams = new ConnectionParams(config.getLogType(), clientId, host, port, config);
+        String clientId =
+                ClientConf.USER_DEFINED_CLIENTID.isEmpty()
+                        ? ClientIdGenerator.generate()
+                        : ClientConf.USER_DEFINED_CLIENTID;
+        ConnectionParams connectionParams =
+                new ConnectionParams(config.getLogType(), clientId, host, port, config);
         connectionParams.setProtocolVersion(ProtocolVersion.V2);
         this.stream = new ClientStream(connectionParams, sslContext);
     }
@@ -59,31 +61,25 @@ public class LogProxyClient {
     /**
      * Constructor without {@link SslContext}.
      *
-     * @param host   Log proxy hostname name or ip.
-     * @param port   Log proxy port.
+     * @param host Log proxy hostname name or ip.
+     * @param port Log proxy port.
      * @param config {@link AbstractConnectionConfig} used to create the {@link ClientStream}.
      */
     public LogProxyClient(String host, int port, AbstractConnectionConfig config) {
         this(host, port, config, null);
     }
 
-    /**
-     * Start the client.
-     */
+    /** Start the client. */
     public void start() {
         stream.start();
     }
 
-    /**
-     * Stop the client.
-     */
+    /** Stop the client. */
     public void stop() {
         stream.stop();
     }
 
-    /**
-     * Join and wait the client.
-     */
+    /** Join and wait the client. */
     public void join() {
         stream.join();
     }

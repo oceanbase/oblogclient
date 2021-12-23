@@ -11,7 +11,8 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.oms.logmessage;
 
 /**
- * This is a subclasses of {@link RuntimeException} primarily used in process of parsing {@link LogMessage}.
+ * This is a subclasses of {@link RuntimeException} primarily used in process of parsing {@link
+ * LogMessage}.
  */
 public class LogMessageException extends RuntimeException {
 
@@ -24,9 +25,7 @@ public class LogMessageException extends RuntimeException {
         super(errMessage);
     }
 
-    /**
-     * Constructor with no arguments.
-     */
+    /** Constructor with no arguments. */
     public LogMessageException() {
         super();
     }
@@ -44,7 +43,7 @@ public class LogMessageException extends RuntimeException {
      * Constructor with error message and cause.
      *
      * @param errMessage Error message.
-     * @param cause      Cause error or exception.
+     * @param cause Cause error or exception.
      */
     public LogMessageException(String errMessage, Throwable cause) {
         super(errMessage, cause);

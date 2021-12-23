@@ -10,19 +10,13 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.packet;
 
-/**
- * Log type enumeration.
- */
+/** Log type enumeration. */
 public enum LogType {
 
-    /**
-     * LogProxy OceanBase LogReader.
-     */
+    /** LogProxy OceanBase LogReader. */
     OCEANBASE(0);
 
-    /**
-     * The ordinal of this enumeration constant.
-     */
+    /** The ordinal of this enumeration constant. */
     private final int code;
 
     /**

@@ -10,33 +10,24 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.connection;
 
+import static com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.RuntimeStatus;
+
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.common.packet.HeaderType;
 import com.oceanbase.oms.logmessage.LogMessage;
 import io.netty.handler.ssl.SslContext;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.RuntimeStatus;
-
-/**
- * This class represents the context of client stream.
- */
+/** This class represents the context of client stream. */
 public class StreamContext {
 
     public static class TransferPacket {
-        /**
-         * Packet header type.
-         */
+        /** Packet header type. */
         private final HeaderType type;
-        /**
-         * Log message record.
-         */
+        /** Log message record. */
         private LogMessage record;
-        /**
-         * Log proxy runtime status.
-         */
+        /** Log proxy runtime status. */
         private RuntimeStatus status;
 
         /**
@@ -87,19 +78,14 @@ public class StreamContext {
         }
     }
 
-    /**
-     * Blocking queue which stores {@link TransferPacket}.
-     */
-    private final BlockingQueue<TransferPacket> recordQueue = new LinkedBlockingQueue<>(ClientConf.TRANSFER_QUEUE_SIZE);
+    /** Blocking queue which stores {@link TransferPacket}. */
+    private final BlockingQueue<TransferPacket> recordQueue =
+            new LinkedBlockingQueue<>(ClientConf.TRANSFER_QUEUE_SIZE);
 
-    /**
-     * Client stream.
-     */
+    /** Client stream. */
     private final ClientStream stream;
 
-    /**
-     * Connection params.
-     */
+    /** Connection params. */
     ConnectionParams params;
 
     /**
@@ -112,8 +98,8 @@ public class StreamContext {
     /**
      * Constructor of StreamContext.
      *
-     * @param stream     Client stream.
-     * @param params     Connection params.
+     * @param stream Client stream.
+     * @param params Connection params.
      * @param sslContext Netty ssl context.
      */
     public StreamContext(ClientStream stream, ConnectionParams params, SslContext sslContext) {

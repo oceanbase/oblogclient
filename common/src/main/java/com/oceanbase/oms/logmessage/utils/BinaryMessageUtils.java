@@ -10,20 +10,18 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage.utils;
 
+
 import com.oceanbase.oms.logmessage.ByteString;
 import com.oceanbase.oms.logmessage.enums.DataType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Utils class for binary message.
- */
+/** Utils class for binary message. */
 public class BinaryMessageUtils {
 
     private static final int PREFIX_LENGTH = 12;
@@ -31,13 +29,14 @@ public class BinaryMessageUtils {
     /**
      * Get string begin with offset.
      *
-     * @param data     A bytes array.
-     * @param offset   Reading offset.
+     * @param data A bytes array.
+     * @param offset Reading offset.
      * @param encoding String encoding.
      * @return Result string.
      * @throws UnsupportedEncodingException When the encoding is not supported.
      */
-    public static String getString(byte[] data, int offset, String encoding) throws UnsupportedEncodingException {
+    public static String getString(byte[] data, int offset, String encoding)
+            throws UnsupportedEncodingException {
         ByteBuf wrapByteBuf = Unpooled.wrappedBuffer(data).order(ByteOrder.LITTLE_ENDIAN);
         wrapByteBuf.readerIndex(PREFIX_LENGTH + offset);
         byte t = wrapByteBuf.readByte();
@@ -51,7 +50,7 @@ public class BinaryMessageUtils {
     /**
      * Get list begin with offset.
      *
-     * @param data   A bytes array.
+     * @param data A bytes array.
      * @param offset Reading offset.
      * @return Result list.
      * @throws IOException If data type is unsigned long.
@@ -71,39 +70,46 @@ public class BinaryMessageUtils {
         int type = t & DataType.DT_MASK;
         for (int i = 0; i < count; i++) {
             switch (type) {
-                case DataType.DT_INT8: {
-                    lists.add(wrapByteBuf.readByte());
-                    break;
-                }
-                case DataType.DT_UINT8: {
-                    lists.add((int) wrapByteBuf.readUnsignedByte());
-                    break;
-                }
-                case DataType.DT_INT16: {
-                    lists.add(wrapByteBuf.readShort());
-                    break;
-                }
-                case DataType.DT_UINT16: {
-                    lists.add((int) wrapByteBuf.readUnsignedShort());
-                    break;
-                }
-                case DataType.DT_INT32: {
-                    lists.add(wrapByteBuf.readInt());
-                    break;
-                }
-                case DataType.DT_UINT32: {
-                    lists.add((long) wrapByteBuf.readUnsignedInt());
-                    break;
-                }
-                case DataType.DT_INT64: {
-                    lists.add((long) wrapByteBuf.readLong());
-                    break;
-                }
-                case DataType.DT_UINT64: {
-                    throw new IOException("Unsupported unsigned long");
-                }
+                case DataType.DT_INT8:
+                    {
+                        lists.add(wrapByteBuf.readByte());
+                        break;
+                    }
+                case DataType.DT_UINT8:
+                    {
+                        lists.add((int) wrapByteBuf.readUnsignedByte());
+                        break;
+                    }
+                case DataType.DT_INT16:
+                    {
+                        lists.add(wrapByteBuf.readShort());
+                        break;
+                    }
+                case DataType.DT_UINT16:
+                    {
+                        lists.add((int) wrapByteBuf.readUnsignedShort());
+                        break;
+                    }
+                case DataType.DT_INT32:
+                    {
+                        lists.add(wrapByteBuf.readInt());
+                        break;
+                    }
+                case DataType.DT_UINT32:
+                    {
+                        lists.add((long) wrapByteBuf.readUnsignedInt());
+                        break;
+                    }
+                case DataType.DT_INT64:
+                    {
+                        lists.add((long) wrapByteBuf.readLong());
+                        break;
+                    }
+                case DataType.DT_UINT64:
+                    {
+                        throw new IOException("Unsupported unsigned long");
+                    }
             }
-
         }
         return lists;
     }
@@ -111,7 +117,7 @@ public class BinaryMessageUtils {
     /**
      * Get ByteString begin with offset.
      *
-     * @param data   A bytes array.
+     * @param data A bytes array.
      * @param offset Reading offset.
      * @return A list of {@link ByteString}.
      */
@@ -139,9 +145,11 @@ public class BinaryMessageUtils {
             if (nextOffset == currentOffset) {
                 lists.add(null);
             } else {
-                lists.add(new ByteString(wrapByteBuf.array(),
-                    PREFIX_LENGTH + currentOffset + readBytes + (int) offset,
-                    nextOffset - currentOffset - 1));
+                lists.add(
+                        new ByteString(
+                                wrapByteBuf.array(),
+                                PREFIX_LENGTH + currentOffset + readBytes + (int) offset,
+                                nextOffset - currentOffset - 1));
             }
             currentOffset = nextOffset;
         }

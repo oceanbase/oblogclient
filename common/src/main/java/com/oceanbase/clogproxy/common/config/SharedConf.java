@@ -10,13 +10,9 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.config;
 
-/**
- * The class that defines the shared constants.
- */
+/** The class that defines the shared constants. */
 public class SharedConf {
 
-    /**
-     * Flag of whether to use the hash function to process password.
-     */
+    /** Flag of whether to use the hash function to process password. */
     public static boolean AUTH_PASSWORD_HASH = true;
 }

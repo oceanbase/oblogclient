@@ -10,9 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage.enums;
 
-/**
- * Database type enumeration for open source.
- */
+/** Database type enumeration for open source. */
 public enum DBType {
     MYSQL,
 
