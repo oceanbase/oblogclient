@@ -10,13 +10,11 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.util;
 
-import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
+import org.apache.commons.lang3.StringUtils;
 
-/**
- * Utils class to check and convert data types.
- */
+/** Utils class to check and convert data types. */
 public class TypeTrait {
 
     /**
@@ -26,8 +24,10 @@ public class TypeTrait {
      * @return True if it is a number type object, false otherwise.
      */
     public static boolean isNumber(Object obj) {
-        return (obj instanceof Byte) || (obj instanceof Short) ||
-            (obj instanceof Integer) || (obj instanceof Long);
+        return (obj instanceof Byte)
+                || (obj instanceof Short)
+                || (obj instanceof Integer)
+                || (obj instanceof Long);
     }
 
     /**
@@ -38,10 +38,14 @@ public class TypeTrait {
      */
     public static boolean isNumber(Field field) {
         String typeName = field.getGenericType().getTypeName();
-        return "byte".equals(typeName) || "java.lang.Byte".equals(typeName) ||
-            "short".equals(typeName) || "java.lang.Short".equals(typeName) ||
-            "int".equals(typeName) || "java.lang.Integer".equals(typeName) ||
-            "long".equals(typeName) || "java.lang.Long".equals(typeName);
+        return "byte".equals(typeName)
+                || "java.lang.Byte".equals(typeName)
+                || "short".equals(typeName)
+                || "java.lang.Short".equals(typeName)
+                || "int".equals(typeName)
+                || "java.lang.Integer".equals(typeName)
+                || "long".equals(typeName)
+                || "java.lang.Long".equals(typeName);
     }
 
     /**
@@ -62,8 +66,10 @@ public class TypeTrait {
      */
     public static boolean isReal(Field field) {
         String typeName = field.getGenericType().getTypeName();
-        return "float".equals(typeName) || "java.lang.Float".equals(typeName) ||
-            "double".equals(typeName) || "java.lang.Double".equals(typeName);
+        return "float".equals(typeName)
+                || "java.lang.Float".equals(typeName)
+                || "double".equals(typeName)
+                || "java.lang.Double".equals(typeName);
     }
 
     /**
@@ -105,22 +111,23 @@ public class TypeTrait {
      */
     public static boolean isString(Field field) {
         String typeName = field.getGenericType().getTypeName();
-        return "char".equals(typeName) || "java.lang.Character".equals(typeName) ||
-            "java.lang.String".equals(typeName);
+        return "char".equals(typeName)
+                || "java.lang.Character".equals(typeName)
+                || "java.lang.String".equals(typeName);
     }
 
     /**
      * Checks if the object and field are the same loose type.
      *
      * @param object An object to check.
-     * @param field  A field to check.
+     * @param field A field to check.
      * @return True if the object and field are the same loose type, false otherwise.
      */
     public static boolean isSameLooseType(Object object, Field field) {
-        return (isNumber(object) && isNumber(field)) ||
-            (isReal(object) && isReal(field)) ||
-            (isBool(object) && isBool(field)) ||
-            (isString(object) && isString(field));
+        return (isNumber(object) && isNumber(field))
+                || (isReal(object) && isReal(field))
+                || (isBool(object) && isBool(field))
+                || (isString(object) && isString(field));
     }
 
     /**
@@ -128,7 +135,7 @@ public class TypeTrait {
      *
      * @param value The source string.
      * @param clazz Value class.
-     * @param <T>   Expected value type.
+     * @param <T> Expected value type.
      * @return The value converted from string.
      */
     @SuppressWarnings("unchecked")

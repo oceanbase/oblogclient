@@ -10,58 +10,37 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.packet;
 
-/**
- * Header type enumeration. Used to identify the type of request or response in protobuf.
- */
+/** Header type enumeration. Used to identify the type of request or response in protobuf. */
 public enum HeaderType {
-    /**
-     * Error response.
-     */
+
+    /** Error response. */
     ERROR_RESPONSE(-1),
 
-    /**
-     * Client handshake request.
-     */
+    /** Client handshake request. */
     HANDSHAKE_REQUEST_CLIENT(1),
 
-    /**
-     * Client handshake response.
-     */
+    /** Client handshake response. */
     HANDSHAKE_RESPONSE_CLIENT(2),
 
-    /**
-     * LogReader handshake request.
-     */
+    /** LogReader handshake request. */
     HANDSHAKE_REQUEST_LOGREADER(3),
 
-    /**
-     * LogReader handshake response.
-     */
+    /** LogReader handshake response. */
     HANDSHAKE_RESPONSE_LOGREADER(4),
 
-    /**
-     * LogReader data stream.
-     */
+    /** LogReader data stream. */
     DATA_LOGREADER(5),
 
-    /**
-     * Client data stream.
-     */
+    /** Client data stream. */
     DATA_CLIENT(6),
 
-    /**
-     * Status info of server runtime.
-     */
+    /** Status info of server runtime. */
     STATUS(7),
 
-    /**
-     * Status info of LogReader.
-     */
+    /** Status info of LogReader. */
     STATUS_LOGREADER(8);
 
-    /**
-     * The ordinal of this enumeration constant.
-     */
+    /** The ordinal of this enumeration constant. */
     private final int code;
 
     /**

@@ -10,18 +10,16 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage.utils;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Utils class for string.
- */
+/** Utils class for string. */
 public class StringUtils {
     /**
-     * Split a string by one separator character. The performance
-     * is better than Java String split.
+     * Split a string by one separator character. The performance is better than Java String split.
      *
-     * @param str           The string need be split.
+     * @param str The string need be split.
      * @param separatorChar The single separator character.
      * @return The array of split items.
      */

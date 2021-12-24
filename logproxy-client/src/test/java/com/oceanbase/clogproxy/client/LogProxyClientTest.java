@@ -10,16 +10,16 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client;
 
+
 import com.oceanbase.clogproxy.client.config.ObReaderConfig;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.oms.logmessage.LogMessage;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import javax.net.ssl.SSLException;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import javax.net.ssl.SSLException;
 
 @Ignore
 public class LogProxyClientTest {
@@ -35,21 +35,22 @@ public class LogProxyClientTest {
 
         LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config);
 
-        client.addListener(new RecordListener() {
+        client.addListener(
+                new RecordListener() {
 
-            @Override
-            public void notify(LogMessage record) {
-                System.out.println(record);
-            }
+                    @Override
+                    public void notify(LogMessage record) {
+                        System.out.println(record);
+                    }
 
-            @Override
-            public void onException(LogProxyClientException e) {
-                if (e.needStop()) {
-                    System.out.println(e.getMessage());
-                    client.stop();
-                }
-            }
-        });
+                    @Override
+                    public void onException(LogProxyClientException e) {
+                        if (e.needStop()) {
+                            System.out.println(e.getMessage());
+                            client.stop();
+                        }
+                    }
+                });
         client.start();
         client.join();
     }
@@ -65,21 +66,22 @@ public class LogProxyClientTest {
 
         LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, sslContext());
 
-        client.addListener(new RecordListener() {
+        client.addListener(
+                new RecordListener() {
 
-            @Override
-            public void notify(LogMessage record) {
-                System.out.println(record);
-            }
+                    @Override
+                    public void notify(LogMessage record) {
+                        System.out.println(record);
+                    }
 
-            @Override
-            public void onException(LogProxyClientException e) {
-                if (e.needStop()) {
-                    System.out.println(e.getMessage());
-                    client.stop();
-                }
-            }
-        });
+                    @Override
+                    public void onException(LogProxyClientException e) {
+                        if (e.needStop()) {
+                            System.out.println(e.getMessage());
+                            client.stop();
+                        }
+                    }
+                });
         client.start();
         client.join();
     }
@@ -88,7 +90,8 @@ public class LogProxyClientTest {
         return SslContextBuilder.forClient()
                 .sslProvider(SslContext.defaultClientProvider())
                 .trustManager(this.getClass().getClassLoader().getResourceAsStream("certs/ca.crt"))
-                .keyManager(this.getClass().getClassLoader().getResourceAsStream("certs/client.crt"),
+                .keyManager(
+                        this.getClass().getClassLoader().getResourceAsStream("certs/client.crt"),
                         this.getClass().getClassLoader().getResourceAsStream("certs/client.key"))
                 .build();
     }

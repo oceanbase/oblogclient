@@ -10,6 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage.typehelper;
 
+
 import com.oceanbase.oms.logmessage.enums.DBType;
 
 public abstract class LogTypeHelperFactory {

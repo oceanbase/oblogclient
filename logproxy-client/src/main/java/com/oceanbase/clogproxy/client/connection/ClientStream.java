@@ -10,21 +10,21 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.connection;
 
+
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.clogproxy.client.listener.StatusListener;
 import io.netty.handler.ssl.SslContext;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a stream of log client. Stream means a channel of log transmission here.
@@ -32,70 +32,42 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClientStream {
     private static final Logger logger = LoggerFactory.getLogger(ClientStream.class);
 
-    /**
-     * Flag of whether the stream is started.
-     */
+    /** Flag of whether the stream is started. */
     private final AtomicBoolean started = new AtomicBoolean(false);
-    /**
-     * The process thread.
-     */
+    /** The process thread. */
     private Thread thread = null;
 
-    /**
-     * Context of stream.
-     */
+    /** Context of stream. */
     private StreamContext context = null;
 
-    /**
-     * Checkpoint string used to resume writing into the queue.
-     */
+    /** Checkpoint string used to resume writing into the queue. */
     private String checkpointString;
 
-    /**
-     * Number of reconnections
-     */
+    /** Number of reconnections */
     private int retryTimes = 0;
 
-    /**
-     * Connection to log proxy with netty channel.
-     */
+    /** Connection to log proxy with netty channel. */
     private Connection connection = null;
 
-    /**
-     * Flag of whether the stream is reconnecting now.
-     */
+    /** Flag of whether the stream is reconnecting now. */
     private final AtomicBoolean reconnecting = new AtomicBoolean(true);
 
-    /**
-     * Flag of whether the stream need reconnect.
-     */
+    /** Flag of whether the stream need reconnect. */
     private final AtomicBoolean reconnect = new AtomicBoolean(true);
 
-    /**
-     * The list of {@link RecordListener}.
-     */
+    /** The list of {@link RecordListener}. */
     private final List<RecordListener> listeners = new ArrayList<>();
 
-    /**
-     * The list of {@link StatusListener}
-     */
+    /** The list of {@link StatusListener} */
     private final List<StatusListener> statusListeners = new ArrayList<>();
 
-    /**
-     * Reconnect state type enumeration.
-     */
+    /** Reconnect state type enumeration. */
     private enum ReconnectState {
-        /**
-         * success
-         */
+        /** success */
         SUCCESS,
-        /**
-         * retry connect next round
-         */
+        /** retry connect next round */
         RETRY,
-        /**
-         * failed, exit thread
-         */
+        /** failed, exit thread */
         EXIT;
     }
 
@@ -103,15 +75,13 @@ public class ClientStream {
      * Sole constructor.
      *
      * @param connectionParams Connection params.
-     * @param sslContext       A {@link SslContext} for encrypted communication.
+     * @param sslContext A {@link SslContext} for encrypted communication.
      */
     public ClientStream(ConnectionParams connectionParams, SslContext sslContext) {
         context = new StreamContext(this, connectionParams, sslContext);
     }
 
-    /**
-     * Close and wait the connection.
-     */
+    /** Close and wait the connection. */
     public void stop() {
         if (!started.compareAndSet(true, false)) {
             logger.info("stopping LogProxy Client....");
@@ -127,9 +97,7 @@ public class ClientStream {
         logger.info("stopped LogProxy Client");
     }
 
-    /**
-     * Call {@link Thread#join()} method of process thread.
-     */
+    /** Call {@link Thread#join()} method of process thread. */
     public void join() {
         if (thread != null) {
             try {
@@ -141,9 +109,7 @@ public class ClientStream {
         }
     }
 
-    /**
-     * Call {@link #stop()} asynchronously.
-     */
+    /** Call {@link #stop()} asynchronously. */
     public void triggerStop() {
         new Thread(this::stop).start();
     }
@@ -155,88 +121,101 @@ public class ClientStream {
      */
     public void triggerException(LogProxyClientException e) {
         // use thread make sure non-blocking
-        new Thread(() -> {
-            for (RecordListener listener : listeners) {
-                listener.onException(e);
-            }
-        }).start();
+        new Thread(
+                        () -> {
+                            for (RecordListener listener : listeners) {
+                                listener.onException(e);
+                            }
+                        })
+                .start();
     }
 
-    /**
-     * Start the process thread.
-     */
+    /** Start the process thread. */
     public void start() {
         // if status listener exist, enable monitor
         context.params.setEnableMonitor(CollectionUtils.isNotEmpty(statusListeners));
 
         if (started.compareAndSet(false, true)) {
-            thread = new Thread(() -> {
-                while (isRunning()) {
-                    ReconnectState state = reconnect();
-                    if (state == ReconnectState.EXIT) {
-                        logger.error("read thread to exit");
-                        triggerException(new LogProxyClientException(ErrorCode.E_MAX_RECONNECT, "exceed max reconnect retry"));
-                        break;
-                    }
-                    if (state == ReconnectState.RETRY) {
-                        try {
-                            TimeUnit.SECONDS.sleep(ClientConf.RETRY_INTERVAL_S);
-                        } catch (InterruptedException e) {
-                            // do nothing
-                        }
-                        continue;
-                    }
+            thread =
+                    new Thread(
+                            () -> {
+                                while (isRunning()) {
+                                    ReconnectState state = reconnect();
+                                    if (state == ReconnectState.EXIT) {
+                                        logger.error("read thread to exit");
+                                        triggerException(
+                                                new LogProxyClientException(
+                                                        ErrorCode.E_MAX_RECONNECT,
+                                                        "exceed max reconnect retry"));
+                                        break;
+                                    }
+                                    if (state == ReconnectState.RETRY) {
+                                        try {
+                                            TimeUnit.SECONDS.sleep(ClientConf.RETRY_INTERVAL_S);
+                                        } catch (InterruptedException e) {
+                                            // do nothing
+                                        }
+                                        continue;
+                                    }
 
-                    StreamContext.TransferPacket packet;
-                    while (true) {
-                        try {
-                            packet = context.recordQueue().poll(ClientConf.READ_WAIT_TIME_MS, TimeUnit.MILLISECONDS);
-                            break;
-                        } catch (InterruptedException e) {
-                            // do nothing
-                        }
-                    }
-                    if (packet == null) {
-                        continue;
-                    }
-                    try {
-                        switch (packet.getType()) {
-                            case DATA_CLIENT:
-                                for (RecordListener listener : listeners) {
-                                    listener.notify(packet.getRecord());
+                                    StreamContext.TransferPacket packet;
+                                    while (true) {
+                                        try {
+                                            packet =
+                                                    context.recordQueue()
+                                                            .poll(
+                                                                    ClientConf.READ_WAIT_TIME_MS,
+                                                                    TimeUnit.MILLISECONDS);
+                                            break;
+                                        } catch (InterruptedException e) {
+                                            // do nothing
+                                        }
+                                    }
+                                    if (packet == null) {
+                                        continue;
+                                    }
+                                    try {
+                                        switch (packet.getType()) {
+                                            case DATA_CLIENT:
+                                                for (RecordListener listener : listeners) {
+                                                    listener.notify(packet.getRecord());
+                                                }
+                                                break;
+                                            case STATUS:
+                                                for (StatusListener listener : statusListeners) {
+                                                    listener.notify(packet.getStatus());
+                                                }
+                                                break;
+                                            default:
+                                                throw new LogProxyClientException(
+                                                        ErrorCode.E_PROTOCOL,
+                                                        "Unsupported Packet Type: "
+                                                                + packet.getType());
+                                        }
+                                    } catch (LogProxyClientException e) {
+                                        triggerStop();
+                                        triggerException(e);
+                                        return;
+
+                                    } catch (Exception e) {
+                                        // if exception occurred, we exit
+                                        triggerStop();
+                                        triggerException(
+                                                new LogProxyClientException(ErrorCode.E_USER, e));
+                                        return;
+                                    }
                                 }
-                                break;
-                            case STATUS:
-                                for (StatusListener listener : statusListeners) {
-                                    listener.notify(packet.getStatus());
+
+                                started.set(false);
+                                if (connection != null) {
+                                    connection.close();
                                 }
-                                break;
-                            default:
-                                throw new LogProxyClientException(ErrorCode.E_PROTOCOL, "Unsupported Packet Type: " + packet.getType());
-                        }
-                    } catch (LogProxyClientException e) {
-                        triggerStop();
-                        triggerException(e);
-                        return;
+                                thread = null;
 
-                    } catch (Exception e) {
-                        // if exception occurred, we exit
-                        triggerStop();
-                        triggerException(new LogProxyClientException(ErrorCode.E_USER, e));
-                        return;
-                    }
-                }
+                                // TODO... if exception occurred, run handler callback
 
-                started.set(false);
-                if (connection != null) {
-                    connection.close();
-                }
-                thread = null;
-
-                // TODO... if exception occurred, run handler callback
-
-                logger.warn("!!! read thread exit !!!");
-            });
+                                logger.warn("!!! read thread exit !!!");
+                            });
 
             thread.setDaemon(false);
             thread.start();
@@ -263,8 +242,11 @@ public class ClientStream {
             logger.warn("start to reconnect...");
 
             try {
-                if (ClientConf.MAX_RECONNECT_TIMES != -1 && retryTimes >= ClientConf.MAX_RECONNECT_TIMES) {
-                    logger.error("failed to reconnect, exceed max reconnect retry time: {}", ClientConf.MAX_RECONNECT_TIMES);
+                if (ClientConf.MAX_RECONNECT_TIMES != -1
+                        && retryTimes >= ClientConf.MAX_RECONNECT_TIMES) {
+                    logger.error(
+                            "failed to reconnect, exceed max reconnect retry time: {}",
+                            ClientConf.MAX_RECONNECT_TIMES);
                     reconnect.set(true);
                     return ReconnectState.EXIT;
                 }
@@ -273,7 +255,8 @@ public class ClientStream {
                     connection.close();
                     connection = null;
                 }
-                // when stopped, context.recordQueue may not empty, just use checkpointString to do reconnection.
+                // when stopped, context.recordQueue may not empty, just use checkpointString to do
+                // reconnection.
                 if (StringUtils.isNotEmpty(checkpointString)) {
                     logger.warn("reconnect set checkpoint: {}", checkpointString);
                     context.getParams().updateCheckpoint(checkpointString);
@@ -286,13 +269,20 @@ public class ClientStream {
                     return ReconnectState.SUCCESS;
                 }
 
-                logger.error("failed to reconnect, retry count: {}, max: {}", ++retryTimes, ClientConf.MAX_RECONNECT_TIMES);
+                logger.error(
+                        "failed to reconnect, retry count: {}, max: {}",
+                        ++retryTimes,
+                        ClientConf.MAX_RECONNECT_TIMES);
                 // not success, retry next time
                 reconnect.set(true);
                 return ReconnectState.RETRY;
 
             } catch (Exception e) {
-                logger.error("failed to reconnect, retry count: {}, max: {}, message: {}", ++retryTimes, ClientConf.MAX_RECONNECT_TIMES, e);
+                logger.error(
+                        "failed to reconnect, retry count: {}, max: {}, message: {}",
+                        ++retryTimes,
+                        ClientConf.MAX_RECONNECT_TIMES,
+                        e);
                 // not success, retry next time
                 reconnect.set(true);
                 return ReconnectState.RETRY;
@@ -304,9 +294,7 @@ public class ClientStream {
         return ReconnectState.SUCCESS;
     }
 
-    /**
-     * Reset the flags for reconnection.
-     */
+    /** Reset the flags for reconnection. */
     public void triggerReconnect() {
         // reconnection action guard, avoid concurrent or multiple invoke
         if (reconnecting.compareAndSet(false, true)) {
@@ -331,5 +319,4 @@ public class ClientStream {
     public synchronized void addStatusListener(StatusListener statusListener) {
         statusListeners.add(statusListener);
     }
-
 }

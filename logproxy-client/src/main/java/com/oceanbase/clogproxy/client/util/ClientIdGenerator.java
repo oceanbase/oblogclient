@@ -10,22 +10,24 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.util;
 
-import com.oceanbase.clogproxy.common.util.NetworkUtil;
 
+import com.oceanbase.clogproxy.common.util.NetworkUtil;
 import java.lang.management.ManagementFactory;
 
-/**
- * The class used to generate client id.
- */
+/** The class used to generate client id. */
 public class ClientIdGenerator {
     /**
-     * Generate a new client id in format "LocalIP"."PID"."currentTimestamp".
-     * Pattern may be changed, never depend on the content of this.
+     * Generate a new client id in format "LocalIP"."PID"."currentTimestamp". Pattern may be
+     * changed, never depend on the content of this.
      *
      * @return Client id string.
      */
     public static String generate() {
-        return NetworkUtil.getLocalIp() + "_" + getProcessId() + "_" + (System.currentTimeMillis() / 1000);
+        return NetworkUtil.getLocalIp()
+                + "_"
+                + getProcessId()
+                + "_"
+                + (System.currentTimeMillis() / 1000);
     }
 
     /**

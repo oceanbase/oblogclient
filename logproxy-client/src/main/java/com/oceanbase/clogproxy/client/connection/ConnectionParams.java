@@ -10,67 +10,55 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.connection;
 
+
 import com.oceanbase.clogproxy.client.config.ConnectionConfig;
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-/**
- * This is a configuration class of connection parameters.
- */
+/** This is a configuration class of connection parameters. */
 public class ConnectionParams {
 
-    /**
-     * Log type.
-     */
+    /** Log type. */
     private final LogType logType;
 
-    /**
-     * Client id.
-     */
+    /** Client id. */
     private final String clientId;
 
-    /**
-     * Log proxy host.
-     */
+    /** Log proxy host. */
     private final String host;
 
-    /**
-     * Log proxy port.
-     */
+    /** Log proxy port. */
     private final int port;
 
-    /**
-     * Connection config.
-     */
+    /** Connection config. */
     private final ConnectionConfig connectionConfig;
 
-    /**
-     * Generated configuration string.
-     */
+    /** Generated configuration string. */
     private String configurationString;
 
-    /**
-     * Protocol version.
-     */
+    /** Protocol version. */
     private ProtocolVersion protocolVersion;
 
-    /**
-     * Flag of whether enable monitor.
-     */
+    /** Flag of whether enable monitor. */
     private boolean enableMonitor;
 
     /**
      * Constructor.
      *
-     * @param logType          Log type.
-     * @param clientId         Client id.
-     * @param host             Log proxy host.
-     * @param port             Log proxy port.
+     * @param logType Log type.
+     * @param clientId Client id.
+     * @param host Log proxy host.
+     * @param port Log proxy port.
      * @param connectionConfig Connection config.
      */
-    public ConnectionParams(LogType logType, String clientId, String host, int port, ConnectionConfig connectionConfig) {
+    public ConnectionParams(
+            LogType logType,
+            String clientId,
+            String host,
+            int port,
+            ConnectionConfig connectionConfig) {
         this.logType = logType;
         this.clientId = clientId;
         this.host = host;

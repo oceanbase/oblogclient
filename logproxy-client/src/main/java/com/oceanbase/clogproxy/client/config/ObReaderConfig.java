@@ -10,51 +10,40 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.config;
 
+
 import com.google.common.collect.Maps;
 import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.config.SharedConf;
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.CryptoUtil;
 import com.oceanbase.clogproxy.common.util.Hex;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-
-/**
- * This is a configuration class for connection to log proxy.
- */
+/** This is a configuration class for connection to log proxy. */
 public class ObReaderConfig extends AbstractConnectionConfig {
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
 
-    /**
-     * Root server list.
-     */
+    /** Root server list. */
     private static final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
 
-    /**
-     * Cluster username.
-     */
+    /** Cluster username. */
     private static final ConfigItem<String> CLUSTER_USER = new ConfigItem<>("cluster_user", "");
 
-    /**
-     * Cluster password.
-     */
-    private static final ConfigItem<String> CLUSTER_PASSWORD = new ConfigItem<>("cluster_password", "");
+    /** Cluster password. */
+    private static final ConfigItem<String> CLUSTER_PASSWORD =
+            new ConfigItem<>("cluster_password", "");
 
-    /**
-     * Table whitelist.
-     */
-    private static final ConfigItem<String> TABLE_WHITE_LIST = new ConfigItem<>("tb_white_list", "");
+    /** Table whitelist. */
+    private static final ConfigItem<String> TABLE_WHITE_LIST =
+            new ConfigItem<>("tb_white_list", "");
 
-    /**
-     * Start timestamp.
-     */
-    private static final ConfigItem<Long> START_TIMESTAMP = new ConfigItem<>("first_start_timestamp", 0L);
+    /** Start timestamp. */
+    private static final ConfigItem<Long> START_TIMESTAMP =
+            new ConfigItem<>("first_start_timestamp", 0L);
 
-    /**
-     * Constructor with empty arguments.
-     */
+    /** Constructor with empty arguments. */
     public ObReaderConfig() {
         super(Maps.newHashMap());
     }
@@ -117,8 +106,15 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     @Override
     public String toString() {
-        return "rootserver_list=" + RS_LIST + ", cluster_user=" + CLUSTER_USER + ", cluster_password=******, " +
-            "tb_white_list=" + TABLE_WHITE_LIST + ", start_timestamp=" + START_TIMESTAMP;
+        return "rootserver_list="
+                + RS_LIST
+                + ", cluster_user="
+                + CLUSTER_USER
+                + ", cluster_password=******, "
+                + "tb_white_list="
+                + TABLE_WHITE_LIST
+                + ", start_timestamp="
+                + START_TIMESTAMP;
     }
 
     /**
@@ -149,8 +145,8 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     }
 
     /**
-     * Set table whitelist. It is composed of three dimensions: tenant, library, and table.
-     * Asterisk means any, such as: "A.foo.bar", "B.foo.*", "C.*.*", "*.*.*".
+     * Set table whitelist. It is composed of three dimensions: tenant, library, and table. Asterisk
+     * means any, such as: "A.foo.bar", "B.foo.*", "C.*.*", "*.*.*".
      *
      * @param tableWhiteList Table whitelist.
      */

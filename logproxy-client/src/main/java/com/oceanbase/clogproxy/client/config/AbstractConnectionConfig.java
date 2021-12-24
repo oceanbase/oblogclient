@@ -10,26 +10,20 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.config;
 
+
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.TypeTrait;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-/**
- * This is an abstract implementation class of the interface {@link ConnectionConfig}.
- */
+/** This is an abstract implementation class of the interface {@link ConnectionConfig}. */
 public abstract class AbstractConnectionConfig implements ConnectionConfig {
 
-    /**
-     * Defined configurations map.
-     */
+    /** Defined configurations map. */
     protected static Map<String, ConfigItem<Object>> configs = new HashMap<>();
 
-    /**
-     * Extra configurations map.
-     */
+    /** Extra configurations map. */
     protected final Map<String, String> extraConfigs = new HashMap<>();
 
     /**

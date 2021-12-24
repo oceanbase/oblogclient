@@ -10,6 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage.typehelper;
 
+
 import com.oceanbase.oms.logmessage.DataMessage;
 import com.oceanbase.oms.logmessage.enums.DBType;
 import org.apache.commons.lang3.StringUtils;
@@ -77,14 +78,14 @@ public class OBLogTypeHelper extends LogTypeHelper {
                 break;
             case LogMessageTypeCode.DRC_MSG_TYPE_VAR_STRING:
                 if (StringUtils.isEmpty(f.encoding) || StringUtils.equals(f.encoding, "binary")) {
-                    f.type =  LogMessageTypeCode.DRC_MSG_TYPE_VAR_BINARY;
+                    f.type = LogMessageTypeCode.DRC_MSG_TYPE_VAR_BINARY;
                 } else {
-                    f.type =  LogMessageTypeCode.DRC_MSG_TYPE_VARCHAR;
+                    f.type = LogMessageTypeCode.DRC_MSG_TYPE_VARCHAR;
                 }
                 break;
             case LogMessageTypeCode.DRC_MSG_TYPE_STRING:
                 if (StringUtils.isEmpty(f.encoding) || StringUtils.equals(f.encoding, "binary")) {
-                    f.type =  LogMessageTypeCode.DRC_MSG_TYPE_BINARY;
+                    f.type = LogMessageTypeCode.DRC_MSG_TYPE_BINARY;
                 }
                 break;
             default:

@@ -10,9 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.config;
 
-/**
- * This is the interface of connection config.
- */
+/** This is the interface of connection config. */
 public interface ConnectionConfig {
 
     /**
