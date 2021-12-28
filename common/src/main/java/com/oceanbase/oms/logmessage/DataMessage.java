@@ -10,11 +10,10 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage;
 
+
 import com.oceanbase.oms.logmessage.enums.DBType;
 import com.oceanbase.oms.logmessage.typehelper.LogTypeHelper;
 import com.oceanbase.oms.logmessage.typehelper.OBLogTypeHelper;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,43 +24,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
-/**
- * Message contains database updating data.
- */
+/** Message contains database updating data. */
 public class DataMessage extends Message {
 
-    /**
-     * Record contains data of one record.
-     */
+    /** Record contains data of one record. */
     public static class Record {
         public static LogTypeHelper logTypeHelper = OBLogTypeHelper.OB_LOG_TYPE_HELPER;
 
-        public static final String            UTF8MB4_ENCODING        = "utf8mb4";
-        public static final String            TRACEID_STRING          = "traceid";
+        public static final String UTF8MB4_ENCODING = "utf8mb4";
+        public static final String TRACEID_STRING = "traceid";
 
-        protected Type                        type;
+        protected Type type;
 
         /* Record attributes. */
-        protected Map<String, String>         attributes;
+        protected Map<String, String> attributes;
 
         /* Fields */
-        protected List<Field>                 fields;
+        protected List<Field> fields;
 
-        protected String                      timestamp;
+        protected String timestamp;
 
-        protected String                      safeTimestamp;
+        protected String safeTimestamp;
 
-        protected static ThreadLocal<String>  globalSafeTimestamp     = new ThreadLocal<String>();
+        protected static ThreadLocal<String> globalSafeTimestamp = new ThreadLocal<String>();
 
-        protected static ThreadLocal<Boolean> txEnd                   = new ThreadLocal<Boolean>() {
+        protected static ThreadLocal<Boolean> txEnd =
+                new ThreadLocal<Boolean>() {
 
-                                                                          @Override
-                                                                          protected Boolean initialValue() {
-                                                                              return true;
-                                                                          }
-                                                                      };
-        private boolean                       isConnectionFirstRecord = false;
+                    @Override
+                    protected Boolean initialValue() {
+                        return true;
+                    }
+                };
+        private boolean isConnectionFirstRecord = false;
 
         public void setColFilter(List<String> colFilter) {
             throw new UnsupportedOperationException();
@@ -73,7 +70,7 @@ public class DataMessage extends Message {
         }
 
         public Set<String> getKeysValue() throws Exception {
-           throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
         public List<String> getPrimaryValues() throws Exception {
@@ -104,31 +101,57 @@ public class DataMessage extends Message {
             return 0L;
         }
 
-        /**
-         * Field contains data of one field
-         */
+        /** Field contains data of one field */
         public static class Field {
 
-            public long       length;
+            public long length;
 
-            public boolean    primaryKey;
+            public boolean primaryKey;
 
-            public String     name;
+            public String name;
 
-            public int        type;
+            public int type;
 
-            public int        flag;
+            public int flag;
 
-            public String     encoding;
+            public String encoding;
 
             public ByteString value;
 
-            public boolean    changeValue = true;
+            public boolean changeValue = true;
 
-            public boolean    prev = false;
+            public boolean prev = false;
 
             public enum Type {
-                INT8, INT16, INT24, INT32, INT64, DECIMAL, FLOAT, DOUBLE, NULL, TIMESTAMP, DATE, TIME, DATETIME, YEAR, BIT, ENUM, SET, BLOB, GEOMETRY, STRING, JSON, BINARY, TIMESTAMP_WITH_TIME_ZONE, TIMESTAMP_WITH_LOCAL_TIME_ZONE, TIMESTAMP_NANO, RAW, INTERVAL_YEAR_TO_MONTH, INTERVAL_DAY_TO_SECOND, UNKOWN
+                INT8,
+                INT16,
+                INT24,
+                INT32,
+                INT64,
+                DECIMAL,
+                FLOAT,
+                DOUBLE,
+                NULL,
+                TIMESTAMP,
+                DATE,
+                TIME,
+                DATETIME,
+                YEAR,
+                BIT,
+                ENUM,
+                SET,
+                BLOB,
+                GEOMETRY,
+                STRING,
+                JSON,
+                BINARY,
+                TIMESTAMP_WITH_TIME_ZONE,
+                TIMESTAMP_WITH_LOCAL_TIME_ZONE,
+                TIMESTAMP_NANO,
+                RAW,
+                INTERVAL_YEAR_TO_MONTH,
+                INTERVAL_DAY_TO_SECOND,
+                UNKOWN
             }
 
             public Field() {
@@ -220,7 +243,7 @@ public class DataMessage extends Message {
                 MYSQL_TYPES[14] = Type.DATETIME;
                 MYSQL_TYPES[15] = Type.STRING;
                 MYSQL_TYPES[16] = Type.BIT;
-                //special
+                // special
                 MYSQL_TYPES[199] = Type.BINARY;
                 MYSQL_TYPES[200] = Type.TIMESTAMP_WITH_TIME_ZONE;
                 MYSQL_TYPES[201] = Type.TIMESTAMP_WITH_LOCAL_TIME_ZONE;
@@ -248,6 +271,7 @@ public class DataMessage extends Message {
 
             /**
              * oracle logminer won't output lob type value
+             *
              * @return true if field is lob type
              */
             public boolean isOracleLobType() {
@@ -295,11 +319,12 @@ public class DataMessage extends Message {
             /**
              * Abstract needed data for a field from the input stream.
              *
-             * @param reader         the DataInputStream.
+             * @param reader the DataInputStream.
              * @param recordEncoding is the encoding of the field value.
              * @throws IOException if an I/O error occurs
              */
-            public void mergeFrom(final DataInputStream reader, final String recordEncoding) throws IOException {
+            public void mergeFrom(final DataInputStream reader, final String recordEncoding)
+                    throws IOException {
 
                 /* Read field name. */
                 name = reader.readLine();
@@ -333,9 +358,7 @@ public class DataMessage extends Message {
                 }
             }
 
-            /**
-             * Clear the field.
-             */
+            /** Clear the field. */
             public void clear() {
                 type = 17; // unknown
                 name = null;
@@ -350,24 +373,24 @@ public class DataMessage extends Message {
                 builder.append("Field length: " + length + System.getProperty("line.separator"));
                 if (value != null) {
                     if ("binary".equalsIgnoreCase(encoding)) {
-                        builder.append("Field value(binary): "
-                                       + Arrays.toString(value.getBytes())
-                                       + System.getProperty("line.separator"));
+                        builder.append(
+                                "Field value(binary): "
+                                        + Arrays.toString(value.getBytes())
+                                        + System.getProperty("line.separator"));
                     } else {
-                        builder.append("Field value: " + value.toString(encoding)
-                                       + System.getProperty("line.separator"));
+                        builder.append(
+                                "Field value: "
+                                        + value.toString(encoding)
+                                        + System.getProperty("line.separator"));
                     }
                 } else {
-                    builder.append("Field value: " + "null"
-                                   + System.getProperty("line.separator"));
+                    builder.append("Field value: " + "null" + System.getProperty("line.separator"));
                 }
                 return builder.toString();
             }
         } // End of Field
 
-        /**
-         *
-         */
+        /** */
         public Record() {
             ending = false;
             attributes = new HashMap<String, String>();
@@ -380,7 +403,7 @@ public class DataMessage extends Message {
         /* Show whether decoding a record is completed. */
         private boolean ending = false;
 
-        private String  regionId;
+        private String regionId;
 
         /**
          * Abstract record information from the DataInputStream.
@@ -397,9 +420,9 @@ public class DataMessage extends Message {
             while (!(line = reader.readLine()).isEmpty()) {
                 String[] kv = StringUtils.split(line, ':');
                 if (2 != kv.length) {
-                    //Bug fix:trace id may contains ':'. Split by ':' and drop tuple contains more than 2 content lead to the miss of trace id.
-                    if (kv.length > 2
-                        && StringUtils.equals(kv[0], TRACEID_STRING)) {
+                    // Bug fix:trace id may contains ':'. Split by ':' and drop tuple contains more
+                    // than 2 content lead to the miss of trace id.
+                    if (kv.length > 2 && StringUtils.equals(kv[0], TRACEID_STRING)) {
                         kv[1] = line.substring(line.indexOf(':') + 1);
                     } else {
                         continue;
@@ -413,16 +436,16 @@ public class DataMessage extends Message {
                 ending = true;
                 return;
             }
-            //parse primary key
+            // parse primary key
             String textPKs = getPrimaryKeys();
             List<String> pkList = Collections.emptyList();
             if (textPKs != null && !textPKs.isEmpty()) {
                 pkList = Arrays.asList(textPKs.split(","));
             }
-            //parse op type
+            // parse op type
             String stype = getAttribute("record_type");
             type = Type.valueOf(stype.toUpperCase());
-            //set timestamp,process heartbeat between tx
+            // set timestamp,process heartbeat between tx
             timestamp = getAttribute("timestamp");
             if (getDbType() == DBType.OCEANBASE1) {
                 if (type == Type.HEARTBEAT) {
@@ -438,7 +461,7 @@ public class DataMessage extends Message {
                 if (txEnd.get()) {
                     globalSafeTimestamp.set(timestamp);
                 }
-                //set txEnd
+                // set txEnd
                 if (type == Type.COMMIT || type == Type.ROLLBACK) {
                     txEnd.set(true);
                 }
@@ -595,9 +618,8 @@ public class DataMessage extends Message {
         }
 
         /**
-         * Get tuples of index.
-         * For example, column 1 is the primary key and column 2 and 3 are unique keys.
-         * The returned format is the list of two arrays, the first array is {0} and
+         * Get tuples of index. For example, column 1 is the primary key and column 2 and 3 are
+         * unique keys. The returned format is the list of two arrays, the first array is {0} and
          * the seconds array is {1,2}
          *
          * @return the tuples of index for primary and unique constraints.
@@ -655,8 +677,9 @@ public class DataMessage extends Message {
 
         public boolean isQueryBack() {
             String cate = getAttribute("source_category");
-            if ("full_recorded".equalsIgnoreCase(cate) || "part_recorded".equalsIgnoreCase(cate)
-                || "full_faked".equalsIgnoreCase(cate)) {
+            if ("full_recorded".equalsIgnoreCase(cate)
+                    || "part_recorded".equalsIgnoreCase(cate)
+                    || "full_faked".equalsIgnoreCase(cate)) {
                 return false;
             } else {
                 return true;
@@ -664,11 +687,10 @@ public class DataMessage extends Message {
         }
 
         /**
-         * Now the api takes on different behavior between MYSQL and OCEANBASE,
-         * for MYSQL, it returns true because the record is the LAST record in
-         * the logevent, while for OCEANBASE, it is true because the record is
-         * the first one.
-         * TBD: server for mysql need change its behavior the same as OCEANBASE
+         * Now the api takes on different behavior between MYSQL and OCEANBASE, for MYSQL, it
+         * returns true because the record is the LAST record in the logevent, while for OCEANBASE,
+         * it is true because the record is the first one. TBD: server for mysql need change its
+         * behavior the same as OCEANBASE
          *
          * @return true if this is the first record
          */
@@ -708,8 +730,7 @@ public class DataMessage extends Message {
          * @param fieldParseListener fieldParseListener
          * @throws Exception if an exception occurs
          */
-        public void fieldListParse(FieldParseListener fieldParseListener) throws Exception {
-        }
+        public void fieldListParse(FieldParseListener fieldParseListener) throws Exception {}
 
         /**
          * Set the type of the record.
@@ -723,7 +744,7 @@ public class DataMessage extends Message {
         /**
          * Add one attribute to the record.
          *
-         * @param key   the name of the attribute.
+         * @param key the name of the attribute.
          * @param value the value of the attribute.
          */
         public void addAttribute(final String key, final String value) {
@@ -763,8 +784,10 @@ public class DataMessage extends Message {
                 messageId.append("/");
             } else {
                 String checkpoint = getCheckpoint();
-                messageId.append(checkpoint.substring(checkpoint.indexOf('@') + 1)).append("/")
-                    .append(checkpoint, 0, checkpoint.indexOf('@'));
+                messageId
+                        .append(checkpoint.substring(checkpoint.indexOf('@') + 1))
+                        .append("/")
+                        .append(checkpoint, 0, checkpoint.indexOf('@'));
             }
 
             messageId.append("/");
@@ -777,10 +800,13 @@ public class DataMessage extends Message {
         }
 
         private void checkDBType(DBType dbType) {
-            if (dbType != DBType.MYSQL && dbType != DBType.OCEANBASE && dbType != DBType.OCEANBASE1
-                && dbType != DBType.ORACLE && dbType != DBType.DB2) {
-                throw new IllegalStateException("dbType [" + dbType
-                                                + "] is not valid for messageId");
+            if (dbType != DBType.MYSQL
+                    && dbType != DBType.OCEANBASE
+                    && dbType != DBType.OCEANBASE1
+                    && dbType != DBType.ORACLE
+                    && dbType != DBType.DB2) {
+                throw new IllegalStateException(
+                        "dbType [" + dbType + "] is not valid for messageId");
             }
         }
 
@@ -819,15 +845,12 @@ public class DataMessage extends Message {
             builder.append(System.getProperty("line.separator"));
             return builder.toString();
         }
-
     } // End of Record
 
     /* Record list. */
     private final List<Record> records;
 
-    /**
-     * Constructor of DataMessage, the type is 100 by default.
-     */
+    /** Constructor of DataMessage, the type is 100 by default. */
     public DataMessage() {
         super();
         type = 100;
@@ -856,7 +879,8 @@ public class DataMessage extends Message {
      * Construct the message from DataInputStream.
      *
      * @param reader is the DataInputStream.
-     * @throws IOException
+     * @param regionId is the region id.
+     * @throws IOException if an IOException occurs.
      */
     public void mergeFrom(final DataInputStream reader, String regionId) throws IOException {
         do {

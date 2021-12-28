@@ -10,15 +10,12 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage;
 
+
 import com.oceanbase.oms.logmessage.enums.DBType;
 import com.oceanbase.oms.logmessage.enums.DataType;
 import com.oceanbase.oms.logmessage.utils.BinaryMessageUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
@@ -29,120 +26,118 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.CRC32;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LogMessage extends DataMessage.Record {
-    private static final Logger log                      = LoggerFactory.getLogger(LogMessage.class);
+    private static final Logger log = LoggerFactory.getLogger(LogMessage.class);
 
-    public static final String DEFAULT_ENCODING         = "ASCII";
+    public static final String DEFAULT_ENCODING = "ASCII";
 
-    public static final String UTF8_ENCODING            = "UTF-8";
+    public static final String UTF8_ENCODING = "UTF-8";
 
-    private static final String SEP                      = System.getProperty("line.separator");
-    //old version header length
-    private static final int    OLD_VERSION_2_HEADER_LEN = 88;
+    private static final String SEP = System.getProperty("line.separator");
+    // old version header length
+    private static final int OLD_VERSION_2_HEADER_LEN = 88;
 
-    //new version header length
-    private static final int    NEW_VERSION_2_HEADER_LEN = 96;
+    // new version header length
+    private static final int NEW_VERSION_2_HEADER_LEN = 96;
 
-    private static final int    VERSION_3_HEADER_LEN     = 104;
+    private static final int VERSION_3_HEADER_LEN = 104;
 
-    private static final int    VERSION_3_1_HEADER_LEN   = 120;
+    private static final int VERSION_3_1_HEADER_LEN = 120;
 
-    private static final int    PREFIX_LENGTH            = 12;
+    private static final int PREFIX_LENGTH = 12;
 
-    private int                 brVersion                = (byte) 0xff;
+    private int brVersion = (byte) 0xff;
 
-    private int                 srcType                  = (byte) 0xff;
+    private int srcType = (byte) 0xff;
 
-    private int                 op                       = (byte) 0xff;
+    private int op = (byte) 0xff;
 
-    private int                 lastInLogEvent           = (byte) 0xff;
+    private int lastInLogEvent = (byte) 0xff;
 
-    private long                srcCategory              = -1;
+    private long srcCategory = -1;
 
-    private long                id                       = -1;
+    private long id = -1;
 
-    private long                timestamp                = -1;
+    private long timestamp = -1;
 
-    private long                encoding                 = -1;
+    private long encoding = -1;
 
-    private long                instanceOffset           = -1;
-    private long                timeMarkOffset           = -1;
+    private long instanceOffset = -1;
+    private long timeMarkOffset = -1;
 
-    private long                dbNameOffset             = -1;
+    private long dbNameOffset = -1;
 
-    private long                tbNameOffset             = -1;
+    private long tbNameOffset = -1;
 
-    private long                colNamesOffset           = -1;
+    private long colNamesOffset = -1;
 
-    private long                colTypesOffset           = -1;
+    private long colTypesOffset = -1;
 
-    private long                fileNameOffset           = -1;
+    private long fileNameOffset = -1;
 
-    private long                fileOffset               = -1;
+    private long fileOffset = -1;
 
-    private long                oldColsOffset            = -1;
+    private long oldColsOffset = -1;
 
-    private long                newColsOffset            = -1;
+    private long newColsOffset = -1;
 
-    private long                m_pkValOffset            = -1;
+    private long m_pkValOffset = -1;
 
-    private long                pkKeysOffset             = -1;
+    private long pkKeysOffset = -1;
 
-    private long                ukColsOffset             = -1;
+    private long ukColsOffset = -1;
 
-    private long                colsEncodingOffset       = -1;
+    private long colsEncodingOffset = -1;
 
-    private long                filterRuleValOffset      = -1;
+    private long filterRuleValOffset = -1;
 
-    private long                tailOffset               = -1;
+    private long tailOffset = -1;
 
-    private long                metaVersion              = -1;
+    private long metaVersion = -1;
 
-    private long                colFlagOffset            = -1;
+    private long colFlagOffset = -1;
 
-    /**
-     * buf parse data
-     */
-    private String              dbName;
+    /** buf parse data */
+    private String dbName;
 
-    private String              tableName;
+    private String tableName;
 
-    private String              serverId;
+    private String serverId;
 
-    private List<Integer>       primaryKeyIndexList;
+    private List<Integer> primaryKeyIndexList;
 
-    private String              uniqueKeyList;
+    private String uniqueKeyList;
 
-    private ByteBuf             byteBuf;
+    private ByteBuf byteBuf;
 
-    private Set<String>         keysValue;
+    private Set<String> keysValue;
 
-    private List<String>        pkValues;
+    private List<String> pkValues;
 
-    private List<Long>          timeMarks                = null;
+    private List<Long> timeMarks = null;
 
-    private List<String>        colFilter;
+    private List<String> colFilter;
 
-    private boolean             keyChange                = false;
+    private boolean keyChange = false;
 
     /**
-     * type bitmap,get array type bytes by type index
-     * array first byte : 1,  array element is unsigned byte
-     *                    2,  array element is unsigned short
-     *                    4,  array element is unsigned int
-     *                    8,  array element is long
-     *
+     * type bitmap,get array type bytes by type index array first byte : 1, array element is
+     * unsigned byte 2, array element is unsigned short 4, array element is unsigned int 8, array
+     * element is long
      */
-    private final static int[]  elementArray             = { 0, 1, 1, 2, 2, 4, 4, 8, 8 };
+    private static final int[] elementArray = {0, 1, 1, 2, 2, 4, 4, 8, 8};
 
-    private final static int    BYTE_SIZE                = 1;
+    private static final int BYTE_SIZE = 1;
 
-    private final static int    INT_SIZE                 = Integer.SIZE / Byte.SIZE;
+    private static final int INT_SIZE = Integer.SIZE / Byte.SIZE;
 
-    private final CRC32         crc32                    = new CRC32();
+    private final CRC32 crc32 = new CRC32();
 
-    private boolean             isCheckCRC               = false;
+    private boolean isCheckCRC = false;
 
     public LogMessage(boolean isCheckCRC) {
         this.isCheckCRC = isCheckCRC;
@@ -218,7 +213,9 @@ public class LogMessage extends DataMessage.Record {
                 dbName = "";
             } else {
                 try {
-                    dbName = BinaryMessageUtils.getString(byteBuf.array(), (int) dbNameOffset, UTF8_ENCODING);
+                    dbName =
+                            BinaryMessageUtils.getString(
+                                    byteBuf.array(), (int) dbNameOffset, UTF8_ENCODING);
                 } catch (Exception e) {
                     throw new LogMessageException(e.getMessage(), e.getCause());
                 }
@@ -234,7 +231,9 @@ public class LogMessage extends DataMessage.Record {
                 tableName = "";
             } else {
                 try {
-                    tableName = BinaryMessageUtils.getString(byteBuf.array(), (int) tbNameOffset, UTF8_ENCODING);
+                    tableName =
+                            BinaryMessageUtils.getString(
+                                    byteBuf.array(), (int) tbNameOffset, UTF8_ENCODING);
                 } catch (Exception e) {
                     throw new LogMessageException(e.getMessage(), e.getCause());
                 }
@@ -260,8 +259,9 @@ public class LogMessage extends DataMessage.Record {
                 serverId = "";
             } else {
                 try {
-                    serverId = BinaryMessageUtils.getString(byteBuf.array(), (int) instanceOffset,
-                        DEFAULT_ENCODING);
+                    serverId =
+                            BinaryMessageUtils.getString(
+                                    byteBuf.array(), (int) instanceOffset, DEFAULT_ENCODING);
                 } catch (Exception e) {
                     throw new LogMessageException(e.getMessage(), e.getCause());
                 }
@@ -275,24 +275,24 @@ public class LogMessage extends DataMessage.Record {
         if (colNamesOffset < 0 || colTypesOffset < 0 || oldColsOffset < 0 || newColsOffset < 0) {
             return;
         }
-        //global encoding
-        String encodingStr = BinaryMessageUtils.getString(byteBuf.array(), (int) encoding,
-            DEFAULT_ENCODING);
-        //pk info
+        // global encoding
+        String encodingStr =
+                BinaryMessageUtils.getString(byteBuf.array(), (int) encoding, DEFAULT_ENCODING);
+        // pk info
         List<Integer> pks = null;
         if ((int) pkKeysOffset > 0) {
             pks = BinaryMessageUtils.getArray(byteBuf.array(), (int) pkKeysOffset);
         }
-        //get column count
-        ByteBuf wrapByteBuf = Unpooled.wrappedBuffer(byteBuf.array())
-            .order(ByteOrder.LITTLE_ENDIAN);
+        // get column count
+        ByteBuf wrapByteBuf =
+                Unpooled.wrappedBuffer(byteBuf.array()).order(ByteOrder.LITTLE_ENDIAN);
         wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE));
         int count = wrapByteBuf.readInt();
-        //op type array
+        // op type array
         wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colTypesOffset);
         byte t = wrapByteBuf.readByte();
         int elementSize = elementArray[t & DataType.DT_MASK];
-        //encoding
+        // encoding
         int colEncodingsCount = 0;
         int currentEncodingOffset = 0;
         if (colsEncodingOffset > 0) {
@@ -300,18 +300,18 @@ public class LogMessage extends DataMessage.Record {
             colEncodingsCount = wrapByteBuf.readInt();
             currentEncodingOffset = (int) wrapByteBuf.readUnsignedInt();
         }
-        //column name
+        // column name
         wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE + INT_SIZE));
         int currentColNameOffset = (int) wrapByteBuf.readUnsignedInt();
-        //old col value
+        // old col value
         wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + oldColsOffset + BYTE_SIZE));
         int oldColCount = wrapByteBuf.readInt();
         int currentOldColOffset = -1;
-        //Bug fix: if newCol count or old Count is 0, then the following offset should not be read;
+        // Bug fix: if newCol count or old Count is 0, then the following offset should not be read;
         if (0 != oldColCount) {
             currentOldColOffset = (int) wrapByteBuf.readUnsignedInt();
         }
-        //new col value
+        // new col value
         wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + newColsOffset + BYTE_SIZE));
         int newColCount = wrapByteBuf.readInt();
         int currentNewColOffset = -1;
@@ -319,17 +319,17 @@ public class LogMessage extends DataMessage.Record {
             currentNewColOffset = (int) wrapByteBuf.readUnsignedInt();
         }
 
-        //start loop
+        // start loop
         for (int i = 0; i < count; i++) {
-            //get pk boolean
+            // get pk boolean
             boolean isPk = false;
             if (pks != null && pks.contains(i)) {
                 isPk = true;
             }
-            //get real op type
+            // get real op type
             int type = 0;
-            wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colTypesOffset + BYTE_SIZE + INT_SIZE + i
-                                    * elementSize);
+            wrapByteBuf.readerIndex(
+                    PREFIX_LENGTH + (int) colTypesOffset + BYTE_SIZE + INT_SIZE + i * elementSize);
             switch (elementSize) {
                 case 1:
                     type = wrapByteBuf.readUnsignedByte();
@@ -344,44 +344,69 @@ public class LogMessage extends DataMessage.Record {
                     type = (int) wrapByteBuf.readLong();
                     break;
             }
-            //get col flag
+            // get col flag
             int flag = 0;
             if (colFlagOffset > 0) {
-                wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colFlagOffset + BYTE_SIZE + INT_SIZE
-                                        + i * elementSize);
+                wrapByteBuf.readerIndex(
+                        PREFIX_LENGTH
+                                + (int) colFlagOffset
+                                + BYTE_SIZE
+                                + INT_SIZE
+                                + i * elementSize);
                 flag = wrapByteBuf.readUnsignedByte();
             }
-            //get real encoding
+            // get real encoding
             String realEncoding = encodingStr;
             if (colEncodingsCount > 0) {
-                wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colsEncodingOffset + BYTE_SIZE
-                        + INT_SIZE + (i + 1) * INT_SIZE));
+                wrapByteBuf.readerIndex(
+                        (int)
+                                (PREFIX_LENGTH
+                                        + colsEncodingOffset
+                                        + BYTE_SIZE
+                                        + INT_SIZE
+                                        + (i + 1) * INT_SIZE));
                 int nextEncodingOffset = (int) wrapByteBuf.readUnsignedInt();
-                ByteString encodingByteString = new ByteString(wrapByteBuf.array(),
-                    PREFIX_LENGTH + currentEncodingOffset + BYTE_SIZE + INT_SIZE + (count + 1)
-                            * INT_SIZE + (int) colsEncodingOffset, nextEncodingOffset
-                                                                   - currentEncodingOffset - 1);
+                ByteString encodingByteString =
+                        new ByteString(
+                                wrapByteBuf.array(),
+                                PREFIX_LENGTH
+                                        + currentEncodingOffset
+                                        + BYTE_SIZE
+                                        + INT_SIZE
+                                        + (count + 1) * INT_SIZE
+                                        + (int) colsEncodingOffset,
+                                nextEncodingOffset - currentEncodingOffset - 1);
                 realEncoding = encodingByteString.toString();
                 currentEncodingOffset = nextEncodingOffset;
             }
             realEncoding = logTypeHelper.correctEncoding(type, realEncoding);
             type = logTypeHelper.correctCode(type, realEncoding);
-            //colName
-            wrapByteBuf
-                .readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE + INT_SIZE + (i + 1)
-                                                                                            * INT_SIZE));
+            // colName
+            wrapByteBuf.readerIndex(
+                    (int)
+                            (PREFIX_LENGTH
+                                    + colNamesOffset
+                                    + BYTE_SIZE
+                                    + INT_SIZE
+                                    + (i + 1) * INT_SIZE));
             int nextColNameOffset = (int) wrapByteBuf.readUnsignedInt();
-            ByteString ColNameByteString = new ByteString(wrapByteBuf.array(),
-                PREFIX_LENGTH + currentColNameOffset + BYTE_SIZE + INT_SIZE + (count + 1)
-                        * INT_SIZE + (int) colNamesOffset, nextColNameOffset - currentColNameOffset
-                                                           - 1);
+            ByteString ColNameByteString =
+                    new ByteString(
+                            wrapByteBuf.array(),
+                            PREFIX_LENGTH
+                                    + currentColNameOffset
+                                    + BYTE_SIZE
+                                    + INT_SIZE
+                                    + (count + 1) * INT_SIZE
+                                    + (int) colNamesOffset,
+                            nextColNameOffset - currentColNameOffset - 1);
             String columnName = ColNameByteString.toString();
             currentColNameOffset = nextColNameOffset;
             Field prev = null;
             Field next = null;
 
             boolean match = false;
-            //col filter check
+            // col filter check
             if (colFilter != null && colFilter.size() > 0) {
                 for (String col : colFilter) {
                     if (col.equalsIgnoreCase(columnName) || "*".equalsIgnoreCase(col)) {
@@ -392,19 +417,28 @@ public class LogMessage extends DataMessage.Record {
                 match = true;
             }
 
-            //old col
+            // old col
             if (oldColCount != 0) {
-                wrapByteBuf
-                    .readerIndex((int) (PREFIX_LENGTH + oldColsOffset + BYTE_SIZE + INT_SIZE + (i + 1)
-                                                                                               * INT_SIZE));
+                wrapByteBuf.readerIndex(
+                        (int)
+                                (PREFIX_LENGTH
+                                        + oldColsOffset
+                                        + BYTE_SIZE
+                                        + INT_SIZE
+                                        + (i + 1) * INT_SIZE));
                 int nextOldColOffset = (int) wrapByteBuf.readUnsignedInt();
                 ByteString value = null;
                 if (nextOldColOffset != currentOldColOffset) {
-                    value = new ByteString(wrapByteBuf.array(), PREFIX_LENGTH + currentOldColOffset
-                                                                + BYTE_SIZE + INT_SIZE
-                                                                + (count + 1) * INT_SIZE
-                                                                + (int) oldColsOffset,
-                        nextOldColOffset - currentOldColOffset - 1);
+                    value =
+                            new ByteString(
+                                    wrapByteBuf.array(),
+                                    PREFIX_LENGTH
+                                            + currentOldColOffset
+                                            + BYTE_SIZE
+                                            + INT_SIZE
+                                            + (count + 1) * INT_SIZE
+                                            + (int) oldColsOffset,
+                                    nextOldColOffset - currentOldColOffset - 1);
                 }
                 Field field = new Field(columnName, type, realEncoding, value, isPk);
                 field.setFlag(flag);
@@ -412,19 +446,28 @@ public class LogMessage extends DataMessage.Record {
                 prev = field;
                 currentOldColOffset = nextOldColOffset;
             }
-            //new col
+            // new col
             if (newColCount != 0) {
-                wrapByteBuf
-                    .readerIndex((int) (PREFIX_LENGTH + newColsOffset + BYTE_SIZE + INT_SIZE + (i + 1)
-                                                                                               * INT_SIZE));
+                wrapByteBuf.readerIndex(
+                        (int)
+                                (PREFIX_LENGTH
+                                        + newColsOffset
+                                        + BYTE_SIZE
+                                        + INT_SIZE
+                                        + (i + 1) * INT_SIZE));
                 int nextNewColOffset = (int) wrapByteBuf.readUnsignedInt();
                 ByteString value = null;
                 if (currentNewColOffset != nextNewColOffset) {
-                    value = new ByteString(wrapByteBuf.array(), PREFIX_LENGTH + currentNewColOffset
-                                                                + BYTE_SIZE + INT_SIZE
-                                                                + (count + 1) * INT_SIZE
-                                                                + (int) newColsOffset,
-                        nextNewColOffset - currentNewColOffset - 1);
+                    value =
+                            new ByteString(
+                                    wrapByteBuf.array(),
+                                    PREFIX_LENGTH
+                                            + currentNewColOffset
+                                            + BYTE_SIZE
+                                            + INT_SIZE
+                                            + (count + 1) * INT_SIZE
+                                            + (int) newColsOffset,
+                                    nextNewColOffset - currentNewColOffset - 1);
                 }
                 Field field = new Field(columnName, type, realEncoding, value, isPk);
                 field.setFlag(flag);
@@ -442,8 +485,10 @@ public class LogMessage extends DataMessage.Record {
     public synchronized List<Field> getFieldList() {
         try {
             if (fields == null) {
-                if (colNamesOffset < 0 || colTypesOffset < 0 || oldColsOffset < 0
-                    || newColsOffset < 0) {
+                if (colNamesOffset < 0
+                        || colTypesOffset < 0
+                        || oldColsOffset < 0
+                        || newColsOffset < 0) {
                     return fields;
                 }
 
@@ -457,25 +502,26 @@ public class LogMessage extends DataMessage.Record {
                 if (this.getOpt() == Type.DDL) {
                     encodingStr = UTF8_ENCODING;
                 } else {
-                    encodingStr = BinaryMessageUtils.getString(byteBuf.array(), (int) encoding,
-                        DEFAULT_ENCODING);
+                    encodingStr =
+                            BinaryMessageUtils.getString(
+                                    byteBuf.array(), (int) encoding, DEFAULT_ENCODING);
                 }
-                //pk info
+                // pk info
                 List<Integer> pks = null;
                 if ((int) pkKeysOffset > 0) {
                     pks = BinaryMessageUtils.getArray(byteBuf.array(), (int) pkKeysOffset);
                 }
-                //get column count
-                ByteBuf wrapByteBuf = Unpooled.wrappedBuffer(byteBuf.array()).order(
-                    ByteOrder.LITTLE_ENDIAN);
+                // get column count
+                ByteBuf wrapByteBuf =
+                        Unpooled.wrappedBuffer(byteBuf.array()).order(ByteOrder.LITTLE_ENDIAN);
                 wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE));
                 int count = wrapByteBuf.readInt();
                 fields = new ArrayList<Field>(count);
-                //op type array
+                // op type array
                 wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colTypesOffset);
                 byte t = wrapByteBuf.readByte();
                 int elementSize = elementArray[t & DataType.DT_MASK];
-                //encoding
+                // encoding
                 int colEncodingsCount = 0;
                 int currentEncodingOffset = 0;
                 if (colsEncodingOffset > 0) {
@@ -483,36 +529,41 @@ public class LogMessage extends DataMessage.Record {
                     colEncodingsCount = wrapByteBuf.readInt();
                     currentEncodingOffset = (int) wrapByteBuf.readUnsignedInt();
                 }
-                //column name
-                wrapByteBuf
-                    .readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE + INT_SIZE));
+                // column name
+                wrapByteBuf.readerIndex(
+                        (int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE + INT_SIZE));
                 int currentColNameOffset = (int) wrapByteBuf.readUnsignedInt();
-                //old col value
+                // old col value
                 wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + oldColsOffset + BYTE_SIZE));
                 int oldColCount = wrapByteBuf.readInt();
                 int currentOldColOffset = -1;
-                //Bug fix: if newCol count or old Count is 0, then the following offset should not be read;
+                // Bug fix: if newCol count or old Count is 0, then the following offset should not
+                // be read;
                 if (0 != oldColCount) {
                     currentOldColOffset = (int) wrapByteBuf.readUnsignedInt();
                 }
-                //new col value
+                // new col value
                 wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + newColsOffset + BYTE_SIZE));
                 int newColCount = wrapByteBuf.readInt();
                 int currentNewColOffset = -1;
                 if (0 != newColCount) {
                     currentNewColOffset = (int) wrapByteBuf.readUnsignedInt();
                 }
-                //start loop
+                // start loop
                 for (int i = 0; i < count; i++) {
-                    //get pk boolean
+                    // get pk boolean
                     boolean isPk = false;
                     if (pks != null && pks.contains(i)) {
                         isPk = true;
                     }
-                    //get real op type
+                    // get real op type
                     int type = 0;
-                    wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colTypesOffset + BYTE_SIZE
-                                            + INT_SIZE + i * elementSize);
+                    wrapByteBuf.readerIndex(
+                            PREFIX_LENGTH
+                                    + (int) colTypesOffset
+                                    + BYTE_SIZE
+                                    + INT_SIZE
+                                    + i * elementSize);
                     switch (elementSize) {
                         case 1:
                             type = wrapByteBuf.readUnsignedByte();
@@ -527,58 +578,94 @@ public class LogMessage extends DataMessage.Record {
                             type = (int) wrapByteBuf.readLong();
                             break;
                     }
-                    //get col flag
+                    // get col flag
                     int flag = 0;
                     if (colFlagOffset > 0) {
-                        wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colFlagOffset + BYTE_SIZE
-                                                + INT_SIZE + i * elementSize);
+                        wrapByteBuf.readerIndex(
+                                PREFIX_LENGTH
+                                        + (int) colFlagOffset
+                                        + BYTE_SIZE
+                                        + INT_SIZE
+                                        + i * elementSize);
                         flag = wrapByteBuf.readUnsignedByte();
                     }
-                    //get real encoding
+                    // get real encoding
                     String realEncoding = encodingStr;
 
                     // now deliver have fix encoding offset bug, encoding has been decoded correctly
                     // add db2 compatible code for new version db2 reader
                     // old else will also saved for old version store
                     // this code will deprecated in future release
-                    // correct oracle code if oralce reader has update delivier version or correct type code
+                    // correct oracle code if oralce reader has update delivier version or correct
+                    // type code
                     if (colEncodingsCount > 0) {
-                        wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colsEncodingOffset + BYTE_SIZE
-                                + INT_SIZE + (i + 1) * INT_SIZE));
+                        wrapByteBuf.readerIndex(
+                                (int)
+                                        (PREFIX_LENGTH
+                                                + colsEncodingOffset
+                                                + BYTE_SIZE
+                                                + INT_SIZE
+                                                + (i + 1) * INT_SIZE));
                         int nextEncodingOffset = (int) wrapByteBuf.readUnsignedInt();
-                        ByteString encodingByteString = new ByteString(wrapByteBuf.array(),
-                            PREFIX_LENGTH + currentEncodingOffset + BYTE_SIZE + INT_SIZE
-                                    + (count + 1) * INT_SIZE + (int) colsEncodingOffset,
-                            nextEncodingOffset - currentEncodingOffset - 1);
+                        ByteString encodingByteString =
+                                new ByteString(
+                                        wrapByteBuf.array(),
+                                        PREFIX_LENGTH
+                                                + currentEncodingOffset
+                                                + BYTE_SIZE
+                                                + INT_SIZE
+                                                + (count + 1) * INT_SIZE
+                                                + (int) colsEncodingOffset,
+                                        nextEncodingOffset - currentEncodingOffset - 1);
                         realEncoding = encodingByteString.toString();
                         currentEncodingOffset = nextEncodingOffset;
                     }
                     realEncoding = logTypeHelper.correctEncoding(type, realEncoding);
                     type = logTypeHelper.correctCode(type, realEncoding);
 
-                    //colName
-                    wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + colNamesOffset + BYTE_SIZE
-                                                   + INT_SIZE + (i + 1) * INT_SIZE));
+                    // colName
+                    wrapByteBuf.readerIndex(
+                            (int)
+                                    (PREFIX_LENGTH
+                                            + colNamesOffset
+                                            + BYTE_SIZE
+                                            + INT_SIZE
+                                            + (i + 1) * INT_SIZE));
                     int nextColNameOffset = (int) wrapByteBuf.readUnsignedInt();
-                    ByteString ColNameByteString = new ByteString(wrapByteBuf.array(),
-                        PREFIX_LENGTH + currentColNameOffset + BYTE_SIZE + INT_SIZE + (count + 1)
-                                * INT_SIZE + (int) colNamesOffset, nextColNameOffset
-                                                                   - currentColNameOffset - 1);
+                    ByteString ColNameByteString =
+                            new ByteString(
+                                    wrapByteBuf.array(),
+                                    PREFIX_LENGTH
+                                            + currentColNameOffset
+                                            + BYTE_SIZE
+                                            + INT_SIZE
+                                            + (count + 1) * INT_SIZE
+                                            + (int) colNamesOffset,
+                                    nextColNameOffset - currentColNameOffset - 1);
                     String columnName = ColNameByteString.toString();
                     currentColNameOffset = nextColNameOffset;
-                    //old col
+                    // old col
                     if (oldColCount != 0) {
-                        wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + oldColsOffset + BYTE_SIZE
-                                                       + INT_SIZE + (i + 1) * INT_SIZE));
+                        wrapByteBuf.readerIndex(
+                                (int)
+                                        (PREFIX_LENGTH
+                                                + oldColsOffset
+                                                + BYTE_SIZE
+                                                + INT_SIZE
+                                                + (i + 1) * INT_SIZE));
                         int nextOldColOffset = (int) wrapByteBuf.readUnsignedInt();
                         ByteString value = null;
                         if (nextOldColOffset != currentOldColOffset) {
-                            value = new ByteString(wrapByteBuf.array(), PREFIX_LENGTH
-                                                                        + currentOldColOffset
-                                                                        + BYTE_SIZE + INT_SIZE
-                                                                        + (count + 1) * INT_SIZE
-                                                                        + (int) oldColsOffset,
-                                nextOldColOffset - currentOldColOffset - 1);
+                            value =
+                                    new ByteString(
+                                            wrapByteBuf.array(),
+                                            PREFIX_LENGTH
+                                                    + currentOldColOffset
+                                                    + BYTE_SIZE
+                                                    + INT_SIZE
+                                                    + (count + 1) * INT_SIZE
+                                                    + (int) oldColsOffset,
+                                            nextOldColOffset - currentOldColOffset - 1);
                         }
                         Field field = new Field(columnName, type, realEncoding, value, isPk);
                         field.setFlag(flag);
@@ -586,19 +673,28 @@ public class LogMessage extends DataMessage.Record {
                         field.setPrev(true);
                         currentOldColOffset = nextOldColOffset;
                     }
-                    //new col
+                    // new col
                     if (newColCount != 0) {
-                        wrapByteBuf.readerIndex((int) (PREFIX_LENGTH + newColsOffset + BYTE_SIZE
-                                                       + INT_SIZE + (i + 1) * INT_SIZE));
+                        wrapByteBuf.readerIndex(
+                                (int)
+                                        (PREFIX_LENGTH
+                                                + newColsOffset
+                                                + BYTE_SIZE
+                                                + INT_SIZE
+                                                + (i + 1) * INT_SIZE));
                         int nextNewColOffset = (int) wrapByteBuf.readUnsignedInt();
                         ByteString value = null;
                         if (currentNewColOffset != nextNewColOffset) {
-                            value = new ByteString(wrapByteBuf.array(), PREFIX_LENGTH
-                                                                        + currentNewColOffset
-                                                                        + BYTE_SIZE + INT_SIZE
-                                                                        + (count + 1) * INT_SIZE
-                                                                        + (int) newColsOffset,
-                                nextNewColOffset - currentNewColOffset - 1);
+                            value =
+                                    new ByteString(
+                                            wrapByteBuf.array(),
+                                            PREFIX_LENGTH
+                                                    + currentNewColOffset
+                                                    + BYTE_SIZE
+                                                    + INT_SIZE
+                                                    + (count + 1) * INT_SIZE
+                                                    + (int) newColsOffset,
+                                            nextNewColOffset - currentNewColOffset - 1);
                         }
                         Field field = new Field(columnName, type, realEncoding, value, isPk);
                         field.setFlag(flag);
@@ -632,8 +728,8 @@ public class LogMessage extends DataMessage.Record {
                 if ((int) pkKeysOffset < 0) {
                     primaryKeyIndexList = new ArrayList<>();
                 } else {
-                    primaryKeyIndexList = BinaryMessageUtils.getArray(byteBuf.array(),
-                        (int) pkKeysOffset);
+                    primaryKeyIndexList =
+                            BinaryMessageUtils.getArray(byteBuf.array(), (int) pkKeysOffset);
                 }
             }
         } catch (Exception e) {
@@ -650,6 +746,7 @@ public class LogMessage extends DataMessage.Record {
 
     /**
      * Get the primary data to avoid parsing
+     *
      * @return primary data
      */
     @Override
@@ -669,7 +766,7 @@ public class LogMessage extends DataMessage.Record {
      */
     public void setByteBuf(ByteBuf byteBuf) throws Exception {
         this.byteBuf = byteBuf;
-        //omit first 12 bytes
+        // omit first 12 bytes
         byteBuf.readerIndex(PREFIX_LENGTH);
         if ((byteBuf.readByte() & DataType.DT_MASK) != DataType.DT_UINT8) {
             throw new Exception("parse error");
@@ -696,26 +793,30 @@ public class LogMessage extends DataMessage.Record {
         timestamp = byteBuf.readLong();
         encoding = byteBuf.readInt();
         instanceOffset = byteBuf.readInt();
-        //get timeMark
+        // get timeMark
         timeMarkOffset = byteBuf.readInt();
         dbNameOffset = byteBuf.readInt();
         tbNameOffset = byteBuf.readInt();
         colNamesOffset = byteBuf.readInt();
         colTypesOffset = byteBuf.readInt();
 
-        //process old version
+        // process old version
         if (!old) {
             m_pkValOffset = byteBuf.readInt();
             fileNameOffset = byteBuf.readLong();
             fileOffset = byteBuf.readLong();
             if (fileNameOffset < -1 || fileOffset < -1) {
-                throw new IOException("f: " + fileNameOffset + " and o: " + fileOffset
-                                      + " should both be signed integer");
+                throw new IOException(
+                        "f: "
+                                + fileNameOffset
+                                + " and o: "
+                                + fileOffset
+                                + " should both be signed integer");
             }
             oldColsOffset = byteBuf.readInt();
             newColsOffset = byteBuf.readInt();
         } else {
-            //process new version
+            // process new version
             fileNameOffset = byteBuf.readInt();
             fileOffset = byteBuf.readInt();
             oldColsOffset = byteBuf.readInt();
@@ -729,7 +830,7 @@ public class LogMessage extends DataMessage.Record {
         if (brVersion > 1) {
             colsEncodingOffset = byteBuf.readLong();
         }
-        //thread id& trace id
+        // thread id& trace id
         if (brVersion == 3) {
             filterRuleValOffset = byteBuf.readInt();
             tailOffset = byteBuf.readInt();
@@ -741,7 +842,7 @@ public class LogMessage extends DataMessage.Record {
             }
         }
 
-        //timestamp,process heartbeat between tx
+        // timestamp,process heartbeat between tx
         Type type = Type.valueOf(op);
         String ts = Long.toString(timestamp);
         if (getDbType() == DBType.OCEANBASE1) {
@@ -754,7 +855,7 @@ public class LogMessage extends DataMessage.Record {
             if (txEnd.get()) {
                 globalSafeTimestamp.set(ts);
             }
-            //set txEnd
+            // set txEnd
             if (type == Type.COMMIT || type == Type.ROLLBACK) {
                 txEnd.set(true);
             }
@@ -780,8 +881,8 @@ public class LogMessage extends DataMessage.Record {
 
     @Override
     public String getTraceId() {
-        List<ByteString> list = BinaryMessageUtils.getByteStringList(byteBuf.array(),
-            filterRuleValOffset);
+        List<ByteString> list =
+                BinaryMessageUtils.getByteStringList(byteBuf.array(), filterRuleValOffset);
         if (list == null || list.size() == 0 || list.size() < 3) {
             return null;
         }
@@ -791,8 +892,8 @@ public class LogMessage extends DataMessage.Record {
 
     @Override
     public String getOB10UniqueId() {
-        List<ByteString> list = BinaryMessageUtils.getByteStringList(byteBuf.array(),
-            filterRuleValOffset);
+        List<ByteString> list =
+                BinaryMessageUtils.getByteStringList(byteBuf.array(), filterRuleValOffset);
         if (list == null || list.size() == 0 || list.size() < 3) {
             return null;
         }
@@ -822,14 +923,14 @@ public class LogMessage extends DataMessage.Record {
             return null;
         }
         List<List<String>> result = new ArrayList<List<String>>();
-        ByteBuf wrapByteBuf = Unpooled.wrappedBuffer(byteBuf.array())
-            .order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuf wrapByteBuf =
+                Unpooled.wrappedBuffer(byteBuf.array()).order(ByteOrder.LITTLE_ENDIAN);
 
-        //get field count
+        // get field count
         wrapByteBuf.readerIndex(PREFIX_LENGTH + valueOffset + 1);
         int fieldCount = wrapByteBuf.readInt();
 
-        //parse
+        // parse
         for (ByteString key : keys) {
             String keyStr = key.toString();
             int m = 0;
@@ -853,14 +954,21 @@ public class LogMessage extends DataMessage.Record {
                     wrapByteBuf.readerIndex(PREFIX_LENGTH + valueOffset + 5 + index * 4);
                     int start = (int) wrapByteBuf.readUnsignedInt();
                     int end = (int) wrapByteBuf.readUnsignedInt();
-                    //uk perhaps null
+                    // uk perhaps null
                     if (end - start == 0) {
                         item.add(null);
                         continue;
                     }
-                    String k = new ByteString(wrapByteBuf.array(), PREFIX_LENGTH + valueOffset + 5
-                                                                   + (fieldCount + 1) * 4 + start,
-                        end - start - 1).toString();
+                    String k =
+                            new ByteString(
+                                            wrapByteBuf.array(),
+                                            PREFIX_LENGTH
+                                                    + valueOffset
+                                                    + 5
+                                                    + (fieldCount + 1) * 4
+                                                    + start,
+                                            end - start - 1)
+                                    .toString();
                     sb.append(k);
                     item.add(k);
                 }
@@ -888,18 +996,21 @@ public class LogMessage extends DataMessage.Record {
             if (keysValue != null) {
                 return keysValue;
             }
-            if (colNamesOffset < 0 || colTypesOffset < 0 || oldColsOffset < 0 || newColsOffset < 0) {
+            if (colNamesOffset < 0
+                    || colTypesOffset < 0
+                    || oldColsOffset < 0
+                    || newColsOffset < 0) {
                 return null;
             }
 
-            //get key str
+            // get key str
             keysValue = new HashSet<String>();
-            List<ByteString> keys = BinaryMessageUtils.getByteStringList(byteBuf.array(),
-                (int) m_pkValOffset);
+            List<ByteString> keys =
+                    BinaryMessageUtils.getByteStringList(byteBuf.array(), (int) m_pkValOffset);
             if (keys == null || keys.size() == 0) {
                 return null;
             }
-            //get value offset by op type
+            // get value offset by op type
             switch (getOpt()) {
                 case INSERT:
                 case REPLACE:
@@ -946,11 +1057,17 @@ public class LogMessage extends DataMessage.Record {
             if (filedList != null) {
                 for (Field field : filedList) {
                     if ("binary".equalsIgnoreCase(field.getEncoding())) {
-                        keyValue.put(field.getFieldname().toLowerCase(),
-                            field.getValue() == null ? null : new String(field.getValue().getBytes()));
+                        keyValue.put(
+                                field.getFieldname().toLowerCase(),
+                                field.getValue() == null
+                                        ? null
+                                        : new String(field.getValue().getBytes()));
                     } else {
-                        keyValue.put(field.getFieldname().toLowerCase(),
-                            field.getValue() == null ? null : field.getValue().toString(field.getEncoding()));
+                        keyValue.put(
+                                field.getFieldname().toLowerCase(),
+                                field.getValue() == null
+                                        ? null
+                                        : field.getValue().toString(field.getEncoding()));
                     }
                 }
             }
@@ -980,8 +1097,8 @@ public class LogMessage extends DataMessage.Record {
             }
             pkValues = new ArrayList<String>();
             List<Integer> pks = BinaryMessageUtils.getArray(byteBuf.array(), (int) pkKeysOffset);
-            List<ByteString> names = BinaryMessageUtils.getByteStringList(byteBuf.array(),
-                colNamesOffset);
+            List<ByteString> names =
+                    BinaryMessageUtils.getByteStringList(byteBuf.array(), colNamesOffset);
             if (pks != null) {
                 for (int idx : pks) {
                     pkValues.add(names.get(idx).toString(DEFAULT_ENCODING));
@@ -995,10 +1112,9 @@ public class LogMessage extends DataMessage.Record {
     }
 
     /**
-     * Get tuples of index.
-     * For example, column 1 is the primary key and column 2 and 3 are unique keys.
-     * The returned format is the list of two arrays, the first array is {0} and
-     * the seconds array is {1,2}
+     * Get tuples of index. For example, column 1 is the primary key and column 2 and 3 are unique
+     * keys. The returned format is the list of two arrays, the first array is {0} and the seconds
+     * array is {1,2}
      *
      * @return the tuples of index for primary and unique constraints.
      */
@@ -1007,11 +1123,12 @@ public class LogMessage extends DataMessage.Record {
         List<int[]> tuples = new ArrayList<int[]>();
         try {
             if ((int) m_pkValOffset > 0) {
-                List<ByteString> rawConstraintByteString = BinaryMessageUtils.getByteStringList(
-                    byteBuf.array(), m_pkValOffset);
+                List<ByteString> rawConstraintByteString =
+                        BinaryMessageUtils.getByteStringList(byteBuf.array(), m_pkValOffset);
                 if (rawConstraintByteString != null && !rawConstraintByteString.isEmpty()) {
                     /**
-                     * The raw format is "(0,1),(2,3)" or "(", the last one is for empty primary or unique constraint
+                     * The raw format is "(0,1),(2,3)" or "(", the last one is for empty primary or
+                     * unique constraint
                      */
                     for (int i = 0; i < rawConstraintByteString.size(); i++) {
                         String rawConstraintStringArray = rawConstraintByteString.get(i).toString();
@@ -1027,17 +1144,19 @@ public class LogMessage extends DataMessage.Record {
                                     if (rightIndex == -1) {
                                         if (rawConstraintString.length() == 1) {
                                             throw new IOException(
-                                                "Missing index and ) for constraints: "
-                                                        + rawConstraintByteString);
+                                                    "Missing index and ) for constraints: "
+                                                            + rawConstraintByteString);
                                         } else {
                                             /* throw new IOException("Missing ] for constraints: " + rawConstraintByteString
-                                                     + "the correct format shoud like (0,1),(2,3) or ( "); */
+                                            + "the correct format shoud like (0,1),(2,3) or ( "); */
                                             rightIndex = rawConstraintString.length();
                                         }
                                     }
                                     m = rightIndex;
-                                    String[] parts = rawConstraintString.substring(leftIndex + 1,
-                                        rightIndex).split(",");
+                                    String[] parts =
+                                            rawConstraintString
+                                                    .substring(leftIndex + 1, rightIndex)
+                                                    .split(",");
                                     if (parts != null && parts.length > 0) {
                                         int[] tuple = new int[parts.length];
                                         for (int j = 0; j < parts.length; j++) {
@@ -1115,10 +1234,10 @@ public class LogMessage extends DataMessage.Record {
                     uniqueKeyList = "";
                     return uniqueKeyList;
                 } else {
-                    List<Integer> uks = BinaryMessageUtils.getArray(byteBuf.array(),
-                        (int) ukColsOffset);
-                    List<ByteString> names = BinaryMessageUtils.getByteStringList(byteBuf.array(),
-                        colNamesOffset);
+                    List<Integer> uks =
+                            BinaryMessageUtils.getArray(byteBuf.array(), (int) ukColsOffset);
+                    List<ByteString> names =
+                            BinaryMessageUtils.getByteStringList(byteBuf.array(), colNamesOffset);
                     StringBuilder ukKeyName = new StringBuilder();
                     if (uks != null && names != null) {
                         for (int idx : uks) {
@@ -1207,8 +1326,7 @@ public class LogMessage extends DataMessage.Record {
 
     public String getEncodingStr() {
         try {
-            return BinaryMessageUtils.getString(byteBuf.array(), (int) encoding,
-                    DEFAULT_ENCODING);
+            return BinaryMessageUtils.getString(byteBuf.array(), (int) encoding, DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
             throw new LogMessageException(e.getMessage(), e.getCause());
         }

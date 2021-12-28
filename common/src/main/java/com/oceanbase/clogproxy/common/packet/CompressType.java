@@ -11,22 +11,18 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.common.packet;
 
 /**
- * Compress type enumeration. Primarily used for {@link com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.RecordData}.
+ * Compress type enumeration. Primarily used for {@link
+ * com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.RecordData}.
  */
 public enum CompressType {
-    /**
-     * No compress.
-     */
+
+    /** No compress. */
     NONE(0),
 
-    /**
-     * LZ4 compress.
-     */
+    /** LZ4 compress. */
     LZ4(1);
 
-    /**
-     * The ordinal of this enumeration constant.
-     */
+    /** The ordinal of this enumeration constant. */
     private final int code;
 
     /**

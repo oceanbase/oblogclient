@@ -51,13 +51,11 @@ public class LogMessageTypeCode {
     public static final int DRC_MSG_TYPE_TIMESTAMP_NANO = 202;
     public static final int DRC_MSG_TYPE_RAW = 203;
     public static final int DRC_MSG_TYPE_INTERVAL_YEAR_TO_MONTH = 204;
-    public static final int DRC_MSG_TYPE_INTERVAL_DAY_TO_SECOND =205;
+    public static final int DRC_MSG_TYPE_INTERVAL_DAY_TO_SECOND = 205;
     public static final int DRC_MSG_TYPE_NUMBER_FLOAT = 206;
     public static final int DRC_MSG_TYPE_NVARCHAR2 = 207;
     public static final int DRC_MSG_TYPE_NCHAR = 208;
     public static final int DRC_MSG_TYPE_ROW_ID = 209;
-
-
 
     public static final int DRC_MSG_TYPE_JSON = 245;
     public static final int DRC_MSG_TYPE_NEWDECIMAL = 246;
@@ -67,7 +65,7 @@ public class LogMessageTypeCode {
     public static final int DRC_MSG_TYPE_MEDIUM_BLOB = 250;
     public static final int DRC_MSG_TYPE_LONG_BLOB = 251;
     public static final int DRC_MSG_TYPE_BLOB = 252;
-    public static final int DRC_MSG_TYPE_VAR_STRING =253;
+    public static final int DRC_MSG_TYPE_VAR_STRING = 253;
     public static final int DRC_MSG_TYPE_STRING = 254;
     public static final int DRC_MSG_TYPE_GEOMETRY = 255;
     public static final int DRC_MSG_TYPE_ORA_BINARY_FLOAT = 256;

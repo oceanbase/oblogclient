@@ -10,70 +10,44 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.enums;
 
-/**
- * Error code enumeration.
- */
+/** Error code enumeration. */
 public enum ErrorCode {
     ////////// 0~499: process error ////////////
-    /**
-     * General error.
-     */
+    /** General error. */
     NONE(0),
 
-    /**
-     * Inner error
-     */
+    /** Inner error */
     E_INNER(1),
 
-    /**
-     * Failed to connect.
-     */
+    /** Failed to connect. */
     E_CONNECT(2),
 
-    /**
-     * Exceed max retry connect count.
-     */
+    /** Exceed max retry connect count. */
     E_MAX_RECONNECT(3),
 
-    /**
-     * User callback throws exception.
-     */
+    /** User callback throws exception. */
     E_USER(4),
 
     ////////// 500~: receive data error ////////////
-    /**
-     * Unknown data protocol.
-     */
+    /** Unknown data protocol. */
     E_PROTOCOL(500),
 
-    /**
-     * Unknown header type.
-     */
+    /** Unknown header type. */
     E_HEADER_TYPE(501),
 
-    /**
-     * Failed to auth.
-     */
+    /** Failed to auth. */
     NO_AUTH(502),
 
-    /**
-     * Unknown compress type.
-     */
+    /** Unknown compress type. */
     E_COMPRESS_TYPE(503),
 
-    /**
-     * Length not match.
-     */
+    /** Length not match. */
     E_LEN(504),
 
-    /**
-     * Failed to parse data.
-     */
+    /** Failed to parse data. */
     E_PARSE(505);
 
-    /**
-     * The ordinal of this enumeration constant.
-     */
+    /** The ordinal of this enumeration constant. */
     int code;
 
     /**

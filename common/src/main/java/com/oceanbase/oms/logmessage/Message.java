@@ -10,21 +10,21 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage;
 
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.lang3.StringUtils;
 
 public class Message {
 
-    protected int                 type;
-    protected long                id;
+    protected int type;
+    protected long id;
     protected Map<String, String> attributes;
-    //this attribute means  the source store's ip and port which this client is pulling data from.
-    public static final String    SOURCEIPANDPORT = "sourceIPAndPort";
+    // this attribute means  the source store's ip and port which this client is pulling data from.
+    public static final String SOURCEIPANDPORT = "sourceIPAndPort";
 
     public Message() {
         attributes = new HashMap<String, String>();
