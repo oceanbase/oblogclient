@@ -879,7 +879,8 @@ public class DataMessage extends Message {
      * Construct the message from DataInputStream.
      *
      * @param reader is the DataInputStream.
-     * @throws IOException
+     * @param regionId is the region id.
+     * @throws IOException if an IOException occurs.
      */
     public void mergeFrom(final DataInputStream reader, String regionId) throws IOException {
         do {
