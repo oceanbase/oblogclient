@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2021 OceanBase and/or its affiliates. All rights reserved.
+oblogclient is licensed under Mulan PSL v2.
+You can use this software according to the terms and conditions of the Mulan PSL v2.
+You may obtain a copy of Mulan PSL v2 at:
+         http://license.coscl.org.cn/MulanPSL2
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+See the Mulan PSL v2 for more details.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -51,7 +62,7 @@
     <protobuf.version>3.18.1</protobuf.version>
     <lz4.version>1.8.0</lz4.version>
     <slf4j.version>1.7.32</slf4j.version>
-    <logback.version>1.2.6</logback.version>
+    <logback.version>1.2.10</logback.version>
     <junit.version>4.13.1</junit.version>
   </properties>
 
@@ -217,6 +228,80 @@
             <phase>verify</phase>
             <goals>
               <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.12</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludeSubProjects>false</excludeSubProjects>
+          <numUnapprovedLicenses>0</numUnapprovedLicenses>
+          <licenses>
+            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+              <licenseFamilyCategory>MulanPSL2</licenseFamilyCategory>
+              <licenseFamilyName>Mulan Public License，Version 2</licenseFamilyName>
+              <notes/>
+              <patterns>
+                <pattern>Mulan PSL v2</pattern>
+              </patterns>
+            </license>
+          </licenses>
+          <licenseFamilies>
+            <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+              <familyName>Mulan Public License，Version 2</familyName>
+            </licenseFamily>
+          </licenseFamilies>
+          <excludes>
+            <!-- Additional files like .gitignore etc.-->
+            <exclude>**/.*/**</exclude>
+            <!-- Generated content -->
+            <exclude>**/target/**</exclude>
+            <!-- Build files -->
+            <exclude>**/*.iml</exclude>
+            <!-- Docs -->
+            <exclude>**/*.md</exclude>
+            <!-- Tests -->
+            <exclude>**/*.key</exclude>
+            <exclude>**/*.crt</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.4.2</version>
+        <configuration>
+          <java>
+            <excludes>
+              <!-- Generated files. -->
+              <exclude>**/LogProxyProto.java</exclude>
+            </excludes>
+            <googleJavaFormat>
+              <version>1.7</version>
+              <style>AOSP</style>
+            </googleJavaFormat>
+            <importOrder/>
+            <removeUnusedImports/>
+          </java>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotless-check</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
             </goals>
           </execution>
         </executions>

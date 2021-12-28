@@ -10,29 +10,23 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.connection;
 
+
 import com.oceanbase.clogproxy.common.util.NetworkUtil;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-/**
- * This class represents a connection which contains a netty channel.
- */
+/** This class represents a connection which contains a netty channel. */
 public class Connection {
 
     private static final Logger logger = LoggerFactory.getLogger(Connection.class);
 
-    /**
-     * A netty channel.
-     */
+    /** A netty channel. */
     private Channel channel;
 
-    /**
-     * A flag of whether the channel is closed.
-     */
+    /** A flag of whether the channel is closed. */
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
@@ -44,9 +38,7 @@ public class Connection {
         this.channel = channel;
     }
 
-    /**
-     * Close this connection.
-     */
+    /** Close this connection. */
     public void close() {
         if (!closed.compareAndSet(false, true)) {
             logger.warn("connection already closed");
@@ -56,8 +48,10 @@ public class Connection {
                 try {
                     channel.close().addListener(this::logCloseResult).syncUninterruptibly();
                 } catch (Exception e) {
-                    logger.warn("close connection to remote address {} exception",
-                        NetworkUtil.parseRemoteAddress(channel), e);
+                    logger.warn(
+                            "close connection to remote address {} exception",
+                            NetworkUtil.parseRemoteAddress(channel),
+                            e);
                 }
             }
             channel = null;
@@ -73,10 +67,15 @@ public class Connection {
     private void logCloseResult(Future future) {
         if (future.isSuccess()) {
             if (logger.isInfoEnabled()) {
-                logger.info("close connection to remote address {} success", NetworkUtil.parseRemoteAddress(channel));
+                logger.info(
+                        "close connection to remote address {} success",
+                        NetworkUtil.parseRemoteAddress(channel));
             }
         } else {
-            logger.warn("close connection to remote address {} fail", NetworkUtil.parseRemoteAddress(channel), future.cause());
+            logger.warn(
+                    "close connection to remote address {} fail",
+                    NetworkUtil.parseRemoteAddress(channel),
+                    future.cause());
         }
     }
 }

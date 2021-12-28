@@ -10,25 +10,22 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.util;
 
-import io.netty.channel.Channel;
-import org.apache.commons.lang3.StringUtils;
 
+import io.netty.channel.Channel;
 import java.net.*;
 import java.util.Enumeration;
+import org.apache.commons.lang3.StringUtils;
 
-/**
- * Utils class for network.
- */
+/** Utils class for network. */
 public class NetworkUtil {
 
-    /**
-     * Local ip.
-     */
+    /** Local ip. */
     private static String IP;
 
     static {
         try {
-            for (Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
+            for (Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+                    e.hasMoreElements(); ) {
                 NetworkInterface item = e.nextElement();
                 for (InterfaceAddress address : item.getInterfaceAddresses()) {
                     if (item.isLoopback() || !item.isUp()) {
@@ -74,9 +71,10 @@ public class NetworkUtil {
 
     /**
      * Parse the address with rules:
+     *
      * <ol>
-     * <li>If an address starts with a '/', skip it.
-     * <li>If an address contains a '/', substring it.
+     *   <li>If an address starts with a '/', skip it.
+     *   <li>If an address contains a '/', substring it.
      * </ol>
      */
     private static String doParse(String addr) {
@@ -95,5 +93,4 @@ public class NetworkUtil {
             return addr;
         }
     }
-
 }

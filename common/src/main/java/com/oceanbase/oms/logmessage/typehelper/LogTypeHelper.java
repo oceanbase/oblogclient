@@ -10,6 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage.typehelper;
 
+
 import com.oceanbase.oms.logmessage.DataMessage;
 import com.oceanbase.oms.logmessage.enums.DBType;
 
@@ -29,9 +30,9 @@ public abstract class LogTypeHelper {
         return dbType;
     }
 
-    abstract public String correctEncoding(int typeCode, String realEncoding);
+    public abstract String correctEncoding(int typeCode, String realEncoding);
 
-    abstract public int correctCode(int typeCode, String encoding);
+    public abstract int correctCode(int typeCode, String encoding);
 
-    abstract public void correctField(DataMessage.Record.Field f, String realEncoding);
+    public abstract void correctField(DataMessage.Record.Field f, String realEncoding);
 }

@@ -10,36 +10,28 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.util;
 
-import org.apache.commons.codec.digest.DigestUtils;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import org.apache.commons.codec.digest.DigestUtils;
 
-/**
- * Utils class for crypto.
- */
+/** Utils class for crypto. */
 public class CryptoUtil {
 
-    /**
-     * Default cipher key.
-     */
+    /** Default cipher key. */
     private static final String KEY = "LogProxy123*";
 
-    /**
-     * AES key length.
-     */
+    /** AES key length. */
     private static final int AES_KEY_SIZE = 256;
 
-    /**
-     * GCM tag length.
-     */
+    /** GCM tag length. */
     private static final int GCM_TAG_LENGTH = 16;
 
     /**
@@ -62,13 +54,13 @@ public class CryptoUtil {
     }
 
     /**
-     * This class provides the functionality of encryption and decryption with a specific cipher key.
+     * This class provides the functionality of encryption and decryption with a specific cipher
+     * key.
      */
     public static class Encryptor {
-        /**
-         * The cipher instance.
-         */
-        private Cipher cipher = null;   // not thread-safe
+
+        /** The cipher instance. */
+        private Cipher cipher = null; // not thread-safe
 
         /**
          * The key material of the secret key.
@@ -87,7 +79,8 @@ public class CryptoUtil {
         /**
          * Constructor.
          *
-         * @param cipherKey The cipher key used to generate {@link Encryptor#key} and {@link Encryptor#iv}.
+         * @param cipherKey The cipher key used to generate {@link Encryptor#key} and {@link
+         *     Encryptor#iv}.
          */
         private Encryptor(String cipherKey) {
             try {
@@ -115,7 +108,10 @@ public class CryptoUtil {
             try {
                 cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
                 return cipher.doFinal(text.getBytes());
-            } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            } catch (InvalidKeyException
+                    | InvalidAlgorithmParameterException
+                    | IllegalBlockSizeException
+                    | BadPaddingException e) {
                 System.out.println("failed to encrypt AES 256 GCM: " + e);
                 return null;
             }
@@ -134,7 +130,10 @@ public class CryptoUtil {
                 cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmParameterSpec);
                 byte[] decryptedText = cipher.doFinal(cipherText);
                 return new String(decryptedText);
-            } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            } catch (InvalidKeyException
+                    | InvalidAlgorithmParameterException
+                    | IllegalBlockSizeException
+                    | BadPaddingException e) {
                 System.out.println("failed to decrypt AES 256 GCM: " + e);
                 return "";
             }

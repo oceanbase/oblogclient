@@ -10,29 +10,19 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.common.packet;
 
-/**
- * Protocol version enumeration.
- */
+/** Protocol version enumeration. */
 public enum ProtocolVersion {
 
-    /**
-     * Protocol version 0.
-     */
+    /** Protocol version 0. */
     V0(0),
 
-    /**
-     * Protocol version 1.
-     */
+    /** Protocol version 1. */
     V1(1),
 
-    /**
-     * Protocol version 2.
-     */
+    /** Protocol version 2. */
     V2(2);
 
-    /**
-     * The ordinal of this enumeration constant.
-     */
+    /** The ordinal of this enumeration constant. */
     private final int code;
 
     /**

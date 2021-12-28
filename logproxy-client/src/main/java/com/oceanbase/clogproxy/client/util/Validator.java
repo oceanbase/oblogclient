@@ -10,11 +10,10 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.util;
 
+
 import java.util.Map;
 
-/**
- * Utils class used to validate arguments.
- */
+/** Utils class used to validate arguments. */
 public class Validator {
 
     private static final int MINIMAL_VALID_PORT = 1;
@@ -23,7 +22,7 @@ public class Validator {
     /**
      * Validate the object is not null, otherwise throws an {@link NullPointerException}.
      *
-     * @param obj     Object to be verified.
+     * @param obj Object to be verified.
      * @param message Message in the NullPointerException.
      */
     public static void notNull(Object obj, String message) {
@@ -35,7 +34,7 @@ public class Validator {
     /**
      * Validate the port number is valid, otherwise throws an {@link IllegalArgumentException}.
      *
-     * @param port    Port number to be verified.
+     * @param port Port number to be verified.
      * @param message Message in the IllegalArgumentException.
      */
     public static void validatePort(int port, String message) {
@@ -45,9 +44,10 @@ public class Validator {
     }
 
     /**
-     * Validate the string is not null or empty, otherwise throws an {@link IllegalArgumentException}.
+     * Validate the string is not null or empty, otherwise throws an {@link
+     * IllegalArgumentException}.
      *
-     * @param val     String to be verified.
+     * @param val String to be verified.
      * @param message Message in the IllegalArgumentException.
      */
     public static void notEmpty(String val, String message) {
@@ -59,7 +59,7 @@ public class Validator {
     /**
      * Validate the map is not null or empty, otherwise throws an {@link IllegalArgumentException}.
      *
-     * @param map     Map to be verified.
+     * @param map Map to be verified.
      * @param message Message in the IllegalArgumentException.
      */
     public static void notEmpty(Map<String, String> map, String message) {
