@@ -47,6 +47,12 @@ If you'd rather like the latest snapshots of the upcoming major version, use our
 </repositories>
 ```
 
+## Workflow
+
+![image](../images/logproxy-client-workflow.png)
+
+When `LogProxyClient.start()` is executed, a new thread will be created in `ClientStream`. The thread will initialize a netty channel which will receive log data from LogProxy and put the data as `TransferPacket` to a BlockingQueue. When the netty connection is established, the thread will poll the queue and pass the `LogMessage` in TransferPacket to `RecordListener.notify`.
+
 ## Usage
 
 ### Basic Usage
