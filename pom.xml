@@ -10,13 +10,12 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.oceanbase.logclient</groupId>
   <artifactId>logclient</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
   <packaging>pom</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -58,7 +57,7 @@ See the Mulan PSL v2 for more details.
     <connection>scm:git:https://github.com/oceanbase/oblogclient.git</connection>
     <developerConnection>scm:git:https://github.com/oceanbase/oblogclient.git</developerConnection>
     <url>https://github.com/oceanbase/oblogclient</url>
-    <tag>HEAD</tag>
+    <tag>logclient-1.0.2</tag>
   </scm>
 
   <properties>
@@ -254,7 +253,7 @@ See the Mulan PSL v2 for more details.
             <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
               <licenseFamilyCategory>MulanPSL2</licenseFamilyCategory>
               <licenseFamilyName>Mulan Public License，Version 2</licenseFamilyName>
-              <notes/>
+              <notes />
               <patterns>
                 <pattern>Mulan PSL v2</pattern>
               </patterns>
@@ -294,8 +293,8 @@ See the Mulan PSL v2 for more details.
               <version>1.7</version>
               <style>AOSP</style>
             </googleJavaFormat>
-            <importOrder/>
-            <removeUnusedImports/>
+            <importOrder />
+            <removeUnusedImports />
           </java>
         </configuration>
         <executions>
