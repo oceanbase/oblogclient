@@ -10,7 +10,8 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.oceanbase.logclient</groupId>
@@ -31,8 +32,23 @@ See the Mulan PSL v2 for more details.
 
   <developers>
     <developer>
+      <name>Si Jiang</name>
+      <email>cmbjiangsi5@163.com</email>
+      <url>https://github.com/hitandrun-zz</url>
+      <organization>OceanBase</organization>
+      <timezone>8</timezone>
+    </developer>
+    <developer>
+      <name>Fankux</name>
+      <email>fankux@gmail.com</email>
+      <url>https://github.com/fankux</url>
+      <organization>OceanBase</organization>
+      <timezone>8</timezone>
+    </developer>
+    <developer>
       <name>He Wang</name>
       <email>wanghechn@qq.com</email>
+      <url>https://github.com/whhe</url>
       <organization>OceanBase</organization>
       <timezone>8</timezone>
     </developer>
@@ -219,20 +235,6 @@ See the Mulan PSL v2 for more details.
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>0.12</version>
@@ -308,5 +310,4 @@ See the Mulan PSL v2 for more details.
       </plugin>
     </plugins>
   </build>
-
 </project>
