@@ -11,12 +11,12 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.client.config;
 
 
-import com.google.common.collect.Maps;
 import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.config.SharedConf;
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.CryptoUtil;
 import com.oceanbase.clogproxy.common.util.Hex;
+import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     /** Constructor with empty arguments. */
     public ObReaderConfig() {
-        super(Maps.newHashMap());
+        super(new HashMap<>());
     }
 
     /**

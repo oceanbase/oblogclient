@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +132,7 @@ public class ClientStream {
     /** Start the process thread. */
     public void start() {
         // if status listener exist, enable monitor
-        context.params.setEnableMonitor(CollectionUtils.isNotEmpty(statusListeners));
+        context.params.setEnableMonitor(!statusListeners.isEmpty());
 
         if (started.compareAndSet(false, true)) {
             thread =
