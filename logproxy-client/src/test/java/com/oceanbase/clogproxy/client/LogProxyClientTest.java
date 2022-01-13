@@ -20,9 +20,13 @@ import io.netty.handler.ssl.SslContextBuilder;
 import javax.net.ssl.SSLException;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class LogProxyClientTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(LogProxyClientTest.class);
 
     @Test
     public void testLogProxyClient() {
@@ -39,14 +43,14 @@ public class LogProxyClientTest {
                 new RecordListener() {
 
                     @Override
-                    public void notify(LogMessage record) {
-                        System.out.println(record);
+                    public void notify(LogMessage message) {
+                        logger.info("LogMessage received: {}", message.toString());
                     }
 
                     @Override
                     public void onException(LogProxyClientException e) {
                         if (e.needStop()) {
-                            System.out.println(e.getMessage());
+                            logger.error(e.getMessage());
                             client.stop();
                         }
                     }
@@ -70,14 +74,14 @@ public class LogProxyClientTest {
                 new RecordListener() {
 
                     @Override
-                    public void notify(LogMessage record) {
-                        System.out.println(record);
+                    public void notify(LogMessage message) {
+                        logger.info("LogMessage received: {}", message.toString());
                     }
 
                     @Override
                     public void onException(LogProxyClientException e) {
                         if (e.needStop()) {
-                            System.out.println(e.getMessage());
+                            logger.error(e.getMessage());
                             client.stop();
                         }
                     }
