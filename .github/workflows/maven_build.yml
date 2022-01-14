@@ -1,9 +1,6 @@
 name: Maven Build
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
@@ -20,4 +17,4 @@ jobs:
           java-version: '8'
           distribution: 'zulu'
       - name: Build with Maven
-        run: mvn clean package
+        run: mvn clean install
