@@ -37,7 +37,7 @@ public class LogProxyClient {
      * @param sslContext {@link SslContext} to create netty handler.
      */
     public LogProxyClient(
-            String host, int port, AbstractConnectionConfig config, SslContext sslContext) {
+        String host, int port, AbstractConnectionConfig config, SslContext sslContext, ClientConf clientConf) {
         try {
             Validator.notNull(config.getLogType(), "log type cannot be null");
             Validator.notEmpty(host, "server cannot be null");
@@ -49,11 +49,11 @@ public class LogProxyClient {
             throw new IllegalArgumentException("Illegal argument for LogProxyClient");
         }
         String clientId =
-                ClientConf.USER_DEFINED_CLIENTID.isEmpty()
-                        ? ClientIdGenerator.generate()
-                        : ClientConf.USER_DEFINED_CLIENTID;
+            ClientConf.USER_DEFINED_CLIENTID.isEmpty()
+                ? ClientIdGenerator.generate()
+                : ClientConf.USER_DEFINED_CLIENTID;
         ConnectionParams connectionParams =
-                new ConnectionParams(config.getLogType(), clientId, host, port, config);
+            new ConnectionParams(config.getLogType(), clientId, host, port, config);
         connectionParams.setProtocolVersion(ProtocolVersion.V2);
         this.stream = new ClientStream(connectionParams, sslContext);
     }
@@ -66,9 +66,16 @@ public class LogProxyClient {
      * @param config {@link AbstractConnectionConfig} used to create the {@link ClientStream}.
      */
     public LogProxyClient(String host, int port, AbstractConnectionConfig config) {
-        this(host, port, config, null);
+        this(host, port, config, null, null);
     }
 
+    public LogProxyClient(String host, int port, AbstractConnectionConfig config, SslContext sslContext) {
+        this(host, port, config, sslContext, null);
+    }
+
+    public LogProxyClient(String host, int port, AbstractConnectionConfig config, ClientConf clientConf) {
+        this(host, port, config, null, null);
+    }
     /** Start the client. */
     public void start() {
         stream.start();

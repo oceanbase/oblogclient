@@ -11,17 +11,19 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.client;
 
 
+import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.config.ObReaderConfig;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.oms.logmessage.LogMessage;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import javax.net.ssl.SSLException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.SSLException;
 
 @Ignore
 public class LogProxyClientTest {
@@ -37,8 +39,11 @@ public class LogProxyClientTest {
         config.setStartTimestamp(0L);
         config.setTableWhiteList("sys.test.*");
 
-        LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config);
-
+        ClientConf clientConf = new ClientConf();
+        clientConf.setVERSION("2.1.1");
+        clientConf.setTransferQueueSize(20);
+        LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf);
+        logger.info(ClientConf.VERSION);
         client.addListener(
                 new RecordListener() {
 

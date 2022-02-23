@@ -16,7 +16,7 @@ import com.oceanbase.clogproxy.common.config.SharedConf;
 /** The class that defines the constants that are used to generate the connection. */
 public class ClientConf extends SharedConf {
     /** Client version. */
-    public static final String VERSION = "1.0.1";
+    public static String VERSION = "1.0.1";
 
     /** Queue size for storing records received from log proxy. */
     public static int TRANSFER_QUEUE_SIZE = 20000;
@@ -49,4 +49,44 @@ public class ClientConf extends SharedConf {
      * exception.
      */
     public static boolean IGNORE_UNKNOWN_RECORD_TYPE = false;
+
+    public void setVERSION(String VERSION) {
+        ClientConf.VERSION = VERSION;
+    }
+
+    public void setTransferQueueSize(int transferQueueSize) {
+        TRANSFER_QUEUE_SIZE = transferQueueSize;
+    }
+
+    public void setConnectTimeoutMs(int connectTimeoutMs) {
+        CONNECT_TIMEOUT_MS = connectTimeoutMs;
+    }
+
+    public void setReadWaitTimeMs(int readWaitTimeMs) {
+        READ_WAIT_TIME_MS = readWaitTimeMs;
+    }
+
+    public static void setRetryIntervalS(int retryIntervalS) {
+        RETRY_INTERVAL_S = retryIntervalS;
+    }
+
+    public void setMaxReconnectTimes(int maxReconnectTimes) {
+        MAX_RECONNECT_TIMES = maxReconnectTimes;
+    }
+
+    public void setIdleTimeoutS(int idleTimeoutS) {
+        IDLE_TIMEOUT_S = idleTimeoutS;
+    }
+
+    public void setNettyDiscardAfterReads(int nettyDiscardAfterReads) {
+        NETTY_DISCARD_AFTER_READS = nettyDiscardAfterReads;
+    }
+
+    public void setUserDefinedClientid(String userDefinedClientid) {
+        USER_DEFINED_CLIENTID = userDefinedClientid;
+    }
+
+    public void setIgnoreUnknownRecordType(boolean ignoreUnknownRecordType) {
+        IGNORE_UNKNOWN_RECORD_TYPE = ignoreUnknownRecordType;
+    }
 }
