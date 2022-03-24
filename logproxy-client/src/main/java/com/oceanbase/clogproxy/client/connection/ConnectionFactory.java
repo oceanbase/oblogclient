@@ -58,17 +58,19 @@ public class ConnectionFactory {
     /**
      * Create a {@link Bootstrap} instance.
      *
-     * @param sslContext The {@link SslContext} used for encrypted communication.
+     * @param context The {@link StreamContext} used in channels.
      * @return A {@link Bootstrap} instance.
      */
-    private Bootstrap initBootstrap(SslContext sslContext) {
+    private Bootstrap initBootstrap(StreamContext context) {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
+                .attr(CONTEXT_KEY, context)
                 .group(WORKER_GROUP)
                 .channel(NettyEventLoopUtil.getClientSocketChannelClass())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true);
 
+        SslContext sslContext = context.getSslContext();
         bootstrap.handler(
                 new ChannelInitializer<SocketChannel>() {
 
@@ -93,13 +95,12 @@ public class ConnectionFactory {
      * @throws LogProxyClientException If exception occurs.
      */
     public Connection createConnection(StreamContext context) throws LogProxyClientException {
-        Bootstrap bootstrap = initBootstrap(context.getSslContext());
+        Bootstrap bootstrap = initBootstrap(context);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, ClientConf.CONNECT_TIMEOUT_MS);
         ChannelFuture channelFuture =
                 bootstrap.connect(
                         new InetSocketAddress(
                                 context.getParams().getHost(), context.getParams().getPort()));
-        channelFuture.channel().attr(CONTEXT_KEY).set(context);
         channelFuture.awaitUninterruptibly();
         if (!channelFuture.isDone()) {
             throw new LogProxyClientException(ErrorCode.E_CONNECT, "timeout of create connection!");
