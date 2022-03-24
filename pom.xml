@@ -15,7 +15,7 @@ See the Mulan PSL v2 for more details.
 
   <groupId>com.oceanbase.logclient</groupId>
   <artifactId>logclient</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.3</version>
   <packaging>pom</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -57,7 +57,7 @@ See the Mulan PSL v2 for more details.
     <connection>scm:git:https://github.com/oceanbase/oblogclient.git</connection>
     <developerConnection>scm:git:https://github.com/oceanbase/oblogclient.git</developerConnection>
     <url>https://github.com/oceanbase/oblogclient</url>
-    <tag>HEAD</tag>
+    <tag>logclient-1.0.3</tag>
   </scm>
 
   <properties>
