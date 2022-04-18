@@ -15,7 +15,7 @@ See the Mulan PSL v2 for more details.
 
   <groupId>com.oceanbase.logclient</groupId>
   <artifactId>logclient</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -24,15 +24,30 @@ See the Mulan PSL v2 for more details.
 
   <licenses>
     <license>
-      <name>Mulan Public License，Version 2</name>
+      <name>Mulan Permissive Software License，Version 2</name>
       <url>http://license.coscl.org.cn/MulanPSL2/</url>
     </license>
   </licenses>
 
   <developers>
     <developer>
+      <name>Si Jiang</name>
+      <email>cmbjiangsi5@163.com</email>
+      <url>https://github.com/hitandrun-zz</url>
+      <organization>OceanBase</organization>
+      <timezone>8</timezone>
+    </developer>
+    <developer>
+      <name>Fankux</name>
+      <email>fankux@gmail.com</email>
+      <url>https://github.com/fankux</url>
+      <organization>OceanBase</organization>
+      <timezone>8</timezone>
+    </developer>
+    <developer>
       <name>He Wang</name>
       <email>wanghechn@qq.com</email>
+      <url>https://github.com/whhe</url>
       <organization>OceanBase</organization>
       <timezone>8</timezone>
     </developer>
@@ -55,11 +70,9 @@ See the Mulan PSL v2 for more details.
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <commons-lang.version>3.12.0</commons-lang.version>
-    <commons-collection.version>4.4</commons-collection.version>
     <commons-codec.version>1.15</commons-codec.version>
-    <guava.version>31.0.1-jre</guava.version>
     <netty.version>4.1.68.Final</netty.version>
-    <protobuf.version>3.18.1</protobuf.version>
+    <protobuf.version>3.18.2</protobuf.version>
     <lz4.version>1.8.0</lz4.version>
     <slf4j.version>1.7.32</slf4j.version>
     <logback.version>1.2.10</logback.version>
@@ -80,19 +93,9 @@ See the Mulan PSL v2 for more details.
         <version>${commons-lang.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-collections4</artifactId>
-        <version>${commons-collection.version}</version>
-      </dependency>
-      <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons-codec.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
       </dependency>
 
       <!-- net -->
@@ -120,49 +123,18 @@ See the Mulan PSL v2 for more details.
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>log4j-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-
-      <!-- logback -->
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>slf4j-api</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>slf4j-log4j12</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
 
       <!-- test -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -219,20 +191,6 @@ See the Mulan PSL v2 for more details.
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>0.12</version>
@@ -252,7 +210,7 @@ See the Mulan PSL v2 for more details.
             <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
               <licenseFamilyCategory>MulanPSL2</licenseFamilyCategory>
               <licenseFamilyName>Mulan Public License，Version 2</licenseFamilyName>
-              <notes/>
+              <notes />
               <patterns>
                 <pattern>Mulan PSL v2</pattern>
               </patterns>
@@ -292,8 +250,8 @@ See the Mulan PSL v2 for more details.
               <version>1.7</version>
               <style>AOSP</style>
             </googleJavaFormat>
-            <importOrder/>
-            <removeUnusedImports/>
+            <importOrder />
+            <removeUnusedImports />
           </java>
         </configuration>
         <executions>
@@ -308,5 +266,4 @@ See the Mulan PSL v2 for more details.
       </plugin>
     </plugins>
   </build>
-
 </project>

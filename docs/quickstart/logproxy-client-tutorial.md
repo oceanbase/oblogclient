@@ -47,6 +47,12 @@ If you'd rather like the latest snapshots of the upcoming major version, use our
 </repositories>
 ```
 
+## Workflow
+
+![image](../images/logproxy-client-workflow.png)
+
+When `LogProxyClient.start()` is executed, a new thread will be created in `ClientStream`. The thread will initialize a netty channel which will receive log data from LogProxy and put the data as `TransferPacket` to a BlockingQueue. When the netty connection is established, the thread will poll the queue and pass the `LogMessage` in TransferPacket to `RecordListener.notify`.
+
 ## Usage
 
 ### Basic Usage
@@ -57,7 +63,9 @@ To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 - *cluster_username*: Username for OceanBase, the format is `username@tenant_name#cluster_name` when connecting to [obproxy](https://github.com/oceanbase/obproxy) or `username@tenant_name` when directly connecting to OceanBase server.
 - *cluster_password*: Password for OceanBase when using configured `cluster_username`.
 - *first_start_timestamp*: Start timestamp in seconds, and zero means starting from now.
-- *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`, and `*` indicates any value.
+- *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`, `*` indicates any value, and multiple values can be separated by `|`.
+
+These parameters are used in `liboblog`, you can check the [doc](https://github.com/oceanbase/oceanbase-doc/blob/V3.1.2/zh-CN/9.supporting-tools/4.cdc/2.liboblog/2.liboblog-parameters/2.liboblog-configuration-items.md) for more details.
 
 Here is an example to set ObReaderConfig with a user of sys tenant, and the OceanBase and LogProxy server are on the same machine.
 
@@ -67,7 +75,7 @@ config.setRsList("127.0.0.1:2882:2881");
 config.setUsername("user@sys");
 config.setPassword("pswd");
 config.setStartTimestamp(0L);
-config.setTableWhiteList("sys.*.*");
+config.setTableWhiteList("sys.db1.tb1|sys.db2.*");
 ```
 
 Once ObReaderConfig is set properly, you can use it to instance a LogProxyClient and listen to the log data.
