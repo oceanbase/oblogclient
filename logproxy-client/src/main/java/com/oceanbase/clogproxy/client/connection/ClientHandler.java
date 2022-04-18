@@ -275,9 +275,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             int rawLen = recordData.getRawLen();
             byte[] rawData = recordData.getRecords().toByteArray();
             if (compressType == CompressType.LZ4.code()) {
-                byte[] bytes = new byte[compressedLen];
-                int decompress = fastDecompressor.decompress(rawData, 0, bytes, 0, compressedLen);
-                if (decompress != rawLen) {
+                byte[] bytes = new byte[rawLen];
+                int decompress = fastDecompressor.decompress(rawData, 0, bytes, 0, rawLen);
+                if (decompress != compressedLen) {
                     throw new LogProxyClientException(
                             ErrorCode.E_LEN,
                             "decompressed length ["
