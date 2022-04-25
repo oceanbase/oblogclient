@@ -15,7 +15,7 @@ import static com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.Runti
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.common.packet.HeaderType;
 import com.oceanbase.oms.logmessage.LogMessage;
-import io.netty.handler.ssl.SslContext;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -79,33 +79,29 @@ public class StreamContext {
     }
 
     /** Blocking queue which stores {@link TransferPacket}. */
-    private final BlockingQueue<TransferPacket> recordQueue =
-            new LinkedBlockingQueue<>(ClientConf.TRANSFER_QUEUE_SIZE);
+    private final BlockingQueue<TransferPacket> recordQueue;
 
     /** Client stream. */
     private final ClientStream stream;
 
-    /** Connection params. */
-    ConnectionParams params;
+    /** Client config. */
+    private final ClientConf config;
 
-    /**
-     * Netty ssl context.
-     *
-     * @see SslContext
-     */
-    private final SslContext sslContext;
+    /** Connection params. */
+    private final ConnectionParams params;
 
     /**
      * Constructor of StreamContext.
      *
      * @param stream Client stream.
+     * @param config Client config.
      * @param params Connection params.
-     * @param sslContext Netty ssl context.
      */
-    public StreamContext(ClientStream stream, ConnectionParams params, SslContext sslContext) {
-        this.stream = stream;
-        this.params = params;
-        this.sslContext = sslContext;
+    public StreamContext(ClientStream stream, ClientConf config, ConnectionParams params) {
+        this.stream = Objects.requireNonNull(stream);
+        this.config = Objects.requireNonNull(config);
+        this.params = Objects.requireNonNull(params);
+        this.recordQueue = new LinkedBlockingQueue<>(config.getTransferQueueSize());
     }
 
     /**
@@ -113,17 +109,17 @@ public class StreamContext {
      *
      * @return Connection params.
      */
-    public ConnectionParams getParams() {
+    public ConnectionParams params() {
         return params;
     }
 
     /**
-     * Get netty ssl context.
+     * Get client config.
      *
-     * @return Netty ssl context.
+     * @return Client config.
      */
-    public SslContext getSslContext() {
-        return sslContext;
+    public ClientConf config() {
+        return config;
     }
 
     /**

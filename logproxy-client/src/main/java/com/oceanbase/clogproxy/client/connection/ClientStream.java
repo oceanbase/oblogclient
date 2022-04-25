@@ -16,7 +16,6 @@ import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.clogproxy.client.listener.StatusListener;
-import io.netty.handler.ssl.SslContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +36,7 @@ public class ClientStream {
     private Thread thread = null;
 
     /** Context of stream. */
-    private StreamContext context = null;
+    private StreamContext context;
 
     /** Checkpoint string used to resume writing into the queue. */
     private String checkpointString;
@@ -74,10 +73,10 @@ public class ClientStream {
      * Sole constructor.
      *
      * @param connectionParams Connection params.
-     * @param sslContext A {@link SslContext} for encrypted communication.
+     * @param clientConf Client config.
      */
-    public ClientStream(ConnectionParams connectionParams, SslContext sslContext) {
-        context = new StreamContext(this, connectionParams, sslContext);
+    public ClientStream(ClientConf clientConf, ConnectionParams connectionParams) {
+        this.context = new StreamContext(this, clientConf, connectionParams);
     }
 
     /** Close and wait the connection. */
@@ -132,7 +131,7 @@ public class ClientStream {
     /** Start the process thread. */
     public void start() {
         // if status listener exist, enable monitor
-        context.params.setEnableMonitor(!statusListeners.isEmpty());
+        context.params().setEnableMonitor(!statusListeners.isEmpty());
 
         if (started.compareAndSet(false, true)) {
             thread =
@@ -150,7 +149,8 @@ public class ClientStream {
                                     }
                                     if (state == ReconnectState.RETRY) {
                                         try {
-                                            TimeUnit.SECONDS.sleep(ClientConf.RETRY_INTERVAL_S);
+                                            TimeUnit.SECONDS.sleep(
+                                                    context.config().getRetryIntervalS());
                                         } catch (InterruptedException e) {
                                             // do nothing
                                         }
@@ -163,7 +163,8 @@ public class ClientStream {
                                             packet =
                                                     context.recordQueue()
                                                             .poll(
-                                                                    ClientConf.READ_WAIT_TIME_MS,
+                                                                    context.config()
+                                                                            .getReadWaitTimeMs(),
                                                                     TimeUnit.MILLISECONDS);
                                             break;
                                         } catch (InterruptedException e) {
@@ -241,11 +242,11 @@ public class ClientStream {
             logger.warn("start to reconnect...");
 
             try {
-                if (ClientConf.MAX_RECONNECT_TIMES != -1
-                        && retryTimes >= ClientConf.MAX_RECONNECT_TIMES) {
+                if (context.config().getMaxReconnectTimes() != -1
+                        && retryTimes >= context.config().getMaxReconnectTimes()) {
                     logger.error(
                             "failed to reconnect, exceed max reconnect retry time: {}",
-                            ClientConf.MAX_RECONNECT_TIMES);
+                            context.config().getMaxReconnectTimes());
                     reconnect.set(true);
                     return ReconnectState.EXIT;
                 }
@@ -258,7 +259,7 @@ public class ClientStream {
                 // reconnection.
                 if (StringUtils.isNotEmpty(checkpointString)) {
                     logger.warn("reconnect set checkpoint: {}", checkpointString);
-                    context.getParams().updateCheckpoint(checkpointString);
+                    context.params().updateCheckpoint(checkpointString);
                 }
                 connection = ConnectionFactory.instance().createConnection(context);
                 if (connection != null) {
@@ -271,7 +272,7 @@ public class ClientStream {
                 logger.error(
                         "failed to reconnect, retry count: {}, max: {}",
                         ++retryTimes,
-                        ClientConf.MAX_RECONNECT_TIMES);
+                        context.config().getMaxReconnectTimes());
                 // not success, retry next time
                 reconnect.set(true);
                 return ReconnectState.RETRY;
@@ -280,7 +281,7 @@ public class ClientStream {
                 logger.error(
                         "failed to reconnect, retry count: {}, max: {}, message: {}",
                         ++retryTimes,
-                        ClientConf.MAX_RECONNECT_TIMES,
+                        context.config().getMaxReconnectTimes(),
                         e);
                 // not success, retry next time
                 reconnect.set(true);

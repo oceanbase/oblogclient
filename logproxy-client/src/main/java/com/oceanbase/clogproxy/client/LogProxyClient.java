@@ -17,7 +17,6 @@ import com.oceanbase.clogproxy.client.connection.ClientStream;
 import com.oceanbase.clogproxy.client.connection.ConnectionParams;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.clogproxy.client.listener.StatusListener;
-import com.oceanbase.clogproxy.client.util.ClientIdGenerator;
 import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import io.netty.handler.ssl.SslContext;
@@ -34,10 +33,10 @@ public class LogProxyClient {
      * @param host Log proxy hostname name or ip.
      * @param port Log proxy port.
      * @param config {@link AbstractConnectionConfig} used to create the {@link ClientStream}.
-     * @param sslContext {@link SslContext} to create netty handler.
+     * @param clientConf {@link ClientConf} used to create netty handler.
      */
     public LogProxyClient(
-            String host, int port, AbstractConnectionConfig config, SslContext sslContext) {
+            String host, int port, AbstractConnectionConfig config, ClientConf clientConf) {
         try {
             Validator.notNull(config.getLogType(), "log type cannot be null");
             Validator.notEmpty(host, "server cannot be null");
@@ -48,14 +47,15 @@ public class LogProxyClient {
         if (!config.valid()) {
             throw new IllegalArgumentException("Illegal argument for LogProxyClient");
         }
-        String clientId =
-                ClientConf.USER_DEFINED_CLIENTID.isEmpty()
-                        ? ClientIdGenerator.generate()
-                        : ClientConf.USER_DEFINED_CLIENTID;
+        if (clientConf == null) {
+            clientConf = ClientConf.builder().build();
+        }
+
+        String clientId = clientConf.getClientId();
         ConnectionParams connectionParams =
                 new ConnectionParams(config.getLogType(), clientId, host, port, config);
         connectionParams.setProtocolVersion(ProtocolVersion.V2);
-        this.stream = new ClientStream(connectionParams, sslContext);
+        this.stream = new ClientStream(clientConf, connectionParams);
     }
 
     /**

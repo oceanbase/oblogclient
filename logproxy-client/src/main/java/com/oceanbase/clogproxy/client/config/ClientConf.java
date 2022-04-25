@@ -11,7 +11,9 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.client.config;
 
 
+import com.oceanbase.clogproxy.client.util.ClientIdGenerator;
 import com.oceanbase.clogproxy.common.config.SharedConf;
+import io.netty.handler.ssl.SslContext;
 
 /** The class that defines the constants that are used to generate the connection. */
 public class ClientConf extends SharedConf {
@@ -19,34 +21,183 @@ public class ClientConf extends SharedConf {
     public static final String VERSION = "1.0.1";
 
     /** Queue size for storing records received from log proxy. */
-    public static int TRANSFER_QUEUE_SIZE = 20000;
+    private final int transferQueueSize;
 
     /** Connection timeout in milliseconds. */
-    public static int CONNECT_TIMEOUT_MS = 5000;
+    private final int connectTimeoutMs;
 
     /** Reading queue timeout in milliseconds. */
-    public static int READ_WAIT_TIME_MS = 2000;
+    private final int readWaitTimeMs;
 
     /** Time to sleep in seconds when retrying. */
-    public static int RETRY_INTERVAL_S = 2;
-
-    /**
-     * Maximum number of retries after disconnect, if not data income lasting {@link
-     * #IDLE_TIMEOUT_S}, a reconnection will be triggered.
-     */
-    public static int MAX_RECONNECT_TIMES = -1;
+    private final int retryIntervalS;
 
     /** Idle timeout in seconds for netty handler. */
-    public static int IDLE_TIMEOUT_S = 15;
+    private final int idleTimeoutS;
+
+    /**
+     * Maximum number of retries after disconnect, if not data income lasting {@link #idleTimeoutS},
+     * a reconnection will be triggered.
+     */
+    private final int maxReconnectTimes;
 
     /** Maximum number of reads, after which data will be discarded. */
-    public static int NETTY_DISCARD_AFTER_READS = 16;
+    private final int nettyDiscardAfterReads;
+
     /** User defined client id. */
-    public static String USER_DEFINED_CLIENTID = "";
+    private final String clientId;
 
     /**
      * Ignore unknown or unsupported record type with a warning log instead of throwing an
      * exception.
      */
-    public static boolean IGNORE_UNKNOWN_RECORD_TYPE = false;
+    private final boolean ignoreUnknownRecordType;
+
+    /** Netty ssl context */
+    private final SslContext sslContext;
+
+    private ClientConf(
+            int transferQueueSize,
+            int connectTimeoutMs,
+            int readWaitTimeMs,
+            int retryIntervalS,
+            int maxReconnectTimes,
+            int idleTimeoutS,
+            int nettyDiscardAfterReads,
+            String clientId,
+            boolean ignoreUnknownRecordType,
+            SslContext sslContext) {
+        this.transferQueueSize = transferQueueSize;
+        this.connectTimeoutMs = connectTimeoutMs;
+        this.readWaitTimeMs = readWaitTimeMs;
+        this.retryIntervalS = retryIntervalS;
+        this.maxReconnectTimes = maxReconnectTimes;
+        this.idleTimeoutS = idleTimeoutS;
+        this.nettyDiscardAfterReads = nettyDiscardAfterReads;
+        this.clientId = clientId;
+        this.ignoreUnknownRecordType = ignoreUnknownRecordType;
+        this.sslContext = sslContext;
+    }
+
+    public int getTransferQueueSize() {
+        return transferQueueSize;
+    }
+
+    public int getConnectTimeoutMs() {
+        return connectTimeoutMs;
+    }
+
+    public int getReadWaitTimeMs() {
+        return readWaitTimeMs;
+    }
+
+    public int getRetryIntervalS() {
+        return retryIntervalS;
+    }
+
+    public int getMaxReconnectTimes() {
+        return maxReconnectTimes;
+    }
+
+    public int getIdleTimeoutS() {
+        return idleTimeoutS;
+    }
+
+    public int getNettyDiscardAfterReads() {
+        return nettyDiscardAfterReads;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public boolean isIgnoreUnknownRecordType() {
+        return ignoreUnknownRecordType;
+    }
+
+    public SslContext getSslContext() {
+        return sslContext;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /** ClientConf builder with default values. */
+    public static class Builder {
+        private int transferQueueSize = 20000;
+        private int connectTimeoutMs = 5000;
+        private int readWaitTimeMs = 2000;
+        private int retryIntervalS = 2;
+        private int maxReconnectTimes = -1;
+        private int idleTimeoutS = 15;
+        private int nettyDiscardAfterReads = 16;
+        private String clientId = ClientIdGenerator.generate();
+        private boolean ignoreUnknownRecordType = false;
+        private SslContext sslContext = null;
+
+        public Builder transferQueueSize(int transferQueueSize) {
+            this.transferQueueSize = transferQueueSize;
+            return this;
+        }
+
+        public Builder connectTimeoutMs(int connectTimeoutMs) {
+            this.connectTimeoutMs = connectTimeoutMs;
+            return this;
+        }
+
+        public Builder readWaitTimeMs(int readWaitTimeMs) {
+            this.readWaitTimeMs = readWaitTimeMs;
+            return this;
+        }
+
+        public Builder retryIntervalS(int retryIntervalS) {
+            this.retryIntervalS = retryIntervalS;
+            return this;
+        }
+
+        public Builder maxReconnectTimes(int maxReconnectTimes) {
+            this.maxReconnectTimes = maxReconnectTimes;
+            return this;
+        }
+
+        public Builder idleTimeoutS(int idleTimeoutS) {
+            this.idleTimeoutS = idleTimeoutS;
+            return this;
+        }
+
+        public Builder nettyDiscardAfterReads(int nettyDiscardAfterReads) {
+            this.nettyDiscardAfterReads = nettyDiscardAfterReads;
+            return this;
+        }
+
+        public Builder clientId(String clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public Builder ignoreUnknownRecordType(boolean ignoreUnknownRecordType) {
+            this.ignoreUnknownRecordType = ignoreUnknownRecordType;
+            return this;
+        }
+
+        public Builder sslContext(SslContext sslContext) {
+            this.sslContext = sslContext;
+            return this;
+        }
+
+        public ClientConf build() {
+            return new ClientConf(
+                    transferQueueSize,
+                    connectTimeoutMs,
+                    readWaitTimeMs,
+                    retryIntervalS,
+                    maxReconnectTimes,
+                    idleTimeoutS,
+                    nettyDiscardAfterReads,
+                    clientId,
+                    ignoreUnknownRecordType,
+                    sslContext);
+        }
+    }
 }

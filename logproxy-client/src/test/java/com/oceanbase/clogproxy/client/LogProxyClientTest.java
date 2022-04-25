@@ -11,6 +11,7 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.client;
 
 
+import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.config.ObReaderConfig;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
@@ -68,7 +69,9 @@ public class LogProxyClientTest {
         config.setStartTimestamp(0L);
         config.setTableWhiteList("sys.test.*");
 
-        LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, sslContext());
+        ClientConf clientConf = ClientConf.builder().sslContext(sslContext()).build();
+
+        LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf);
 
         client.addListener(
                 new RecordListener() {
