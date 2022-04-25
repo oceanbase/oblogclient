@@ -11,9 +11,10 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.clogproxy.client.connection;
 
 
-import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
+import com.oceanbase.clogproxy.client.util.NamedThreadFactory;
+import com.oceanbase.clogproxy.client.util.NettyEventLoopUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -70,7 +71,7 @@ public class ConnectionFactory {
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, true);
 
-        SslContext sslContext = context.getSslContext();
+        SslContext sslContext = context.config().getSslContext();
         bootstrap.handler(
                 new ChannelInitializer<SocketChannel>() {
 
@@ -80,7 +81,9 @@ public class ConnectionFactory {
                             ch.pipeline().addFirst(sslContext.newHandler(ch.alloc()));
                         }
                         ch.pipeline()
-                                .addLast(new IdleStateHandler(ClientConf.IDLE_TIMEOUT_S, 0, 0));
+                                .addLast(
+                                        new IdleStateHandler(
+                                                context.config().getIdleTimeoutS(), 0, 0));
                         ch.pipeline().addLast(new ClientHandler());
                     }
                 });
@@ -96,11 +99,12 @@ public class ConnectionFactory {
      */
     public Connection createConnection(StreamContext context) throws LogProxyClientException {
         Bootstrap bootstrap = initBootstrap(context);
-        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, ClientConf.CONNECT_TIMEOUT_MS);
+        bootstrap.option(
+                ChannelOption.CONNECT_TIMEOUT_MILLIS, context.config().getConnectTimeoutMs());
         ChannelFuture channelFuture =
                 bootstrap.connect(
                         new InetSocketAddress(
-                                context.getParams().getHost(), context.getParams().getPort()));
+                                context.params().getHost(), context.params().getPort()));
         channelFuture.awaitUninterruptibly();
         if (!channelFuture.isDone()) {
             throw new LogProxyClientException(ErrorCode.E_CONNECT, "timeout of create connection!");

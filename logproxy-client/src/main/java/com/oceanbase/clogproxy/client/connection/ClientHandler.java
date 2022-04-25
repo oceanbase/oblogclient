@@ -52,6 +52,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     /** A client stream. */
     private ClientStream stream;
 
+    /** Client config. */
+    private ClientConf config;
+
     /** Connection params. */
     private ConnectionParams params;
 
@@ -156,7 +159,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             numReads = 0;
             buffer.release();
             buffer = null;
-        } else if (++numReads >= ClientConf.NETTY_DISCARD_AFTER_READS) {
+        } else if (++numReads >= config.getNettyDiscardAfterReads()) {
             numReads = 0;
             discardSomeReadBytes();
         }
@@ -317,7 +320,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 byte[] data = new byte[dataLength + 8];
                 System.arraycopy(bytes, offset, data, 0, data.length);
                 logMessage.parse(data);
-                if (ClientConf.IGNORE_UNKNOWN_RECORD_TYPE) {
+                if (config.isIgnoreUnknownRecordType()) {
                     // unsupported type, ignore
                     logger.debug("Unsupported record type: {}", logMessage);
                     offset += (8 + dataLength);
@@ -361,7 +364,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
         StreamContext context = ctx.channel().attr(ConnectionFactory.CONTEXT_KEY).get();
         stream = context.stream();
-        params = context.getParams();
+        config = context.config();
+        params = context.params();
         recordQueue = context.recordQueue();
 
         logger.info(
