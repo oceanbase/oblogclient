@@ -18,12 +18,16 @@ import com.oceanbase.clogproxy.common.util.CryptoUtil;
 import com.oceanbase.clogproxy.common.util.Hex;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** This is a configuration class for connection to log proxy. */
 public class ObReaderConfig extends AbstractConnectionConfig {
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
+
+    /** Cluster config url. */
+    private static final ConfigItem<String> CLUSTER_URL = new ConfigItem<>("cluster_url", "");
 
     /** Root server list. */
     private static final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
@@ -37,11 +41,18 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     /** Table whitelist. */
     private static final ConfigItem<String> TABLE_WHITE_LIST =
-            new ConfigItem<>("tb_white_list", "");
+            new ConfigItem<>("tb_white_list", "*.*.*");
+
+    /** Table blacklist. */
+    private static final ConfigItem<String> TABLE_BLACK_LIST =
+            new ConfigItem<>("tb_black_list", "|");
 
     /** Start timestamp. */
     private static final ConfigItem<Long> START_TIMESTAMP =
             new ConfigItem<>("first_start_timestamp", 0L);
+
+    /** Timezone offset. */
+    private static final ConfigItem<String> TIME_ZONE = new ConfigItem<>("timezone", "+8:00");
 
     /** Constructor with empty arguments. */
     public ObReaderConfig() {
@@ -65,7 +76,9 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     @Override
     public boolean valid() {
         try {
-            Validator.notEmpty(RS_LIST.val, "invalid rsList");
+            if (StringUtils.isEmpty(CLUSTER_URL.val) && StringUtils.isEmpty(RS_LIST.val)) {
+                throw new IllegalArgumentException("empty clusterUrl or rsList");
+            }
             Validator.notEmpty(CLUSTER_USER.val, "invalid clusterUser");
             Validator.notEmpty(CLUSTER_PASSWORD.val, "invalid clusterPassword");
             if (START_TIMESTAMP.val < 0L) {
@@ -83,6 +96,11 @@ public class ObReaderConfig extends AbstractConnectionConfig {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, ConfigItem<Object>> entry : configs.entrySet()) {
             String value = entry.getValue().val.toString();
+            // Empty `cluster_url` should be discarded, otherwise the server will
+            // use it as a valid value by mistake.
+            if (CLUSTER_URL.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+                continue;
+            }
             if (CLUSTER_PASSWORD.key.equals(entry.getKey()) && SharedConf.AUTH_PASSWORD_HASH) {
                 value = Hex.str(CryptoUtil.sha1(value));
             }
@@ -106,15 +124,25 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     @Override
     public String toString() {
-        return "rootserver_list="
-                + RS_LIST
-                + ", cluster_user="
-                + CLUSTER_USER
-                + ", cluster_password=******, "
-                + "tb_white_list="
-                + TABLE_WHITE_LIST
-                + ", start_timestamp="
-                + START_TIMESTAMP;
+        return (StringUtils.isNotEmpty(CLUSTER_URL.val))
+                ? ("cluster_url=" + CLUSTER_URL)
+                : ("rootserver_list=" + RS_LIST)
+                        + ", cluster_user="
+                        + CLUSTER_USER
+                        + ", cluster_password=******, "
+                        + "tb_white_list="
+                        + TABLE_WHITE_LIST
+                        + ", start_timestamp="
+                        + START_TIMESTAMP;
+    }
+
+    /**
+     * Set cluster config url.
+     *
+     * @param clusterUrl Cluster config url.
+     */
+    public void setClusterUrl(String clusterUrl) {
+        CLUSTER_URL.set(clusterUrl);
     }
 
     /**
@@ -155,11 +183,29 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     }
 
     /**
+     * Set table blacklist, the format is same with table whitelist.
+     *
+     * @param tableBlackList Table blacklist.
+     */
+    public void setTableBlackList(String tableBlackList) {
+        TABLE_BLACK_LIST.set(tableBlackList);
+    }
+
+    /**
      * Set start timestamp, zero means from now on.
      *
      * @param startTimestamp Start timestamp.
      */
     public void setStartTimestamp(Long startTimestamp) {
         START_TIMESTAMP.set(startTimestamp);
+    }
+
+    /**
+     * Set the timezone which is used to convert timestamp column.
+     *
+     * @param timezone Timezone offset from UTC, the value is `+8:00` by default.
+     */
+    public void setTimezone(String timezone) {
+        TIME_ZONE.set(timezone);
     }
 }

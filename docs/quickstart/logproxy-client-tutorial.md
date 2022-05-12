@@ -59,13 +59,16 @@ When `LogProxyClient.start()` is executed, a new thread will be created in `Clie
 
 To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 
-- *rootserver_list*: Root server list of OceanBase cluster in format `ip1:rpc_port1:sql_port1;ip2:rpc_port2:sql_port2`, IP address here must be able to be resolved by LogProxy.
+- *cluster_url*: Cluster config url used to set up the OBConfig service. Required for OceanBase Enterprise Edition.
+- *rootserver_list*: Root server list of OceanBase cluster in format `ip1:rpc_port1:sql_port1;ip2:rpc_port2:sql_port2`, IP address here must be able to be resolved by LogProxy. Required for OceanBase Community Edition.
 - *cluster_username*: Username for OceanBase, the format is `username@tenant_name#cluster_name` when connecting to [obproxy](https://github.com/oceanbase/obproxy) or `username@tenant_name` when directly connecting to OceanBase server.
 - *cluster_password*: Password for OceanBase when using configured `cluster_username`.
-- *first_start_timestamp*: Start timestamp in seconds, and zero means starting from now.
-- *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`, `*` indicates any value, and multiple values can be separated by `|`.
+- *first_start_timestamp*: Start timestamp in seconds, and zero means starting from now. Default is `0`.
+- *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`, `*` indicates any value, and multiple values can be separated by `|`. Default is `*.*.*`.
+- *tb_black_list*: Table blacklist in the same format with whitelist. Default is `|`.
+- *timezone*: Timezone offset from UTC. Default value is `+8:00`.
 
-These parameters are used in `liboblog`, you can check the [doc](https://github.com/oceanbase/oceanbase-doc/blob/V3.1.2/zh-CN/9.supporting-tools/4.cdc/2.liboblog/2.liboblog-parameters/2.liboblog-configuration-items.md) for more details.
+These parameters are used in `obcdc` (former `liboblog`), and the items not listed above can be passed to `obcdc` through the `ObReaderConfig` constructor with parameters.
 
 Here is an example to set ObReaderConfig with a user of sys tenant, and the OceanBase and LogProxy server are on the same machine.
 
