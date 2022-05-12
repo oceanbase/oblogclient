@@ -43,9 +43,16 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     private static final ConfigItem<String> TABLE_WHITE_LIST =
             new ConfigItem<>("tb_white_list", "");
 
+    /** Table blacklist. */
+    private static final ConfigItem<String> TABLE_BLACK_LIST =
+            new ConfigItem<>("tb_black_list", "|");
+
     /** Start timestamp. */
     private static final ConfigItem<Long> START_TIMESTAMP =
             new ConfigItem<>("first_start_timestamp", 0L);
+
+    /** Timezone offset. */
+    private static final ConfigItem<String> TIME_ZONE = new ConfigItem<>("timezone", "+8:00");
 
     /** Constructor with empty arguments. */
     public ObReaderConfig() {
@@ -176,11 +183,29 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     }
 
     /**
+     * Set table blacklist, the format is same with table whitelist.
+     *
+     * @param tableBlackList Table blacklist.
+     */
+    public void setTableBlackList(String tableBlackList) {
+        TABLE_BLACK_LIST.set(tableBlackList);
+    }
+
+    /**
      * Set start timestamp, zero means from now on.
      *
      * @param startTimestamp Start timestamp.
      */
     public void setStartTimestamp(Long startTimestamp) {
         START_TIMESTAMP.set(startTimestamp);
+    }
+
+    /**
+     * Set the timezone which is used to convert timestamp column.
+     *
+     * @param timezone Timezone offset from UTC, the value is `+8:00` by default.
+     */
+    public void setTimezone(String timezone) {
+        TIME_ZONE.set(timezone);
     }
 }
