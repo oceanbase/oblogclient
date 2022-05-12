@@ -68,7 +68,7 @@ To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 - *tb_black_list*: Table blacklist in the same format with whitelist. Default is `|`.
 - *timezone*: Timezone offset from UTC. Default value is `+8:00`.
 
-These parameters are used in `liboblog`, you can check the [doc](https://github.com/oceanbase/oceanbase-doc/blob/V3.1.2/zh-CN/9.supporting-tools/4.cdc/2.liboblog/2.liboblog-parameters/2.liboblog-configuration-items.md) for more details.
+These parameters are used in `obcdc` (former `liboblog`), and the items not listed above can be passed to `obcdc` through the `ObReaderConfig` constructor with parameters.
 
 Here is an example to set ObReaderConfig with a user of sys tenant, and the OceanBase and LogProxy server are on the same machine.
 
