@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 public class ObReaderConfig extends AbstractConnectionConfig {
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
 
+    /** Cluster config url. */
     private static final ConfigItem<String> CLUSTER_URL = new ConfigItem<>("cluster_url", "");
 
     /** Root server list. */

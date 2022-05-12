@@ -59,7 +59,8 @@ When `LogProxyClient.start()` is executed, a new thread will be created in `Clie
 
 To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 
-- *rootserver_list*: Root server list of OceanBase cluster in format `ip1:rpc_port1:sql_port1;ip2:rpc_port2:sql_port2`, IP address here must be able to be resolved by LogProxy.
+- *cluster_url*: Cluster config url used to set up the OBConfig service. Required for OceanBase Enterprise Edition.
+- *rootserver_list*: Root server list of OceanBase cluster in format `ip1:rpc_port1:sql_port1;ip2:rpc_port2:sql_port2`, IP address here must be able to be resolved by LogProxy. Required for OceanBase Community Edition.
 - *cluster_username*: Username for OceanBase, the format is `username@tenant_name#cluster_name` when connecting to [obproxy](https://github.com/oceanbase/obproxy) or `username@tenant_name` when directly connecting to OceanBase server.
 - *cluster_password*: Password for OceanBase when using configured `cluster_username`.
 - *first_start_timestamp*: Start timestamp in seconds, and zero means starting from now.
