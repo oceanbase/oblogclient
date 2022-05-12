@@ -41,7 +41,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     /** Table whitelist. */
     private static final ConfigItem<String> TABLE_WHITE_LIST =
-            new ConfigItem<>("tb_white_list", "");
+            new ConfigItem<>("tb_white_list", "*.*.*");
 
     /** Table blacklist. */
     private static final ConfigItem<String> TABLE_BLACK_LIST =
