@@ -132,8 +132,12 @@ public class ObReaderConfig extends AbstractConnectionConfig {
                         + ", cluster_password=******, "
                         + "tb_white_list="
                         + TABLE_WHITE_LIST
+                        + ", tb_black_list="
+                        + TABLE_BLACK_LIST
                         + ", start_timestamp="
-                        + START_TIMESTAMP;
+                        + START_TIMESTAMP
+                        + ", timezone="
+                        + TIME_ZONE;
     }
 
     /**

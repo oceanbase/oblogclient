@@ -941,7 +941,7 @@ public class LogMessage extends DataMessage.Record {
                 }
                 int j = keyStr.indexOf(')', i);
                 if (j == -1) {
-                    log.error("parse key error");
+                    log.error("Parse key error");
                     return null;
                 }
                 m = j;
@@ -1040,7 +1040,7 @@ public class LogMessage extends DataMessage.Record {
                     }
             }
         } catch (Exception e) {
-            log.error("", e);
+            throw new LogMessageException(e.getMessage(), e.getCause());
         }
         return keysValue;
     }
@@ -1077,7 +1077,7 @@ public class LogMessage extends DataMessage.Record {
             }
             return primaryValues;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new LogMessageException(e.getMessage(), e.getCause());
         }
     }
 

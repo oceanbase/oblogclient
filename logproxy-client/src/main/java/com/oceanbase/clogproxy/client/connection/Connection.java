@@ -41,7 +41,7 @@ public class Connection {
     /** Close this connection. */
     public void close() {
         if (!closed.compareAndSet(false, true)) {
-            logger.warn("connection already closed");
+            logger.warn("Connection already closed");
         }
         if (channel != null) {
             if (channel.isActive()) {
@@ -49,7 +49,7 @@ public class Connection {
                     channel.close().addListener(this::logCloseResult).syncUninterruptibly();
                 } catch (Exception e) {
                     logger.warn(
-                            "close connection to remote address {} exception",
+                            "Close connection to remote address {} exception",
                             NetworkUtil.parseRemoteAddress(channel),
                             e);
                 }
@@ -68,12 +68,12 @@ public class Connection {
         if (future.isSuccess()) {
             if (logger.isInfoEnabled()) {
                 logger.info(
-                        "close connection to remote address {} success",
+                        "Close connection to remote address {} success",
                         NetworkUtil.parseRemoteAddress(channel));
             }
         } else {
             logger.warn(
-                    "close connection to remote address {} fail",
+                    "Close connection to remote address {} fail",
                     NetworkUtil.parseRemoteAddress(channel),
                     future.cause());
         }

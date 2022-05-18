@@ -226,7 +226,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             byte[] bytes = new byte[dataLength];
             buffer.readBytes(bytes);
             LogProxyProto.RuntimeStatus response = LogProxyProto.RuntimeStatus.parseFrom(bytes);
-            logger.debug("server status: {}", response.toString());
+            logger.debug("Server status: {}", response.toString());
             state = HandshakeStateV1.PB_HEAD;
         } else {
             dataNotEnough = true;
@@ -252,18 +252,18 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
      */
     private void checkHeader(int version, int type, int length) {
         if (ProtocolVersion.codeOf(version) == null) {
-            logger.error("unsupported protocol version: {}", version);
+            logger.error("Unsupported protocol version: {}", version);
             throw new LogProxyClientException(
-                    ErrorCode.E_PROTOCOL, "unsupported protocol version: " + version);
+                    ErrorCode.E_PROTOCOL, "Unsupported protocol version: " + version);
         }
         if (HeaderType.codeOf(type) == null) {
-            logger.error("unsupported header type: {}", type);
+            logger.error("Unsupported header type: {}", type);
             throw new LogProxyClientException(
-                    ErrorCode.E_HEADER_TYPE, "unsupported header type: " + type);
+                    ErrorCode.E_HEADER_TYPE, "Unsupported header type: " + type);
         }
         if (length <= 0) {
-            logger.error("data length equals 0");
-            throw new LogProxyClientException(ErrorCode.E_LEN, "data length equals 0");
+            logger.error("Data length equals 0");
+            throw new LogProxyClientException(ErrorCode.E_LEN, "Data length equals 0");
         }
     }
 
@@ -452,8 +452,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         poolFlag = false;
 
         logger.info(
-                "Connect broken of ClientId: {} with LogProxy: {}",
-                params.info(),
+                "Channel closed with ClientId: {}, LogProxy: {}",
+                params.getClientId(),
                 NetworkUtil.parseRemoteAddress(ctx.channel()));
         ctx.channel().disconnect();
         ctx.close();
