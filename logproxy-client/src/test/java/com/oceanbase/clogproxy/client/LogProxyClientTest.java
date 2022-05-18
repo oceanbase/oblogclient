@@ -50,10 +50,7 @@ public class LogProxyClientTest {
 
                     @Override
                     public void onException(LogProxyClientException e) {
-                        if (e.needStop()) {
-                            logger.error(e.getMessage());
-                            client.stop();
-                        }
+                        logger.error(e.getMessage());
                     }
                 });
         client.start();
@@ -83,10 +80,7 @@ public class LogProxyClientTest {
 
                     @Override
                     public void onException(LogProxyClientException e) {
-                        if (e.needStop()) {
-                            logger.error(e.getMessage());
-                            client.stop();
-                        }
+                        logger.error(e.getMessage());
                     }
                 });
         client.start();
