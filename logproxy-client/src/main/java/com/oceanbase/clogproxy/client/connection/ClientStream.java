@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +30,17 @@ import org.slf4j.LoggerFactory;
 public class ClientStream {
     private static final Logger logger = LoggerFactory.getLogger(ClientStream.class);
 
-    /** Context of stream. */
-    private final StreamContext context;
-
     /** Flag of whether the stream is started. */
     private final AtomicBoolean started = new AtomicBoolean(false);
 
     /** The process thread. */
     private Thread thread = null;
+
+    /** Context of stream. */
+    private final StreamContext context;
+
+    /** Checkpoint string used to resume writing into the queue. */
+    private String checkpointString;
 
     /** Number of reconnections */
     private int retryTimes = 0;
@@ -228,21 +232,26 @@ public class ClientStream {
         if (reconnect.compareAndSet(true, false)) {
             logger.info("Try to reconnect");
 
-            // return when the limit of reconnect times id reached
-            if (context.config().getMaxReconnectTimes() != -1
-                    && retryTimes >= context.config().getMaxReconnectTimes()) {
-                logger.error(
-                        "Failed to reconnect, exceed max reconnect retry time: {}",
-                        context.config().getMaxReconnectTimes());
-                return ReconnectState.EXIT;
-            }
-
-            if (connection != null) {
-                connection.close();
-                connection = null;
-            }
-
             try {
+                if (context.config().getMaxReconnectTimes() != -1
+                        && retryTimes >= context.config().getMaxReconnectTimes()) {
+                    logger.error(
+                            "Failed to reconnect, exceed max reconnect retry time: {}",
+                            context.config().getMaxReconnectTimes());
+                    return ReconnectState.EXIT;
+                }
+
+                if (connection != null) {
+                    connection.close();
+                    connection = null;
+                }
+                // when stopped, context.recordQueue may not empty, just use checkpointString to do
+                // reconnection.
+                if (StringUtils.isNotEmpty(checkpointString)) {
+                    logger.warn("reconnect set checkpoint: {}", checkpointString);
+                    context.params().updateCheckpoint(checkpointString);
+                }
+
                 connection = ConnectionFactory.instance().createConnection(context);
                 if (connection != null) {
                     logger.info("Reconnect successfully");
