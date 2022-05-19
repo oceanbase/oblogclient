@@ -334,6 +334,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             while (true) {
                 try {
                     recordQueue.put(new StreamContext.TransferPacket(logMessage));
+                    stream.setCheckpointString(logMessage.getTimestamp());
                     break;
                 } catch (InterruptedException e) {
                     // do nothing

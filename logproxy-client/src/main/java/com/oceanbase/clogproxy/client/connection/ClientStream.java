@@ -303,6 +303,15 @@ public class ClientStream {
     }
 
     /**
+     * Set checkpoint string.
+     *
+     * @param checkpointString Checkpoint string.
+     */
+    public void setCheckpointString(String checkpointString) {
+        this.checkpointString = checkpointString;
+    }
+
+    /**
      * Add a {@link RecordListener} to {@link #listeners}.
      *
      * @param recordListener A {@link RecordListener}.
