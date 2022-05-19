@@ -1040,7 +1040,7 @@ public class LogMessage extends DataMessage.Record {
                     }
             }
         } catch (Exception e) {
-            throw new LogMessageException(e.getMessage(), e.getCause());
+            log.error("", e);
         }
         return keysValue;
     }
