@@ -47,12 +47,6 @@ If you'd rather like the latest snapshots of the upcoming major version, use our
 </repositories>
 ```
 
-## Workflow
-
-![image](../images/logproxy-client-workflow.png)
-
-When `LogProxyClient.start()` is executed, a new thread will be created in `ClientStream`. The thread will initialize a netty channel which will receive log data from LogProxy and put the data as `TransferPacket` to a BlockingQueue. When the netty connection is established, the thread will poll the queue and pass the `LogMessage` in TransferPacket to `RecordListener.notify`.
-
 ## Usage
 
 ### Basic Usage
@@ -70,18 +64,34 @@ To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 
 These parameters are used in `obcdc` (former `liboblog`), and the items not listed above can be passed to `obcdc` through the `ObReaderConfig` constructor with parameters.
 
-Here is an example to set ObReaderConfig with a user of sys tenant, and the OceanBase and LogProxy server are on the same machine.
+Here is an example to set `ObReaderConfig` with OceanBase Community Edition:
+
+```java
+// obcdc params that are not listed above can be passed through the constructor
+Map<String, String> extraConfigs = new HashMap<>();
+extraConfigs.put("working_mode", "storage");
+
+// set 'rootserver_list' and other params
+ObReaderConfig config = new ObReaderConfig(extraConfigs);
+config.setRsList("127.0.0.1:2882:2881");
+config.setUsername("username");
+config.setPassword("password");
+config.setStartTimestamp(0L);
+config.setTableWhiteList("tenant.*.*");
+```
+
+If you want to work with OceanBase Enterprise Edition, you can set the `ObReaderConfig` with `cluster_url` like below:
 
 ```java
 ObReaderConfig config = new ObReaderConfig();
-config.setRsList("127.0.0.1:2882:2881");
-config.setUsername("user@sys");
-config.setPassword("pswd");
+config.setClusterUrl("http://127.0.0.1:8080/services?Action=ObRootServiceInfo&User_ID=alibaba&UID=ocpmaster&ObRegion=tenant");
+config.setUsername("username");
+config.setPassword("password");
 config.setStartTimestamp(0L);
-config.setTableWhiteList("sys.db1.tb1|sys.db2.*");
+config.setTableWhiteList("tenant.*.*");
 ```
 
-Once ObReaderConfig is set properly, you can use it to instance a LogProxyClient and listen to the log data.
+Once ObReaderConfig is set properly, you can use it to instance a LogProxyClient and monitor the log data.
 
 ```java
 LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config);
@@ -96,10 +106,7 @@ client.addListener(new RecordListener() {
 
     @Override
     public void onException(LogProxyClientException e) {
-        if (e.needStop()) {
-            // add error hander here
-            client.stop();
-        }
+        logger.error(e.getMessage());
     }
 });
 
@@ -109,7 +116,25 @@ client.join();
 
 The method `LogProxyClient.start()` will start a new thread which serving with a netty socket to receive data from LogProxy.
 
-For details about `LogMessage`, see [LogMessage](../formats/logmessage.md).
+There are also some configurations for the client in `ClientConf`, if you don't want to use its default values, you can customize a `ClientConf` and pass it to the corresponding constructor to create the client instance.
+
+```java
+ClientConf clientConf =
+        ClientConf.builder()
+                .clientId("myClientId")
+                .transferQueueSize(1024)
+                .connectTimeoutMs(1000)
+                .readWaitTimeMs(1000)
+                .retryIntervalS(1)
+                .maxReconnectTimes(10)
+                .idleTimeoutS(10)
+                .nettyDiscardAfterReads(1)
+                .ignoreUnknownRecordType(true)
+                .build();
+LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf);
+```
+
+The received log records are parsed to `LogMessage` in the client handler, you can see [LogMessage doc](../formats/logmessage.md) for more details.
 
 ### SSL Encryption
 
@@ -123,7 +148,8 @@ SslContext sslContext = SslContextBuilder.forClient()
             this.getClass().getClassLoader().getResourceAsStream("client.crt"),
             this.getClass().getClassLoader().getResourceAsStream("client.key"))
         .build();
-LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, sslContext);
+ClientConf clientConf = ClientConf.builder().sslContext(sslContext).build();
+LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf);
 ```
 
 Here you need provide following files:
