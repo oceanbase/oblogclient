@@ -159,6 +159,22 @@ Here you need provide following files:
 
 See [manual](https://github.com/oceanbase/oblogproxy/blob/master/docs/manual.md) of LogProxy for more details about SSL encryption.
 
+## Version Compatibility
+
+The communication protocol between the `logproxy-client` and `oblogproxy` is forward compatible, and the latest version of `logproxy-client` can work with any version of `oblogproxy`. But for legacy versions, there are some restrictions in functionality.
+
+#### OceanBase Enterprise Edition
+
+To monitor change data from OceanBase EE, you need to configure `cluster_url` to replace the `rootserver_list` parameter for `obcdc`, which is supported from `1.0.4` of the client.
+
+#### Record Compression
+
+The log proxy compresses the record data by default from `1.0.1`, and the client fixed the bug in decompression process with [#33](https://github.com/oceanbase/oblogclient/pull/33) from `1.0.4`. So if you want to work with log proxy `1.0.1` or later version, you should use `1.0.4` or later version of the client.
+
+#### Reuse Client Id
+
+The log proxy use `clientId` to identify a connection, and reuse it will make the log proxy reduce the use of hardware resources. In legacy versions of the client, there is a bug [#38](https://github.com/oceanbase/oblogclient/issues/38) which will cause connection close failure, and it's fixed in `1.0.4`. So you can only reuse a fixed `clientId` from `1.0.4` of the client.
+
 ## Heartbeat and Troubleshooting
 
 Once the connection is established properly, LogProxy will start to fetch log messages from OceanBase and send them to LogProxyClient. When the connection is idle, LogProxy will send heartbeat messages to LogProxyClient.
