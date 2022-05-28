@@ -8,18 +8,7 @@ Getting Started
 
 ### Work with LogProxy
 
-#### Use LogProxyClient
-
 You can use `logproxy-client` with [oblogproxy](https://github.com/oceanbase/oblogproxy) to get the commit log of OceanBase cluster, see the [tutorial](docs/quickstart/logproxy-client-tutorial.md) for more details.
-
-#### Version Compatibility
-
-`oblogproxy` compresses the record data from `1.0.1`, and `logproxy-client` fixed the decompression process with [#33](https://github.com/oceanbase/oblogclient/pull/33) from `1.0.4`, so there is a version compatibility as follows:
-
-|   `oblogproxy`   | `logproxy-client` |
-|:----------------:|:-----------------:|
-|     `1.0.0`      | `1.0.0` - `1.0.3` |
-| `1.0.1` or later | `1.0.4` or later  |
 
 ### Connect to OceanBase Directly
 
