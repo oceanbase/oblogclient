@@ -24,35 +24,34 @@ import org.slf4j.LoggerFactory;
 
 /** This is a configuration class for connection to log proxy. */
 public class ObReaderConfig extends AbstractConnectionConfig {
+
+    private static final long serialVersionUID = 1L;
+
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
 
     /** Cluster config url. */
-    private static final ConfigItem<String> CLUSTER_URL = new ConfigItem<>("cluster_url", "");
+    private final ConfigItem<String> CLUSTER_URL = new ConfigItem<>("cluster_url", "");
 
     /** Root server list. */
-    private static final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
+    private final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
 
     /** Cluster username. */
-    private static final ConfigItem<String> CLUSTER_USER = new ConfigItem<>("cluster_user", "");
+    private final ConfigItem<String> CLUSTER_USER = new ConfigItem<>("cluster_user", "");
 
     /** Cluster password. */
-    private static final ConfigItem<String> CLUSTER_PASSWORD =
-            new ConfigItem<>("cluster_password", "");
+    private final ConfigItem<String> CLUSTER_PASSWORD = new ConfigItem<>("cluster_password", "");
 
     /** Table whitelist. */
-    private static final ConfigItem<String> TABLE_WHITE_LIST =
-            new ConfigItem<>("tb_white_list", "*.*.*");
+    private final ConfigItem<String> TABLE_WHITE_LIST = new ConfigItem<>("tb_white_list", "*.*.*");
 
     /** Table blacklist. */
-    private static final ConfigItem<String> TABLE_BLACK_LIST =
-            new ConfigItem<>("tb_black_list", "|");
+    private final ConfigItem<String> TABLE_BLACK_LIST = new ConfigItem<>("tb_black_list", "|");
 
     /** Start timestamp. */
-    private static final ConfigItem<Long> START_TIMESTAMP =
-            new ConfigItem<>("first_start_timestamp", 0L);
+    private final ConfigItem<Long> START_TIMESTAMP = new ConfigItem<>("first_start_timestamp", 0L);
 
     /** Timezone offset. */
-    private static final ConfigItem<String> TIME_ZONE = new ConfigItem<>("timezone", "+8:00");
+    private final ConfigItem<String> TIME_ZONE = new ConfigItem<>("timezone", "+8:00");
 
     /** Constructor with empty arguments. */
     public ObReaderConfig() {
@@ -111,6 +110,27 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             sb.append(entry.getKey()).append("=").append(entry.getValue()).append(" ");
         }
         return sb.toString();
+    }
+
+    @Override
+    public Map<String, String> generateConfigurationMap(boolean encrypt_password) {
+        Map<String, String> result = new HashMap<>();
+        for (Map.Entry<String, ConfigItem<Object>> entry : configs.entrySet()) {
+            String value = entry.getValue().val.toString();
+            // Empty `cluster_url` should be discarded, otherwise the server will
+            // use it as a valid value by mistake.
+            if (CLUSTER_URL.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+                continue;
+            }
+            if (encrypt_password
+                    && CLUSTER_PASSWORD.key.equals(entry.getKey())
+                    && SharedConf.AUTH_PASSWORD_HASH) {
+                value = Hex.str(CryptoUtil.sha1(value));
+            }
+            result.put(entry.getKey(), value);
+        }
+        result.putAll(extraConfigs);
+        return result;
     }
 
     @Override

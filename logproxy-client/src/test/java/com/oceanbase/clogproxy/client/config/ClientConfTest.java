@@ -13,13 +13,19 @@
 package com.oceanbase.clogproxy.client.config;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ClientConfTest {
 
     @Test
-    public void builderTest() {
+    public void testBuilderDefaultValues() {
         ClientConf clientConf = ClientConf.builder().build();
         Assert.assertEquals(clientConf.getTransferQueueSize(), 20000);
         Assert.assertEquals(clientConf.getConnectTimeoutMs(), 5000);
@@ -31,5 +37,22 @@ public class ClientConfTest {
         Assert.assertNotNull(clientConf.getClientId());
         Assert.assertFalse(clientConf.isIgnoreUnknownRecordType());
         Assert.assertNull(clientConf.getSslContext());
+    }
+
+    @Test
+    public void testSerialization() throws IOException, ClassNotFoundException {
+        ClientConf clientConf = ClientConf.builder().build();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
+        outputStream.writeObject(clientConf);
+        outputStream.flush();
+        outputStream.close();
+        ObjectInputStream inputStream =
+                new ObjectInputStream(
+                        new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+        Object object = inputStream.readObject();
+        Assert.assertTrue(object instanceof ClientConf);
+        Assert.assertTrue(EqualsBuilder.reflectionEquals(object, clientConf));
     }
 }
