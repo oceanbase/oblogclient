@@ -54,8 +54,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     private final ConfigItem<String> TIME_ZONE = new ConfigItem<>("timezone", "+8:00");
 
     /** Working mode. */
-    private static final ConfigItem<String> WORKING_MODE =
-            new ConfigItem<>("working_mode", "storage");
+    private final ConfigItem<String> WORKING_MODE = new ConfigItem<>("working_mode", "storage");
 
     /** Constructor with empty arguments. */
     public ObReaderConfig() {

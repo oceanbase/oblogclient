@@ -13,8 +13,11 @@
 package com.oceanbase.clogproxy.client.config;
 
 
-import java.io.*;
-import java.util.Collections;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,8 +25,7 @@ import org.junit.Test;
 public class ObReaderConfigTest {
 
     private static ObReaderConfig generateTestConfig() {
-        ObReaderConfig config =
-                new ObReaderConfig(Collections.singletonMap("working_mode", "storage"));
+        ObReaderConfig config = new ObReaderConfig();
         config.setRsList("127.0.0.1:2882:2881");
         config.setUsername("root@test_tenant");
         config.setPassword("password");
@@ -31,6 +33,7 @@ public class ObReaderConfigTest {
         config.setTableWhiteList("test_tenant.test.*");
         config.setTableBlackList("|");
         config.setTimezone("+8:00");
+        config.setWorkingMode("storage");
         return config;
     }
 
