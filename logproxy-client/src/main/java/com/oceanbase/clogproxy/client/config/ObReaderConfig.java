@@ -54,6 +54,10 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     /** Timezone offset. */
     private static final ConfigItem<String> TIME_ZONE = new ConfigItem<>("timezone", "+8:00");
 
+    /** Working mode. */
+    private static final ConfigItem<String> WORKING_MODE =
+            new ConfigItem<>("working_mode", "storage");
+
     /** Constructor with empty arguments. */
     public ObReaderConfig() {
         super(new HashMap<>());
@@ -211,5 +215,14 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      */
     public void setTimezone(String timezone) {
         TIME_ZONE.set(timezone);
+    }
+
+    /**
+     * Set working mode.
+     *
+     * @param workingMode Working mode, can be 'memory' or 'storage'.
+     */
+    public void setWorkingMode(String workingMode) {
+        WORKING_MODE.set(workingMode);
     }
 }
