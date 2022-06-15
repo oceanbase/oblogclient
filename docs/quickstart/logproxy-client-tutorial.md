@@ -61,7 +61,7 @@ To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 - *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`, `*` indicates any value, and multiple values can be separated by `|`. Default is `*.*.*`.
 - *tb_black_list*: Table blacklist in the same format with whitelist. Default is `|`.
 - *timezone*: Timezone offset from UTC. Default value is `+8:00`.
-- *working_mode*: Working mode. Can be `storage` (default) or `memory`.
+- *working_mode*: Working mode. Can be `storage` (default value, supported from `obcdc` 3.1.3) or `memory`.
 
 These parameters are used in `obcdc` (former `liboblog`), and the items not listed above can be passed to `obcdc` through the `ObReaderConfig` constructor with parameters.
 
