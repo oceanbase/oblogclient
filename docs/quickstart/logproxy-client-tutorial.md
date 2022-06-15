@@ -61,18 +61,14 @@ To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 - *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`, `*` indicates any value, and multiple values can be separated by `|`. Default is `*.*.*`.
 - *tb_black_list*: Table blacklist in the same format with whitelist. Default is `|`.
 - *timezone*: Timezone offset from UTC. Default value is `+8:00`.
+- *working_mode*: Working mode. Can be `storage` (default value, supported from `obcdc` 3.1.3) or `memory`.
 
 These parameters are used in `obcdc` (former `liboblog`), and the items not listed above can be passed to `obcdc` through the `ObReaderConfig` constructor with parameters.
 
 Here is an example to set `ObReaderConfig` with OceanBase Community Edition:
 
 ```java
-// obcdc params that are not listed above can be passed through the constructor
-Map<String, String> extraConfigs = new HashMap<>();
-extraConfigs.put("working_mode", "storage");
-
-// set 'rootserver_list' and other params
-ObReaderConfig config = new ObReaderConfig(extraConfigs);
+ObReaderConfig config = new ObReaderConfig();
 config.setRsList("127.0.0.1:2882:2881");
 config.setUsername("username");
 config.setPassword("password");
