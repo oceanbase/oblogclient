@@ -77,11 +77,11 @@ public abstract class AbstractConnectionConfig implements ConnectionConfig {
     }
 
     /**
-     * Sole constructor.
+     * Set configs.
      *
      * @param allConfigs The map of configurations.
      */
-    public AbstractConnectionConfig(Map<String, String> allConfigs) {
+    public void setConfigs(Map<String, String> allConfigs) {
         if (allConfigs != null) {
             for (Entry<String, String> entry : allConfigs.entrySet()) {
                 if (!configs.containsKey(entry.getKey())) {

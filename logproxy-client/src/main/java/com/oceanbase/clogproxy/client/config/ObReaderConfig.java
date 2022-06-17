@@ -30,36 +30,34 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
 
     /** Cluster config url. */
-    private final ConfigItem<String> CLUSTER_URL = new ConfigItem<>("cluster_url", "");
+    private final ConfigItem<String> clusterUrl = new ConfigItem<>("cluster_url", "");
 
     /** Root server list. */
-    private final ConfigItem<String> RS_LIST = new ConfigItem<>("rootserver_list", "");
+    private final ConfigItem<String> rsList = new ConfigItem<>("rootserver_list", "");
 
     /** Cluster username. */
-    private final ConfigItem<String> CLUSTER_USER = new ConfigItem<>("cluster_user", "");
+    private final ConfigItem<String> clusterUser = new ConfigItem<>("cluster_user", "");
 
     /** Cluster password. */
-    private final ConfigItem<String> CLUSTER_PASSWORD = new ConfigItem<>("cluster_password", "");
+    private final ConfigItem<String> clusterPassword = new ConfigItem<>("cluster_password", "");
 
     /** Table whitelist. */
-    private final ConfigItem<String> TABLE_WHITE_LIST = new ConfigItem<>("tb_white_list", "*.*.*");
+    private final ConfigItem<String> tableWhitelist = new ConfigItem<>("tb_white_list", "*.*.*");
 
     /** Table blacklist. */
-    private final ConfigItem<String> TABLE_BLACK_LIST = new ConfigItem<>("tb_black_list", "|");
+    private final ConfigItem<String> tableBlacklist = new ConfigItem<>("tb_black_list", "|");
 
     /** Start timestamp. */
-    private final ConfigItem<Long> START_TIMESTAMP = new ConfigItem<>("first_start_timestamp", 0L);
+    private final ConfigItem<Long> startTimestamp = new ConfigItem<>("first_start_timestamp", 0L);
 
     /** Timezone offset. */
-    private final ConfigItem<String> TIME_ZONE = new ConfigItem<>("timezone", "+8:00");
+    private final ConfigItem<String> timezone = new ConfigItem<>("timezone", "+8:00");
 
     /** Working mode. */
-    private final ConfigItem<String> WORKING_MODE = new ConfigItem<>("working_mode", "storage");
+    private final ConfigItem<String> workingMode = new ConfigItem<>("working_mode", "storage");
 
     /** Constructor with empty arguments. */
-    public ObReaderConfig() {
-        super(new HashMap<>());
-    }
+    public ObReaderConfig() {}
 
     /**
      * Constructor with a config map.
@@ -67,7 +65,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param allConfigs Config map.
      */
     public ObReaderConfig(Map<String, String> allConfigs) {
-        super(allConfigs);
+        setConfigs(allConfigs);
     }
 
     @Override
@@ -78,12 +76,12 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     @Override
     public boolean valid() {
         try {
-            if (StringUtils.isEmpty(CLUSTER_URL.val) && StringUtils.isEmpty(RS_LIST.val)) {
+            if (StringUtils.isEmpty(clusterUrl.val) && StringUtils.isEmpty(rsList.val)) {
                 throw new IllegalArgumentException("empty clusterUrl or rsList");
             }
-            Validator.notEmpty(CLUSTER_USER.val, "invalid clusterUser");
-            Validator.notEmpty(CLUSTER_PASSWORD.val, "invalid clusterPassword");
-            if (START_TIMESTAMP.val < 0L) {
+            Validator.notEmpty(clusterUser.val, "invalid clusterUser");
+            Validator.notEmpty(clusterPassword.val, "invalid clusterPassword");
+            if (startTimestamp.val < 0L) {
                 throw new IllegalArgumentException("invalid startTimestamp");
             }
             return true;
@@ -100,10 +98,10 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             String value = entry.getValue().val.toString();
             // Empty `cluster_url` should be discarded, otherwise the server will
             // use it as a valid value by mistake.
-            if (CLUSTER_URL.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+            if (clusterUrl.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
                 continue;
             }
-            if (CLUSTER_PASSWORD.key.equals(entry.getKey()) && SharedConf.AUTH_PASSWORD_HASH) {
+            if (clusterPassword.key.equals(entry.getKey()) && SharedConf.AUTH_PASSWORD_HASH) {
                 value = Hex.str(CryptoUtil.sha1(value));
             }
             sb.append(entry.getKey()).append("=").append(value).append(" ");
@@ -122,11 +120,11 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             String value = entry.getValue().val.toString();
             // Empty `cluster_url` should be discarded, otherwise the server will
             // use it as a valid value by mistake.
-            if (CLUSTER_URL.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+            if (clusterUrl.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
                 continue;
             }
             if (encrypt_password
-                    && CLUSTER_PASSWORD.key.equals(entry.getKey())
+                    && clusterPassword.key.equals(entry.getKey())
                     && SharedConf.AUTH_PASSWORD_HASH) {
                 value = Hex.str(CryptoUtil.sha1(value));
             }
@@ -139,7 +137,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     @Override
     public void updateCheckpoint(String checkpoint) {
         try {
-            START_TIMESTAMP.set(Long.parseLong(checkpoint));
+            startTimestamp.set(Long.parseLong(checkpoint));
         } catch (NumberFormatException e) {
             // do nothing
         }
@@ -147,20 +145,22 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     @Override
     public String toString() {
-        return (StringUtils.isNotEmpty(CLUSTER_URL.val))
-                ? ("cluster_url=" + CLUSTER_URL)
-                : ("rootserver_list=" + RS_LIST)
+        return (StringUtils.isNotEmpty(clusterUrl.val))
+                ? ("cluster_url=" + clusterUrl)
+                : ("rootserver_list=" + rsList)
                         + ", cluster_user="
-                        + CLUSTER_USER
+                        + clusterUser
                         + ", cluster_password=******, "
                         + "tb_white_list="
-                        + TABLE_WHITE_LIST
+                        + tableWhitelist
                         + ", tb_black_list="
-                        + TABLE_BLACK_LIST
+                        + tableBlacklist
                         + ", start_timestamp="
-                        + START_TIMESTAMP
+                        + startTimestamp
                         + ", timezone="
-                        + TIME_ZONE;
+                        + timezone
+                        + ", working_mode="
+                        + workingMode;
     }
 
     /**
@@ -169,7 +169,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param clusterUrl Cluster config url.
      */
     public void setClusterUrl(String clusterUrl) {
-        CLUSTER_URL.set(clusterUrl);
+        this.clusterUrl.set(clusterUrl);
     }
 
     /**
@@ -178,7 +178,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param rsList Root server list.
      */
     public void setRsList(String rsList) {
-        RS_LIST.set(rsList);
+        this.rsList.set(rsList);
     }
 
     /**
@@ -187,7 +187,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param clusterUser Cluster username.
      */
     public void setUsername(String clusterUser) {
-        CLUSTER_USER.set(clusterUser);
+        this.clusterUser.set(clusterUser);
     }
 
     /**
@@ -196,7 +196,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param clusterPassword Cluster password.
      */
     public void setPassword(String clusterPassword) {
-        CLUSTER_PASSWORD.set(clusterPassword);
+        this.clusterPassword.set(clusterPassword);
     }
 
     /**
@@ -206,7 +206,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param tableWhiteList Table whitelist.
      */
     public void setTableWhiteList(String tableWhiteList) {
-        TABLE_WHITE_LIST.set(tableWhiteList);
+        tableWhitelist.set(tableWhiteList);
     }
 
     /**
@@ -215,7 +215,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param tableBlackList Table blacklist.
      */
     public void setTableBlackList(String tableBlackList) {
-        TABLE_BLACK_LIST.set(tableBlackList);
+        tableBlacklist.set(tableBlackList);
     }
 
     /**
@@ -224,7 +224,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param startTimestamp Start timestamp.
      */
     public void setStartTimestamp(Long startTimestamp) {
-        START_TIMESTAMP.set(startTimestamp);
+        this.startTimestamp.set(startTimestamp);
     }
 
     /**
@@ -233,7 +233,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param timezone Timezone offset from UTC, the value is `+8:00` by default.
      */
     public void setTimezone(String timezone) {
-        TIME_ZONE.set(timezone);
+        this.timezone.set(timezone);
     }
 
     /**
@@ -242,6 +242,6 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      * @param workingMode Working mode, can be 'memory' or 'storage'.
      */
     public void setWorkingMode(String workingMode) {
-        WORKING_MODE.set(workingMode);
+        this.workingMode.set(workingMode);
     }
 }
