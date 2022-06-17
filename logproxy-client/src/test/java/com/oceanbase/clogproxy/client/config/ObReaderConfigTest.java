@@ -18,41 +18,42 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ClientConfTest {
+public class ObReaderConfigTest {
 
-    @Test
-    public void testBuilderDefaultValues() {
-        ClientConf clientConf = ClientConf.builder().build();
-        Assert.assertEquals(clientConf.getTransferQueueSize(), 20000);
-        Assert.assertEquals(clientConf.getConnectTimeoutMs(), 5000);
-        Assert.assertEquals(clientConf.getReadWaitTimeMs(), 2000);
-        Assert.assertEquals(clientConf.getRetryIntervalS(), 2);
-        Assert.assertEquals(clientConf.getMaxReconnectTimes(), -1);
-        Assert.assertEquals(clientConf.getIdleTimeoutS(), 15);
-        Assert.assertEquals(clientConf.getNettyDiscardAfterReads(), 16);
-        Assert.assertNotNull(clientConf.getClientId());
-        Assert.assertFalse(clientConf.isIgnoreUnknownRecordType());
-        Assert.assertNull(clientConf.getSslContext());
+    private static ObReaderConfig generateTestConfig() {
+        ObReaderConfig config = new ObReaderConfig();
+        config.setRsList("127.0.0.1:2882:2881");
+        config.setUsername("root@test_tenant");
+        config.setPassword("password");
+        config.setStartTimestamp(0L);
+        config.setTableWhiteList("test_tenant.test.*");
+        config.setTableBlackList("|");
+        config.setTimezone("+8:00");
+        config.setWorkingMode("storage");
+        return config;
     }
 
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
-        ClientConf clientConf = ClientConf.builder().build();
+        ObReaderConfig config = generateTestConfig();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
-        outputStream.writeObject(clientConf);
+        outputStream.writeObject(config);
         outputStream.flush();
         outputStream.close();
         ObjectInputStream inputStream =
                 new ObjectInputStream(
                         new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
         Object object = inputStream.readObject();
-        Assert.assertTrue(object instanceof ClientConf);
-        Assert.assertTrue(EqualsBuilder.reflectionEquals(object, clientConf));
+
+        Assert.assertTrue(object instanceof ObReaderConfig);
+        Map<String, String> configMap = ((ObReaderConfig) object).generateConfigurationMap(false);
+        Assert.assertEquals(configMap.size(), 8);
+        Assert.assertEquals(configMap, config.generateConfigurationMap(false));
     }
 }

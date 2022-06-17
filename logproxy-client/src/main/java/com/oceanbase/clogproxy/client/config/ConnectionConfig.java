@@ -10,8 +10,12 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.config;
 
+
+import java.io.Serializable;
+import java.util.Map;
+
 /** This is the interface of connection config. */
-public interface ConnectionConfig {
+public interface ConnectionConfig extends Serializable {
 
     /**
      * Generate a configuration string from connection parameters.
@@ -19,6 +23,14 @@ public interface ConnectionConfig {
      * @return The configuration string.
      */
     String generateConfigurationString();
+
+    /**
+     * Generate a configuration map from connection parameters.
+     *
+     * @param encryptPassword The flag of whether encrypt the password.
+     * @return The configuration map.
+     */
+    Map<String, String> generateConfigurationMap(boolean encryptPassword);
 
     /**
      * Update the checkpoint.

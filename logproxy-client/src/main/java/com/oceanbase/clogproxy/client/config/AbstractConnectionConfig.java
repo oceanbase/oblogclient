@@ -13,6 +13,7 @@ package com.oceanbase.clogproxy.client.config;
 
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.TypeTrait;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,7 +22,7 @@ import java.util.Map.Entry;
 public abstract class AbstractConnectionConfig implements ConnectionConfig {
 
     /** Defined configurations map. */
-    protected static Map<String, ConfigItem<Object>> configs = new HashMap<>();
+    protected final Map<String, ConfigItem<Object>> configs = new HashMap<>();
 
     /** Extra configurations map. */
     protected final Map<String, String> extraConfigs = new HashMap<>();
@@ -32,7 +33,10 @@ public abstract class AbstractConnectionConfig implements ConnectionConfig {
      * @param <T> The type of stored value.
      */
     @SuppressWarnings("unchecked")
-    protected static class ConfigItem<T> {
+    protected class ConfigItem<T> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
         protected String key;
         protected T val;
 
@@ -73,11 +77,11 @@ public abstract class AbstractConnectionConfig implements ConnectionConfig {
     }
 
     /**
-     * Sole constructor.
+     * Set configs.
      *
      * @param allConfigs The map of configurations.
      */
-    public AbstractConnectionConfig(Map<String, String> allConfigs) {
+    public void setConfigs(Map<String, String> allConfigs) {
         if (allConfigs != null) {
             for (Entry<String, String> entry : allConfigs.entrySet()) {
                 if (!configs.containsKey(entry.getKey())) {
