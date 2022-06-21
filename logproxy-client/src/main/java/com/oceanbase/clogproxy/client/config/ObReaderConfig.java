@@ -137,7 +137,12 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     @Override
     public void updateCheckpoint(String checkpoint) {
         try {
-            startTimestamp.set(Long.parseLong(checkpoint));
+            long timestamp = Long.parseLong(checkpoint);
+            if (timestamp < 0) {
+                throw new IllegalArgumentException(
+                        "update checkpoint with invalid value: " + checkpoint);
+            }
+            startTimestamp.set(timestamp);
         } catch (NumberFormatException e) {
             // do nothing
         }

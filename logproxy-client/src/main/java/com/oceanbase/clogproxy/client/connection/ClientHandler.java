@@ -331,10 +331,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 throw new LogProxyClientException(ErrorCode.E_PARSE, e);
             }
 
+            if (logger.isTraceEnabled()) {
+                logger.trace("Log message: {}", logMessage);
+            }
+
             while (true) {
                 try {
                     recordQueue.put(new StreamContext.TransferPacket(logMessage));
-                    stream.setCheckpointString(logMessage.getTimestamp());
+                    stream.setCheckpointString(logMessage.getSafeTimestamp());
                     break;
                 } catch (InterruptedException e) {
                     // do nothing
