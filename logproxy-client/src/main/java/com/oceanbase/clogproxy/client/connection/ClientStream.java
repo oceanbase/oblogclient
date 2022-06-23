@@ -296,7 +296,14 @@ public class ClientStream {
      * @param checkpointString Checkpoint string.
      */
     public void setCheckpointString(String checkpointString) {
-        this.checkpointString = checkpointString;
+        long timestamp = Long.parseLong(checkpointString);
+        if (timestamp < 0) {
+            throw new IllegalArgumentException(
+                    "Update checkpoint with invalid value: " + timestamp);
+        }
+        if (this.checkpointString == null || Long.parseLong(this.checkpointString) < timestamp) {
+            this.checkpointString = checkpointString;
+        }
     }
 
     /**

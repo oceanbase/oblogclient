@@ -342,6 +342,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     break;
                 } catch (InterruptedException e) {
                     // do nothing
+                } catch (IllegalArgumentException e) {
+                    logger.error("Failed to update checkpoint for log message: " + logMessage, e);
                 }
             }
 
