@@ -336,13 +336,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             while (true) {
                 try {
                     recordQueue.put(new StreamContext.TransferPacket(logMessage));
-                    stream.setCheckpointString(logMessage.getSafeTimestamp());
                     break;
                 } catch (InterruptedException e) {
                     // do nothing
-                } catch (IllegalArgumentException e) {
-                    logger.error("Failed to update checkpoint for log message: " + logMessage, e);
                 }
+            }
+
+            try {
+                stream.setCheckpointString(logMessage.getSafeTimestamp());
+            } catch (IllegalArgumentException e) {
+                logger.error("Failed to update checkpoint for log message: " + logMessage, e);
             }
 
             offset += (8 + dataLength);
