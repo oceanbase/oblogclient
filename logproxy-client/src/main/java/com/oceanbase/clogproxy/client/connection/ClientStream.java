@@ -297,7 +297,7 @@ public class ClientStream {
      */
     public void setCheckpointString(String checkpointString) {
         long timestamp = Long.parseLong(checkpointString);
-        if (timestamp < 0) {
+        if (timestamp <= 0) {
             throw new IllegalArgumentException(
                     "Update checkpoint with invalid value: " + timestamp);
         }

@@ -309,25 +309,23 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         int offset = 0;
         while (offset < bytes.length) {
             int dataLength = Conversion.byteArrayToInt(bytes, offset + 4, 0, 0, 4);
-            LogMessage logMessage;
+            /*
+             * We must copy a byte array and call parse after then,
+             * or got a !!!RIDICULOUS EXCEPTION!!!,
+             * if we wrap an unpooled buffer with offset and call setByteBuf just as same as `parse` function do.
+             */
+            LogMessage logMessage = new LogMessage(false);
+            byte[] data = new byte[dataLength + 8];
+            System.arraycopy(bytes, offset, data, 0, data.length);
             try {
-                /*
-                 * We must copy a byte array and call parse after then,
-                 * or got a !!!RIDICULOUS EXCEPTION!!!,
-                 * if we wrap an unpooled buffer with offset and call setByteBuf just as same as `parse` function do.
-                 */
-                logMessage = new LogMessage(false);
-                byte[] data = new byte[dataLength + 8];
-                System.arraycopy(bytes, offset, data, 0, data.length);
                 logMessage.parse(data);
+            } catch (Exception e) {
                 if (config.isIgnoreUnknownRecordType()) {
                     // unsupported type, ignore
                     logger.debug("Unsupported record type: {}", logMessage);
                     offset += (8 + dataLength);
                     continue;
                 }
-
-            } catch (Exception e) {
                 throw new LogProxyClientException(ErrorCode.E_PARSE, e);
             }
 
@@ -338,13 +336,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             while (true) {
                 try {
                     recordQueue.put(new StreamContext.TransferPacket(logMessage));
-                    stream.setCheckpointString(logMessage.getSafeTimestamp());
                     break;
                 } catch (InterruptedException e) {
                     // do nothing
-                } catch (IllegalArgumentException e) {
-                    logger.error("Failed to update checkpoint for log message: " + logMessage, e);
                 }
+            }
+
+            try {
+                stream.setCheckpointString(logMessage.getSafeTimestamp());
+            } catch (IllegalArgumentException e) {
+                logger.error("Failed to update checkpoint for log message: " + logMessage, e);
             }
 
             offset += (8 + dataLength);
