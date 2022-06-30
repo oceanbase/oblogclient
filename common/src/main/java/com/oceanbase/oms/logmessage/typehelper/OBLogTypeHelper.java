@@ -11,8 +11,8 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.oms.logmessage.typehelper;
 
 
+import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.DataMessage;
-import com.oceanbase.oms.logmessage.enums.DBType;
 import org.apache.commons.lang3.StringUtils;
 
 public class OBLogTypeHelper extends LogTypeHelper {
@@ -21,14 +21,14 @@ public class OBLogTypeHelper extends LogTypeHelper {
     private static final String DEFAULT_ENCODING = "";
 
     public OBLogTypeHelper() {
-        super(DBType.OCEANBASE1);
+        super(DbTypeEnum.OB_MYSQL);
     }
 
     @Override
     public String correctEncoding(int typeCode, String realEncoding) {
         switch (typeCode) {
-            case LogMessageTypeCode.DRC_MSG_TYPE_VAR_STRING:
-            case LogMessageTypeCode.DRC_MSG_TYPE_STRING:
+            case LogMessageTypeCode.LOG_MSG_TYPE_VAR_STRING:
+            case LogMessageTypeCode.LOG_MSG_TYPE_STRING:
                 return realEncoding;
             default:
                 if (StringUtils.equals(realEncoding, "binary")) {
@@ -42,23 +42,23 @@ public class OBLogTypeHelper extends LogTypeHelper {
     @Override
     public int correctCode(int typeCode, String encoding) {
         switch (typeCode) {
-            case LogMessageTypeCode.DRC_MSG_TYPE_TINY_BLOB:
-            case LogMessageTypeCode.DRC_MSG_TYPE_MEDIUM_BLOB:
-            case LogMessageTypeCode.DRC_MSG_TYPE_LONG_BLOB:
-            case LogMessageTypeCode.DRC_MSG_TYPE_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_TINY_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_MEDIUM_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_LONG_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_BLOB:
                 if (!StringUtils.isEmpty(encoding) && !StringUtils.equals(encoding, "binary")) {
-                    return LogMessageTypeCode.DRC_MSG_TYPE_CLOB;
+                    return LogMessageTypeCode.LOG_MSG_TYPE_CLOB;
                 }
                 break;
-            case LogMessageTypeCode.DRC_MSG_TYPE_VAR_STRING:
+            case LogMessageTypeCode.LOG_MSG_TYPE_VAR_STRING:
                 if (StringUtils.isEmpty(encoding) || StringUtils.equals(encoding, "binary")) {
-                    return LogMessageTypeCode.DRC_MSG_TYPE_VAR_BINARY;
+                    return LogMessageTypeCode.LOG_MSG_TYPE_VAR_BINARY;
                 } else {
-                    return LogMessageTypeCode.DRC_MSG_TYPE_VARCHAR;
+                    return LogMessageTypeCode.LOG_MSG_TYPE_VARCHAR;
                 }
-            case LogMessageTypeCode.DRC_MSG_TYPE_STRING:
+            case LogMessageTypeCode.LOG_MSG_TYPE_STRING:
                 if (StringUtils.isEmpty(encoding) || StringUtils.equals(encoding, "binary")) {
-                    return LogMessageTypeCode.DRC_MSG_TYPE_BINARY;
+                    return LogMessageTypeCode.LOG_MSG_TYPE_BINARY;
                 }
                 break;
         }
@@ -68,24 +68,24 @@ public class OBLogTypeHelper extends LogTypeHelper {
     @Override
     public void correctField(DataMessage.Record.Field f, String realEncoding) {
         switch (f.type) {
-            case LogMessageTypeCode.DRC_MSG_TYPE_TINY_BLOB:
-            case LogMessageTypeCode.DRC_MSG_TYPE_MEDIUM_BLOB:
-            case LogMessageTypeCode.DRC_MSG_TYPE_LONG_BLOB:
-            case LogMessageTypeCode.DRC_MSG_TYPE_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_TINY_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_MEDIUM_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_LONG_BLOB:
+            case LogMessageTypeCode.LOG_MSG_TYPE_BLOB:
                 if (!StringUtils.isEmpty(f.encoding) && !StringUtils.equals(f.encoding, "binary")) {
-                    f.type = LogMessageTypeCode.DRC_MSG_TYPE_CLOB;
+                    f.type = LogMessageTypeCode.LOG_MSG_TYPE_CLOB;
                 }
                 break;
-            case LogMessageTypeCode.DRC_MSG_TYPE_VAR_STRING:
+            case LogMessageTypeCode.LOG_MSG_TYPE_VAR_STRING:
                 if (StringUtils.isEmpty(f.encoding) || StringUtils.equals(f.encoding, "binary")) {
-                    f.type = LogMessageTypeCode.DRC_MSG_TYPE_VAR_BINARY;
+                    f.type = LogMessageTypeCode.LOG_MSG_TYPE_VAR_BINARY;
                 } else {
-                    f.type = LogMessageTypeCode.DRC_MSG_TYPE_VARCHAR;
+                    f.type = LogMessageTypeCode.LOG_MSG_TYPE_VARCHAR;
                 }
                 break;
-            case LogMessageTypeCode.DRC_MSG_TYPE_STRING:
+            case LogMessageTypeCode.LOG_MSG_TYPE_STRING:
                 if (StringUtils.isEmpty(f.encoding) || StringUtils.equals(f.encoding, "binary")) {
-                    f.type = LogMessageTypeCode.DRC_MSG_TYPE_BINARY;
+                    f.type = LogMessageTypeCode.LOG_MSG_TYPE_BINARY;
                 }
                 break;
             default:

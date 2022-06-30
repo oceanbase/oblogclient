@@ -11,9 +11,9 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.oms.logmessage;
 
 
-import com.oceanbase.oms.logmessage.enums.DBType;
+import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.typehelper.LogTypeHelper;
-import com.oceanbase.oms.logmessage.typehelper.OBLogTypeHelper;
+import com.oceanbase.oms.logmessage.typehelper.LogTypeHelperFactory;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +31,6 @@ public class DataMessage extends Message {
 
     /** Record contains data of one record. */
     public static class Record {
-        public static LogTypeHelper logTypeHelper = OBLogTypeHelper.OB_LOG_TYPE_HELPER;
 
         public static final String UTF8MB4_ENCODING = "utf8mb4";
         public static final String TRACEID_STRING = "traceid";
@@ -122,6 +121,8 @@ public class DataMessage extends Message {
 
             public boolean prev = false;
 
+            public boolean notNull = false;
+
             public enum Type {
                 INT8,
                 INT16,
@@ -190,6 +191,10 @@ public class DataMessage extends Message {
                 this.flag = flag;
             }
 
+            public void setNotNull(boolean notNull) {
+                this.notNull = notNull;
+            }
+
             public final boolean isPrimary() {
                 return primaryKey;
             }
@@ -221,6 +226,10 @@ public class DataMessage extends Message {
                     return "utf8";
                 }
                 return encoding;
+            }
+
+            public final boolean getNotNull() {
+                return notNull;
             }
 
             public static Type[] MYSQL_TYPES = new Type[256];
@@ -371,6 +380,7 @@ public class DataMessage extends Message {
                 builder.append("Field name: " + name + System.getProperty("line.separator"));
                 builder.append("Field type: " + type + System.getProperty("line.separator"));
                 builder.append("Field length: " + length + System.getProperty("line.separator"));
+                builder.append("Field notNull: " + notNull + System.getProperty("line.separator"));
                 if (value != null) {
                     if ("binary".equalsIgnoreCase(encoding)) {
                         builder.append(
@@ -447,7 +457,9 @@ public class DataMessage extends Message {
             type = Type.valueOf(stype.toUpperCase());
             // set timestamp,process heartbeat between tx
             timestamp = getAttribute("timestamp");
-            if (getDbType() == DBType.OCEANBASE1) {
+            DbTypeEnum dbType = getDbType();
+            LogTypeHelper logTypeHelper = LogTypeHelperFactory.getInstance(dbType);
+            if (dbType == DbTypeEnum.OB_MYSQL || dbType == DbTypeEnum.OB_ORACLE) {
                 if (type == Type.HEARTBEAT) {
                     globalSafeTimestamp.set(timestamp);
                 } else {
@@ -654,25 +666,8 @@ public class DataMessage extends Message {
             return getAttribute("unique");
         }
 
-        public DBType getDbType() {
-            String type = getAttribute("source_type");
-            if (StringUtils.isEmpty(type)) {
-                return DBType.UNKNOWN;
-            }
-            if ("mysql".equalsIgnoreCase(type)) {
-                return DBType.MYSQL;
-            } else if ("oceanbase".equalsIgnoreCase(type)) {
-                return DBType.OCEANBASE;
-            } else if ("oracle".equalsIgnoreCase(type)) {
-                return DBType.ORACLE;
-            } else if ("hbase".equalsIgnoreCase(type)) {
-                return DBType.HBASE;
-            } else if ("oceanbase_1_0".equalsIgnoreCase(type)) {
-                return DBType.OCEANBASE1;
-            } else if ("db2".equalsIgnoreCase(type)) {
-                return DBType.DB2;
-            }
-            return DBType.UNKNOWN;
+        public DbTypeEnum getDbType() {
+            return parseDbTypeStr(getAttribute("source_type"));
         }
 
         public boolean isQueryBack() {
@@ -772,15 +767,12 @@ public class DataMessage extends Message {
         }
 
         public String getMessageUniqueIdStr() throws Exception {
-            DBType dbType = getDbType();
+            DbTypeEnum dbType = getDbType();
             this.checkDBType(dbType);
             StringBuilder messageId = new StringBuilder();
-            if (dbType == DBType.MYSQL) {
-                messageId.append(getServerId());
-            }
 
             messageId.append("/").append(this.getCommonPart()).append("/");
-            if (dbType == DBType.OCEANBASE1) {
+            if (dbType == DbTypeEnum.OB_MYSQL || dbType == DbTypeEnum.OB_ORACLE) {
                 messageId.append("/");
             } else {
                 String checkpoint = getCheckpoint();
@@ -791,7 +783,7 @@ public class DataMessage extends Message {
             }
 
             messageId.append("/");
-            if (dbType == DBType.OCEANBASE1) {
+            if (dbType == DbTypeEnum.OB_MYSQL || dbType == DbTypeEnum.OB_ORACLE) {
                 messageId.append(getOB10UniqueId());
             }
 
@@ -799,14 +791,15 @@ public class DataMessage extends Message {
             return messageId.toString();
         }
 
-        private void checkDBType(DBType dbType) {
-            if (dbType != DBType.MYSQL
-                    && dbType != DBType.OCEANBASE
-                    && dbType != DBType.OCEANBASE1
-                    && dbType != DBType.ORACLE
-                    && dbType != DBType.DB2) {
-                throw new IllegalStateException(
-                        "dbType [" + dbType + "] is not valid for messageId");
+        private void checkDBType(DbTypeEnum dbType) {
+            switch (dbType) {
+                case OB_MYSQL:
+                case OB_ORACLE:
+                case OB_05:
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            "dbType [" + dbType + "] is not valid for messageId");
             }
         }
 
@@ -913,5 +906,28 @@ public class DataMessage extends Message {
 
     public void addRecord(Record r) {
         records.add(r);
+    }
+
+    public static DbTypeEnum parseDbTypeStr(String dbTypeInStr) {
+        if (StringUtils.isEmpty(dbTypeInStr)) {
+            return DbTypeEnum.UNKNOWN;
+        }
+        if ("oceanbase".equalsIgnoreCase(dbTypeInStr)) {
+            return DbTypeEnum.OB_05;
+        } else if ("oceanbase_1_0".equalsIgnoreCase(dbTypeInStr)) {
+            return DbTypeEnum.OB_MYSQL;
+        }
+        return DbTypeEnum.UNKNOWN;
+    }
+
+    public static DbTypeEnum parseDBTypeCode(int dbTypeCode) {
+        switch (dbTypeCode) {
+            case 1:
+                return DbTypeEnum.OB_05;
+            case 4:
+                return DbTypeEnum.OB_MYSQL;
+            default:
+                return DbTypeEnum.UNKNOWN;
+        }
     }
 }

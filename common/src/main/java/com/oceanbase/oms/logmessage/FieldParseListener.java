@@ -10,15 +10,44 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.oms.logmessage;
 
+
+import com.oceanbase.oms.logmessage.typehelper.LogMessageTypeCode;
+
 /** This interface defined a kind of listener for field parsing. */
 public interface FieldParseListener {
 
     /**
      * Handle the filed parsing result.
      *
-     * @param prev The original field.
-     * @param next The field after parsing.
-     * @throws Exception When exception occurs.
+     * @param fieldName Field name.
+     * @param type {@link LogMessageTypeCode}.
+     * @param encoding Encoding of value.
+     * @param value Field value.
+     * @param notNull Flag of whether the field is not null (not optional).
+     * @param isPrev Flag of whether the value is the old one.
      */
-    void parseNotify(DataMessage.Record.Field prev, DataMessage.Record.Field next) throws Exception;
+    void parseNotify(
+            String fieldName,
+            int type,
+            String encoding,
+            ByteString value,
+            boolean notNull,
+            boolean isPrev);
+
+    /**
+     * Handle the filed parsing result. Only support value, as we already know schema info.
+     *
+     * @param type {@link LogMessageTypeCode}.
+     * @param value Field value.
+     * @param encoding Encoding of value.
+     * @param isPrev Flag of whether the value is the old one.
+     */
+    void parseNotify(int type, ByteString value, String encoding, boolean isPrev);
+
+    /**
+     * Flag of whether schema info (fieldName, type, encoding, notNull) is needed.
+     *
+     * @return True for needed, otherwise false.
+     */
+    boolean needSchemaInfo();
 }

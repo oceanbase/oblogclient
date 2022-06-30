@@ -114,7 +114,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     }
 
     @Override
-    public Map<String, String> generateConfigurationMap(boolean encrypt_password) {
+    public Map<String, String> generateConfigurationMap(boolean encryptPassword) {
         Map<String, String> result = new HashMap<>();
         for (Map.Entry<String, ConfigItem<Object>> entry : configs.entrySet()) {
             String value = entry.getValue().val.toString();
@@ -123,7 +123,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             if (clusterUrl.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
                 continue;
             }
-            if (encrypt_password
+            if (encryptPassword
                     && clusterPassword.key.equals(entry.getKey())
                     && SharedConf.AUTH_PASSWORD_HASH) {
                 value = Hex.str(CryptoUtil.sha1(value));

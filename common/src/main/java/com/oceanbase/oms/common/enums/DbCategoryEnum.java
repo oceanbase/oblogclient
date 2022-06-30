@@ -8,21 +8,16 @@ EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
 MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 See the Mulan PSL v2 for more details. */
 
-package com.oceanbase.oms.logmessage.enums;
+package com.oceanbase.oms.common.enums;
 
-/** Database type enumeration for open source. */
-public enum DBType {
-    MYSQL,
+public enum DbCategoryEnum {
 
-    OCEANBASE,
-
-    HBASE,
-
-    ORACLE,
-
-    OCEANBASE1,
-
-    DB2,
-
-    UNKNOWN
+    /** Relational database. */
+    RDB,
+    /** Message queue. */
+    MQ,
+    /** Big data. */
+    BIGDATA,
+    /** Not only SQL. */
+    NOSQL;
 }
