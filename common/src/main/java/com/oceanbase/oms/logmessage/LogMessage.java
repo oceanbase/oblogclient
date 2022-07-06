@@ -40,10 +40,9 @@ public class LogMessage extends DataMessage.Record {
     public static final String UTF8_ENCODING = "UTF-8";
 
     private static final String SEP = System.getProperty("line.separator");
-    // old version header length
+
     private static final int OLD_VERSION_2_HEADER_LEN = 88;
 
-    // new version header length
     private static final int NEW_VERSION_2_HEADER_LEN = 96;
 
     private static final int VERSION_3_HEADER_LEN = 104;
@@ -127,7 +126,7 @@ public class LogMessage extends DataMessage.Record {
     private boolean keyChange = false;
 
     /** type size map, used to get array type bytes by type index */
-    private static final int[] ELEMENT_SIZE_ARRAY = {0, 1, 1, 2, 2, 4, 4, 8, 8};
+    private static final int[] ELEMENT_ARRAY = {0, 1, 1, 2, 2, 4, 4, 8, 8};
 
     private static final int BYTE_SIZE = 1;
 
@@ -275,7 +274,7 @@ public class LogMessage extends DataMessage.Record {
         // op type array
         wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colTypesOffset);
         byte t = wrapByteBuf.readByte();
-        int elementSize = ELEMENT_SIZE_ARRAY[t & DataType.DT_MASK];
+        int elementSize = ELEMENT_ARRAY[t & DataType.DT_MASK];
         // encoding
         int colEncodingsCount = 0;
         int currentEncodingOffset = 0;
@@ -392,7 +391,6 @@ public class LogMessage extends DataMessage.Record {
                 columnName = colNameByteString.toString();
                 currentColNameOffset = nextColNameOffset;
             }
-
             // old col
             if (oldColCount != 0) {
                 wrapByteBuf.readerIndex(
@@ -497,7 +495,7 @@ public class LogMessage extends DataMessage.Record {
                 // op type array
                 wrapByteBuf.readerIndex(PREFIX_LENGTH + (int) colTypesOffset);
                 byte t = wrapByteBuf.readByte();
-                int elementSize = ELEMENT_SIZE_ARRAY[t & DataType.DT_MASK];
+                int elementSize = ELEMENT_ARRAY[t & DataType.DT_MASK];
                 // encoding
                 int colEncodingsCount = 0;
                 int currentEncodingOffset = 0;
@@ -789,7 +787,6 @@ public class LogMessage extends DataMessage.Record {
         colNamesOffset = byteBuf.readInt();
         colTypesOffset = byteBuf.readInt();
 
-        // process old version
         if (!old) {
             pkValOffset = byteBuf.readInt();
             fileNameOffset = byteBuf.readLong();
@@ -805,7 +802,6 @@ public class LogMessage extends DataMessage.Record {
             oldColsOffset = byteBuf.readInt();
             newColsOffset = byteBuf.readInt();
         } else {
-            // process new version
             fileNameOffset = byteBuf.readInt();
             fileOffset = byteBuf.readInt();
             oldColsOffset = byteBuf.readInt();

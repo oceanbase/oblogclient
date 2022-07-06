@@ -22,7 +22,7 @@ public abstract class LogTypeHelperFactory {
             case OB_05:
                 return OBLogTypeHelper.OB_LOG_TYPE_HELPER;
             default:
-                throw new RuntimeException("Unsupported dbType " + dbType);
+                throw new IllegalArgumentException("Unsupported dbType " + dbType);
         }
     }
 }
