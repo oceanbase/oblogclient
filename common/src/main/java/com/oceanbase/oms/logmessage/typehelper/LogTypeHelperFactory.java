@@ -11,17 +11,18 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.oms.logmessage.typehelper;
 
 
-import com.oceanbase.oms.logmessage.enums.DBType;
+import com.oceanbase.oms.common.enums.DbTypeEnum;
 
 public abstract class LogTypeHelperFactory {
 
-    public static LogTypeHelper getInstance(DBType dbType) {
+    public static LogTypeHelper getInstance(DbTypeEnum dbType) {
         switch (dbType) {
-            case OCEANBASE:
-            case OCEANBASE1:
+            case OB_MYSQL:
+            case OB_ORACLE:
+            case OB_05:
                 return OBLogTypeHelper.OB_LOG_TYPE_HELPER;
             default:
-                throw new RuntimeException("unsupported dbtype");
+                throw new IllegalArgumentException("Unsupported dbType " + dbType);
         }
     }
 }

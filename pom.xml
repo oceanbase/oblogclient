@@ -259,7 +259,7 @@ See the Mulan PSL v2 for more details.
             <id>spotless-check</id>
             <phase>validate</phase>
             <goals>
-              <goal>check</goal>
+              <goal>apply</goal>
             </goals>
           </execution>
         </executions>

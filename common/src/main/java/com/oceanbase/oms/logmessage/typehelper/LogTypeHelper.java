@@ -11,8 +11,8 @@ See the Mulan PSL v2 for more details. */
 package com.oceanbase.oms.logmessage.typehelper;
 
 
+import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.DataMessage;
-import com.oceanbase.oms.logmessage.enums.DBType;
 
 public abstract class LogTypeHelper {
 
@@ -20,13 +20,13 @@ public abstract class LogTypeHelper {
 
     public static final String EMPTY_ENCODING_STR = "";
 
-    protected final DBType dbType;
+    protected final DbTypeEnum dbType;
 
-    public LogTypeHelper(DBType dbType) {
+    public LogTypeHelper(DbTypeEnum dbType) {
         this.dbType = dbType;
     }
 
-    public DBType getDbType() {
+    public DbTypeEnum getDbType() {
         return dbType;
     }
 
