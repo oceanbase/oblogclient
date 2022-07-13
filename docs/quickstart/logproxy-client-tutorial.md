@@ -58,7 +58,7 @@ To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
 - *cluster_username*: Username for OceanBase, the format is `username@tenant_name#cluster_name` when connecting to [obproxy](https://github.com/oceanbase/obproxy) or `username@tenant_name` when directly connecting to OceanBase server.
 - *cluster_password*: Password for OceanBase when using configured `cluster_username`.
 - *first_start_timestamp*: Start timestamp in seconds, and zero means starting from now. Default is `0`.
-- *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`, `*` indicates any value, and multiple values can be separated by `|`. Default is `*.*.*`.
+- *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`. Pattern matching is provided by `fnmatch`, and multiple values can be separated by `|`. Default is `*.*.*`.
 - *tb_black_list*: Table blacklist in the same format with whitelist. Default is `|`.
 - *timezone*: Timezone offset from UTC. Default value is `+8:00`.
 - *working_mode*: Working mode. Can be `storage` (default value, supported from `obcdc` 3.1.3) or `memory`.
