@@ -205,8 +205,9 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     }
 
     /**
-     * Set table whitelist. It is composed of three dimensions: tenant, library, and table. Asterisk
-     * means any, such as: "A.foo.bar", "B.foo.*", "C.*.*", "*.*.*".
+     * Set table whitelist. It is composed of three dimensions: tenant, db and table. Pattern
+     * matching is provided by `fnmatch`, so asterisk means any, for example: "A.foo.bar",
+     * "B.foo.*", "C.*.*", "*.*.*".
      *
      * @param tableWhiteList Table whitelist.
      */
