@@ -42,7 +42,8 @@ public class LogProxyClient {
             Validator.notEmpty(host, "server cannot be null");
             Validator.validatePort(port, "port is not valid");
         } catch (Exception e) {
-            throw new IllegalArgumentException("Illegal argument for LogProxyClient");
+            throw new IllegalArgumentException(
+                    "Illegal argument for LogProxyClient: " + e.getMessage());
         }
         if (!config.valid()) {
             throw new IllegalArgumentException("Illegal argument for LogProxyClient");
