@@ -19,7 +19,6 @@ import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.clogproxy.client.listener.StatusListener;
 import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
-import io.netty.handler.ssl.SslContext;
 
 /** A client that makes it easy to connect to log proxy and start a {@link ClientStream}. */
 public class LogProxyClient {
@@ -28,7 +27,7 @@ public class LogProxyClient {
     private final ClientStream stream;
 
     /**
-     * Constructor with {@link SslContext}.
+     * Constructor with {@link ClientConf}.
      *
      * @param host Log proxy hostname name or ip.
      * @param port Log proxy port.
@@ -60,7 +59,7 @@ public class LogProxyClient {
     }
 
     /**
-     * Constructor without {@link SslContext}.
+     * Constructor without {@link ClientConf}.
      *
      * @param host Log proxy hostname name or ip.
      * @param port Log proxy port.
