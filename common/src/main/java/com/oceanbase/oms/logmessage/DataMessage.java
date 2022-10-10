@@ -152,6 +152,8 @@ public class DataMessage extends Message {
                 RAW,
                 INTERVAL_YEAR_TO_MONTH,
                 INTERVAL_DAY_TO_SECOND,
+                // TEXT or CLOB
+                CLOB,
                 UNKOWN
             }
 
@@ -253,6 +255,8 @@ public class DataMessage extends Message {
                 MYSQL_TYPES[15] = Type.STRING;
                 MYSQL_TYPES[16] = Type.BIT;
                 // special
+                MYSQL_TYPES[197] = Type.CLOB;
+                MYSQL_TYPES[198] = Type.BINARY;
                 MYSQL_TYPES[199] = Type.BINARY;
                 MYSQL_TYPES[200] = Type.TIMESTAMP_WITH_TIME_ZONE;
                 MYSQL_TYPES[201] = Type.TIMESTAMP_WITH_LOCAL_TIME_ZONE;
@@ -264,6 +268,8 @@ public class DataMessage extends Message {
                 MYSQL_TYPES[207] = Type.STRING;
                 MYSQL_TYPES[208] = Type.STRING;
                 MYSQL_TYPES[209] = Type.STRING;
+                MYSQL_TYPES[210] = Type.BLOB;
+                MYSQL_TYPES[211] = Type.CLOB;
 
                 MYSQL_TYPES[255] = Type.GEOMETRY;
                 MYSQL_TYPES[254] = Type.STRING;
@@ -293,7 +299,7 @@ public class DataMessage extends Message {
              * @return the enumerated type of the field.
              */
             public final Type getType() {
-                if ((type > 16 && type < 199) || (type > 209 && type < 245)) {
+                if ((type > 16 && type < 197) || (type > 211 && type < 245)) {
                     return Type.UNKOWN;
                 } else {
                     return MYSQL_TYPES[type];
