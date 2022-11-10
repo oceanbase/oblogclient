@@ -16,7 +16,7 @@ See the Mulan PSL v2 for more details.
   <parent>
     <groupId>com.oceanbase.logclient</groupId>
     <artifactId>logclient</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.9-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -34,6 +34,10 @@ See the Mulan PSL v2 for more details.
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
     <!-- SLF4J -->

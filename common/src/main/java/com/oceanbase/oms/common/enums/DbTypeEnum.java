@@ -33,6 +33,11 @@ public enum DbTypeEnum {
             DbCategoryEnum.RDB,
             new HashSet<>(Arrays.asList("oceanbase_oracle_mode", "ob_in_oracle_mode"))),
 
+    MYSQL(DbCategoryEnum.RDB),
+    ORACLE(DbCategoryEnum.RDB),
+    DB2_LUW(DbCategoryEnum.RDB, Collections.singleton("db2")),
+    POSTGRESQL(DbCategoryEnum.RDB),
+    HBASE(DbCategoryEnum.NOSQL),
     UNKNOWN(null);
 
     DbTypeEnum(DbCategoryEnum category) {

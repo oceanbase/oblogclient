@@ -90,7 +90,8 @@ public class CryptoUtil {
                 System.arraycopy(cipherBytes, 0, iv, 0, Math.min(iv.length, cipherBytes.length));
 
             } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-                System.out.println("failed to init AES key generator, exit!!! : " + e);
+                //                System.out.println("failed to init AES key generator, exit!!! : "
+                // + e);
                 System.exit(-1);
             }
         }
@@ -112,7 +113,7 @@ public class CryptoUtil {
                     | InvalidAlgorithmParameterException
                     | IllegalBlockSizeException
                     | BadPaddingException e) {
-                System.out.println("failed to encrypt AES 256 GCM: " + e);
+                //                System.out.println("failed to encrypt AES 256 GCM: " + e);
                 return null;
             }
         }
@@ -134,7 +135,7 @@ public class CryptoUtil {
                     | InvalidAlgorithmParameterException
                     | IllegalBlockSizeException
                     | BadPaddingException e) {
-                System.out.println("failed to decrypt AES 256 GCM: " + e);
+                //                System.out.println("failed to decrypt AES 256 GCM: " + e);
                 return "";
             }
         }

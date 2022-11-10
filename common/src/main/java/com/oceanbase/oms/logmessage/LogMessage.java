@@ -1014,6 +1014,8 @@ public class LogMessage extends DataMessage.Record {
                 case UPDATE:
                 case INDEX_UPDATE:
                     switch (getDbType()) {
+                        case ORACLE:
+                        case MYSQL:
                         case OB_MYSQL:
                         case OB_ORACLE:
                             prev.addAll(getKeys((int) oldColsOffset, keys));

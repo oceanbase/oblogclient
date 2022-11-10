@@ -192,6 +192,20 @@ public class ClientStream {
                                                         "Unsupported Packet Type: "
                                                                 + packet.getType());
                                         }
+
+                                        try {
+                                            setCheckpointString(
+                                                    packet.getRecord().getSafeTimestamp());
+                                        } catch (IllegalArgumentException e) {
+                                            logger.error(
+                                                    "Failed to update checkpoint for log message: "
+                                                            + packet.getRecord(),
+                                                    e);
+                                            throw new LogProxyClientException(
+                                                    ErrorCode.E_INNER,
+                                                    "Failed to update checkpoint");
+                                        }
+
                                     } catch (LogProxyClientException e) {
                                         triggerException(e);
                                         break;
@@ -295,7 +309,7 @@ public class ClientStream {
      *
      * @param checkpointString Checkpoint string.
      */
-    public void setCheckpointString(String checkpointString) {
+    private void setCheckpointString(String checkpointString) {
         long timestamp = Long.parseLong(checkpointString);
         if (timestamp <= 0) {
             throw new IllegalArgumentException(

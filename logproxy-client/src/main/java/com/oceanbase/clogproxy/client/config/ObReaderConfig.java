@@ -29,6 +29,9 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ObReaderConfig.class);
 
+    /** Cluster Id. */
+    private final ConfigItem<String> clusterId = new ConfigItem<>("cluster_id", "");
+
     /** Cluster config url. */
     private final ConfigItem<String> clusterUrl = new ConfigItem<>("cluster_url", "");
 
@@ -41,6 +44,10 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     /** Cluster password. */
     private final ConfigItem<String> clusterPassword = new ConfigItem<>("cluster_password", "");
 
+    private final ConfigItem<String> sysUser = new ConfigItem<>("sys_user", "");
+
+    private final ConfigItem<String> sysPassword = new ConfigItem<>("sys_password", "");
+
     /** Table whitelist. */
     private final ConfigItem<String> tableWhitelist = new ConfigItem<>("tb_white_list", "*.*.*");
 
@@ -49,6 +56,10 @@ public class ObReaderConfig extends AbstractConnectionConfig {
 
     /** Start timestamp. */
     private final ConfigItem<Long> startTimestamp = new ConfigItem<>("first_start_timestamp", 0L);
+
+    /** Start timestamp in microsecond. */
+    private final ConfigItem<Long> startTimestampUs =
+            new ConfigItem<>("first_start_timestamp_us", 0L);
 
     /** Timezone offset. */
     private final ConfigItem<String> timezone = new ConfigItem<>("timezone", "+8:00");
@@ -101,6 +112,12 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             if (clusterUrl.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
                 continue;
             }
+            if (sysUser.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+                continue;
+            }
+            if (sysPassword.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+                continue;
+            }
             if (clusterPassword.key.equals(entry.getKey()) && SharedConf.AUTH_PASSWORD_HASH) {
                 value = Hex.str(CryptoUtil.sha1(value));
             }
@@ -121,6 +138,12 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             // Empty `cluster_url` should be discarded, otherwise the server will
             // use it as a valid value by mistake.
             if (clusterUrl.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+                continue;
+            }
+            if (sysUser.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
+                continue;
+            }
+            if (sysPassword.key.equals(entry.getKey()) && StringUtils.isEmpty(value)) {
                 continue;
             }
             if (encryptPassword
@@ -153,6 +176,8 @@ public class ObReaderConfig extends AbstractConnectionConfig {
         return (StringUtils.isNotEmpty(clusterUrl.val))
                 ? ("cluster_url=" + clusterUrl)
                 : ("rootserver_list=" + rsList)
+                        + ", cluster_id="
+                        + clusterId
                         + ", cluster_user="
                         + clusterUser
                         + ", cluster_password=******, "
@@ -166,6 +191,15 @@ public class ObReaderConfig extends AbstractConnectionConfig {
                         + timezone
                         + ", working_mode="
                         + workingMode;
+    }
+
+    /**
+     * Set cluster id.
+     *
+     * @param clusterId Cluster Id.
+     */
+    public void setClusterId(String clusterId) {
+        this.clusterId.set(clusterId);
     }
 
     /**
@@ -205,6 +239,24 @@ public class ObReaderConfig extends AbstractConnectionConfig {
     }
 
     /**
+     * Set cluster sys username
+     *
+     * @param sysUsername Cluster sys username.
+     */
+    public void setSysUsername(String sysUsername) {
+        this.sysUser.set(sysUsername);
+    }
+
+    /**
+     * Set cluster sys password
+     *
+     * @param sysPassword Cluster sys password.
+     */
+    public void setSysPassword(String sysPassword) {
+        this.sysPassword.set(sysPassword);
+    }
+
+    /**
      * Set table whitelist. It is composed of three dimensions: tenant, db and table. Pattern
      * matching is provided by `fnmatch`, so asterisk means any, for example: "A.foo.bar",
      * "B.foo.*", "C.*.*", "*.*.*".
@@ -231,6 +283,10 @@ public class ObReaderConfig extends AbstractConnectionConfig {
      */
     public void setStartTimestamp(Long startTimestamp) {
         this.startTimestamp.set(startTimestamp);
+    }
+
+    public void setStartTimestampUs(Long startTimestampUs) {
+        this.startTimestampUs.set(startTimestampUs);
     }
 
     /**

@@ -54,7 +54,8 @@ public class LogProxyClient {
         String clientId = clientConf.getClientId();
         ConnectionParams connectionParams =
                 new ConnectionParams(config.getLogType(), clientId, host, port, config);
-        connectionParams.setProtocolVersion(ProtocolVersion.V2);
+        connectionParams.setProtocolVersion(
+                ProtocolVersion.codeOf(clientConf.getProtocolVersion()));
         this.stream = new ClientStream(clientConf, connectionParams);
     }
 

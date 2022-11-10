@@ -64,7 +64,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     private BlockingQueue<StreamContext.TransferPacket> recordQueue;
 
     /** Handshake type enumeration. */
-    enum HandshakeStateV1 {
+    enum HandshakeState {
         /** State of parsing the packet header. */
         PB_HEAD,
         /** State of handling handshake response. */
@@ -78,7 +78,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     /** Handshake state. */
-    private HandshakeStateV1 state = HandshakeStateV1.PB_HEAD;
+    private HandshakeState state = HandshakeState.PB_HEAD;
 
     /** A {@link Cumulator} instance. */
     private final Cumulator cumulator = ByteToMessageDecoder.MERGE_CUMULATOR;
@@ -107,12 +107,18 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     /** A {@link LZ4FastDecompressor} instance. */
     LZ4FastDecompressor fastDecompressor = factory.fastDecompressor();
 
+    ClientHandlerV01 clientHandlerV01;
+
     /** Constructor with empty arguments. */
     public ClientHandler() {}
 
-    /** Reset {@link #state} to {@link HandshakeStateV1#PB_HEAD}. */
+    /** Reset {@link #state} to {@link HandshakeState#PB_HEAD}. */
     protected void resetState() {
-        state = HandshakeStateV1.PB_HEAD;
+        if (params.getProtocolVersion().code() < ProtocolVersion.V2.code()) {
+            clientHandlerV01.resetState();
+        } else {
+            state = HandshakeState.PB_HEAD;
+        }
     }
 
     @Override
@@ -136,6 +142,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         }
 
         while (poolFlag && buffer.isReadable() && !dataNotEnough) {
+            if (params.getProtocolVersion().code() < ProtocolVersion.V2.code()) {
+                dataNotEnough = clientHandlerV01.channelRead(poolFlag, buffer, dataNotEnough);
+                continue;
+            }
+
             switch (state) {
                 case PB_HEAD:
                     handleHeader();
@@ -175,13 +186,13 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
             HeaderType headerType = HeaderType.codeOf(type);
             if (headerType == HeaderType.HANDSHAKE_RESPONSE_CLIENT) {
-                state = HandshakeStateV1.CLIENT_HANDSHAKE_RESPONSE;
+                state = HandshakeState.CLIENT_HANDSHAKE_RESPONSE;
             } else if (headerType == HeaderType.ERROR_RESPONSE) {
-                state = HandshakeStateV1.ERROR_RESPONSE;
+                state = HandshakeState.ERROR_RESPONSE;
             } else if (headerType == HeaderType.DATA_CLIENT) {
-                state = HandshakeStateV1.RECORD;
+                state = HandshakeState.RECORD;
             } else if (headerType == HeaderType.STATUS) {
-                state = HandshakeStateV1.STATUS;
+                state = HandshakeState.STATUS;
             }
         } else {
             dataNotEnough = true;
@@ -199,7 +210,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                     "Connected to LogProxyServer, ip:{}, version:{}",
                     response.getIp(),
                     response.getVersion());
-            state = HandshakeStateV1.PB_HEAD;
+            state = HandshakeState.PB_HEAD;
         } else {
             dataNotEnough = true;
         }
@@ -227,7 +238,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             buffer.readBytes(bytes);
             LogProxyProto.RuntimeStatus response = LogProxyProto.RuntimeStatus.parseFrom(bytes);
             logger.debug("Server status: {}", response.toString());
-            state = HandshakeStateV1.PB_HEAD;
+            state = HandshakeState.PB_HEAD;
         } else {
             dataNotEnough = true;
         }
@@ -236,8 +247,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     /** Handle record data response. */
     private void handleRecord() {
         if (buffer.readableBytes() >= dataLength) {
-            parseDataNew();
-            state = HandshakeStateV1.PB_HEAD;
+            parseData();
+            state = HandshakeState.PB_HEAD;
         } else {
             dataNotEnough = true;
         }
@@ -251,7 +262,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
      * @param length Data length.
      */
     private void checkHeader(int version, int type, int length) {
-        if (ProtocolVersion.codeOf(version) == null) {
+        if (ProtocolVersion.codeOf(version) == null && version != ProtocolVersion.V2.code()) {
             logger.error("Unsupported protocol version: {}", version);
             throw new LogProxyClientException(
                     ErrorCode.E_PROTOCOL, "Unsupported protocol version: " + version);
@@ -268,7 +279,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     /** Do parse record data from buffer. It will firstly decompress the raw data if necessary. */
-    private void parseDataNew() {
+    private void parseData() {
         try {
             byte[] buff = new byte[dataLength];
             buffer.readBytes(buff, 0, dataLength);
@@ -342,12 +353,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 }
             }
 
-            try {
-                stream.setCheckpointString(logMessage.getSafeTimestamp());
-            } catch (IllegalArgumentException e) {
-                logger.error("Failed to update checkpoint for log message: " + logMessage, e);
-            }
-
             offset += (8 + dataLength);
         }
     }
@@ -375,6 +380,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         config = context.config();
         params = context.params();
         recordQueue = context.recordQueue();
+        clientHandlerV01 = new ClientHandlerV01(config, params, recordQueue, fastDecompressor);
 
         logger.info(
                 "ClientId: {} connecting LogProxy: {}",
@@ -386,9 +392,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     /**
      * Generate the request body for protocol v2.
      *
+     * @param version version of protocol
      * @return Request body.
      */
-    public ByteBuf generateConnectRequestV2() {
+    public ByteBuf generateConnectRequest(ProtocolVersion version) {
+        if (version.code() < ProtocolVersion.V2.code()) {
+            return clientHandlerV01.generateConnectRequest();
+        }
+
         LogProxyProto.ClientHandshakeRequest handShake =
                 LogProxyProto.ClientHandshakeRequest.newBuilder()
                         .setLogType(params.getLogType().code())
@@ -408,50 +419,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         byteBuf.writeByte(HeaderType.HANDSHAKE_REQUEST_CLIENT.code());
         byteBuf.writeInt(packetBytes.length);
         byteBuf.writeBytes(packetBytes);
-        return byteBuf;
-    }
-
-    /**
-     * Generate the request body.
-     *
-     * @param version Protocol version.
-     * @return Request body.
-     */
-    public ByteBuf generateConnectRequest(ProtocolVersion version) {
-        if (version == ProtocolVersion.V2) {
-            return generateConnectRequestV2();
-        }
-
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer(MAGIC_STRING.length);
-        byteBuf.writeBytes(MAGIC_STRING);
-
-        // header
-        byteBuf.capacity(byteBuf.capacity() + 2 + 4 + 1);
-        byteBuf.writeShort(ProtocolVersion.V0.code());
-        byteBuf.writeInt(HeaderType.HANDSHAKE_REQUEST_CLIENT.code());
-        byteBuf.writeByte(params.getLogType().code());
-
-        // body
-        int length = CLIENT_IP.length();
-        byteBuf.capacity(byteBuf.capacity() + length + 4);
-        byteBuf.writeInt(length);
-        byteBuf.writeBytes(CLIENT_IP.getBytes());
-
-        length = params.getClientId().length();
-        byteBuf.capacity(byteBuf.capacity() + length + 4);
-        byteBuf.writeInt(length);
-        byteBuf.writeBytes(params.getClientId().getBytes());
-
-        length = ClientConf.VERSION.length();
-        byteBuf.capacity(byteBuf.capacity() + length + 4);
-        byteBuf.writeInt(length);
-        byteBuf.writeBytes(ClientConf.VERSION.getBytes());
-
-        length = params.getConfigurationString().length();
-        byteBuf.capacity(byteBuf.capacity() + length + 4);
-        byteBuf.writeInt(length);
-        byteBuf.writeBytes(params.getConfigurationString().getBytes());
-
         return byteBuf;
     }
 

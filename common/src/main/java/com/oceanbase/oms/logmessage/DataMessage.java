@@ -776,6 +776,9 @@ public class DataMessage extends Message {
             DbTypeEnum dbType = getDbType();
             this.checkDBType(dbType);
             StringBuilder messageId = new StringBuilder();
+            if (dbType == DbTypeEnum.MYSQL) {
+                messageId.append(getServerId());
+            }
 
             messageId.append("/").append(this.getCommonPart()).append("/");
             if (dbType == DbTypeEnum.OB_MYSQL || dbType == DbTypeEnum.OB_ORACLE) {
@@ -799,6 +802,9 @@ public class DataMessage extends Message {
 
         private void checkDBType(DbTypeEnum dbType) {
             switch (dbType) {
+                case MYSQL:
+                case ORACLE:
+                case DB2_LUW:
                 case OB_MYSQL:
                 case OB_ORACLE:
                 case OB_05:
@@ -918,20 +924,40 @@ public class DataMessage extends Message {
         if (StringUtils.isEmpty(dbTypeInStr)) {
             return DbTypeEnum.UNKNOWN;
         }
-        if ("oceanbase".equalsIgnoreCase(dbTypeInStr)) {
+        if ("mysql".equalsIgnoreCase(dbTypeInStr)) {
+            return DbTypeEnum.MYSQL;
+        } else if ("oceanbase".equalsIgnoreCase(dbTypeInStr)) {
             return DbTypeEnum.OB_05;
+        } else if ("oracle".equalsIgnoreCase(dbTypeInStr)) {
+            return DbTypeEnum.ORACLE;
+        } else if ("hbase".equalsIgnoreCase(dbTypeInStr)) {
+            return DbTypeEnum.HBASE;
         } else if ("oceanbase_1_0".equalsIgnoreCase(dbTypeInStr)) {
             return DbTypeEnum.OB_MYSQL;
+        } else if ("db2".equalsIgnoreCase(dbTypeInStr)) {
+            return DbTypeEnum.DB2_LUW;
+        } else if ("postgresql".equalsIgnoreCase(dbTypeInStr)) {
+            return DbTypeEnum.POSTGRESQL;
         }
         return DbTypeEnum.UNKNOWN;
     }
 
     public static DbTypeEnum parseDBTypeCode(int dbTypeCode) {
         switch (dbTypeCode) {
+            case 0:
+                return DbTypeEnum.MYSQL;
             case 1:
                 return DbTypeEnum.OB_05;
+            case 2:
+                return DbTypeEnum.HBASE;
+            case 3:
+                return DbTypeEnum.ORACLE;
             case 4:
                 return DbTypeEnum.OB_MYSQL;
+            case 5:
+                return DbTypeEnum.DB2_LUW;
+            case 6:
+                return DbTypeEnum.POSTGRESQL;
             default:
                 return DbTypeEnum.UNKNOWN;
         }

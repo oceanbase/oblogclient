@@ -71,4 +71,42 @@ public class LogMessageTypeCode {
     public static final int LOG_MSG_TYPE_ORA_BINARY_FLOAT = 256;
     public static final int LOG_MSG_TYPE_ORA_BINARY_DOUBLE = 257;
     public static final int LOG_MSG_TYPE_UNKNOWN = LOG_MSG_TYPE_ORA_BINARY_DOUBLE + 1;
+
+    // type code for xlog
+    public static final int XLOG_MSG_TYPE_SHORT = 50;
+    public static final int XLOG_MSG_TYPE_INT = 51;
+    public static final int XLOG_MSG_TYPE_LONG = 52;
+    public static final int XLOG_MSG_TYPE_DECIMAL = 53;
+    public static final int XLOG_MSG_TYPE_FLOAT = 54;
+    public static final int XLOG_MSG_TYPE_DOUBLE = 55;
+    public static final int XLOG_MSG_TYPE_BOOLEAN = 56;
+    public static final int XLOG_MSG_TYPE_TINY = 57;
+    public static final int XLOG_MSG_TYPE_LONGLONG = 58;
+    public static final int XLOG_MSG_TYPE_CHAR = 70;
+    public static final int XLOG_MSG_TYPE_VARCHAR = 71;
+    public static final int XLOG_MSG_TYPE_BINARY = 72;
+    public static final int XLOG_MSG_TYPE_JSON = 73;
+    public static final int XLOG_MSG_TYPE_CLOB = 74;
+    public static final int XLOG_MSG_TYPE_ENUM = 75;
+    public static final int XLOG_MSG_TYPE_SET = 76;
+    public static final int XLOG_MSG_TYPE_UUID = 77;
+    public static final int XLOG_MSG_TYPE_ROWID = 78;
+    public static final int XLOG_MSG_TYPE_VARBINARY = 79;
+    public static final int XLOG_MSG_TYPE_TIMESTAMP = 80;
+    public static final int XLOG_MSG_TYPE_TIMESTAMP_WITH_TIME_ZONE = 81;
+    public static final int XLOG_MSG_TYPE_DATE = 82;
+    public static final int XLOG_MSG_TYPE_TIME = 83;
+    public static final int XLOG_MSG_TYPE_TIME_WITH_TIME_ZONE = 84;
+    public static final int XLOG_MSG_TYPE_INSTANT = 85;
+    public static final int XLOG_MSG_TYPE_YEAR = 86;
+    public static final int XLOG_MSG_TYPE_INTERVAL_YEAR_TO_MONTH = 87;
+    public static final int XLOG_MSG_TYPE_INTERVAL_DAY_TO_SECOND = 88;
+    public static final int XLOG_MSG_TYPE_INTERVAL_YEAR_TO_SECOND = 89;
+    public static final int XLOG_MSG_TYPE_XML = 90;
+    public static final int XLOG_MSG_TYPE_BITMAP = 91;
+    public static final int XLOG_MSG_TYPE_GEOMETRY_EWKT = 92;
+    public static final int XLOG_MSG_TYPE_GEOMETRY_EWKB = 93;
+    public static final int XLOG_MSG_TYPE_GEOGRAPHY_EWKT = 94;
+    public static final int XLOG_MSG_TYPE_GEOGRAPHY_EWKB = 95;
+    public static final int XLOG_MSG_TYPE_BLOB = 102;
 }
