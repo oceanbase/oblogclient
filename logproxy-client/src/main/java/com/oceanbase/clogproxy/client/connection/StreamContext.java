@@ -24,11 +24,11 @@ public class StreamContext {
 
     public static class TransferPacket {
         /** Packet header type. */
-        private final HeaderType type;
+        protected final HeaderType type;
         /** Log message record. */
-        private LogMessage record;
+        protected LogMessage record;
         /** Log proxy runtime status. */
-        private RuntimeStatus status;
+        protected RuntimeStatus status;
 
         /**
          * Constructor with a {@link LogMessage}.

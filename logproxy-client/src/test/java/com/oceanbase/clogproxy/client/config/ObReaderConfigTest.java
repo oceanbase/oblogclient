@@ -30,6 +30,7 @@ public class ObReaderConfigTest {
         config.setUsername("root@test_tenant");
         config.setPassword("password");
         config.setStartTimestamp(0L);
+        config.setStartTimestampUs(0L);
         config.setTableWhiteList("test_tenant.test.*");
         config.setTableBlackList("|");
         config.setTimezone("+8:00");
@@ -53,7 +54,7 @@ public class ObReaderConfigTest {
 
         Assert.assertTrue(object instanceof ObReaderConfig);
         Map<String, String> configMap = ((ObReaderConfig) object).generateConfigurationMap(false);
-        Assert.assertEquals(configMap.size(), 8);
+        Assert.assertEquals(configMap.size(), 10);
         Assert.assertEquals(configMap, config.generateConfigurationMap(false));
     }
 }

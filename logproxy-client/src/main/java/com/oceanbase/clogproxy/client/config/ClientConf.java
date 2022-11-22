@@ -13,6 +13,7 @@ package com.oceanbase.clogproxy.client.config;
 
 import com.oceanbase.clogproxy.client.util.ClientIdGenerator;
 import com.oceanbase.clogproxy.common.config.SharedConf;
+import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import io.netty.handler.ssl.SslContext;
 import java.io.Serializable;
 
@@ -22,7 +23,7 @@ public class ClientConf extends SharedConf implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** Client version. */
-    public static final String VERSION = "1.0.7";
+    public static final String VERSION = "1.1.0";
 
     /** Queue size for storing records received from log proxy. */
     private final int transferQueueSize;
@@ -48,6 +49,8 @@ public class ClientConf extends SharedConf implements Serializable {
     /** Maximum number of reads, after which data will be discarded. */
     private final int nettyDiscardAfterReads;
 
+    private final int protocolVersion;
+
     /** User defined client id. */
     private final String clientId;
 
@@ -68,6 +71,7 @@ public class ClientConf extends SharedConf implements Serializable {
             int maxReconnectTimes,
             int idleTimeoutS,
             int nettyDiscardAfterReads,
+            int protocolVersion,
             String clientId,
             boolean ignoreUnknownRecordType,
             SslContext sslContext) {
@@ -78,6 +82,7 @@ public class ClientConf extends SharedConf implements Serializable {
         this.maxReconnectTimes = maxReconnectTimes;
         this.idleTimeoutS = idleTimeoutS;
         this.nettyDiscardAfterReads = nettyDiscardAfterReads;
+        this.protocolVersion = protocolVersion;
         this.clientId = clientId;
         this.ignoreUnknownRecordType = ignoreUnknownRecordType;
         this.sslContext = sslContext;
@@ -111,6 +116,10 @@ public class ClientConf extends SharedConf implements Serializable {
         return nettyDiscardAfterReads;
     }
 
+    public int getProtocolVersion() {
+        return protocolVersion;
+    }
+
     public String getClientId() {
         return clientId;
     }
@@ -136,6 +145,7 @@ public class ClientConf extends SharedConf implements Serializable {
         private int maxReconnectTimes = -1;
         private int idleTimeoutS = 15;
         private int nettyDiscardAfterReads = 16;
+        private int protocolVersion = ProtocolVersion.V2.code();
         private String clientId = ClientIdGenerator.generate();
         private boolean ignoreUnknownRecordType = false;
         private SslContext sslContext = null;
@@ -175,6 +185,11 @@ public class ClientConf extends SharedConf implements Serializable {
             return this;
         }
 
+        public Builder protocolVersion(int protocolVersion) {
+            this.protocolVersion = protocolVersion;
+            return this;
+        }
+
         public Builder clientId(String clientId) {
             this.clientId = clientId;
             return this;
@@ -199,6 +214,7 @@ public class ClientConf extends SharedConf implements Serializable {
                     maxReconnectTimes,
                     idleTimeoutS,
                     nettyDiscardAfterReads,
+                    protocolVersion,
                     clientId,
                     ignoreUnknownRecordType,
                     sslContext);

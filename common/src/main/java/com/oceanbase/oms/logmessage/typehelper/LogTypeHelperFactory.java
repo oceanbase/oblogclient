@@ -21,6 +21,14 @@ public abstract class LogTypeHelperFactory {
             case OB_ORACLE:
             case OB_05:
                 return OBLogTypeHelper.OB_LOG_TYPE_HELPER;
+            case MYSQL:
+                return MySQLLogTypeHelper.MYSQL_LOG_TYPE_HELPER;
+            case ORACLE:
+                return OracleLogTypeHelper.ORACLE_LOG_TYPE_HELPER;
+            case DB2_LUW:
+                return DB2LogTypeHelper.DB2_LOG_TYPE_HELPER;
+            case POSTGRESQL:
+                return XLogTypeHelper.XLOG_TYPE_HELPER;
             default:
                 throw new IllegalArgumentException("Unsupported dbType " + dbType);
         }
