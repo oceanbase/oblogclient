@@ -31,6 +31,7 @@ import org.apache.commons.lang3.Conversion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/* Compatitable for legacy V0 and V1 only, however you should not use */
 public class ClientHandlerV01 {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientHandlerV01.class);

@@ -35,10 +35,6 @@ See the Mulan PSL v2 for more details.
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
 
     <!-- SLF4J -->
     <dependency>

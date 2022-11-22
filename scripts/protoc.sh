@@ -13,5 +13,5 @@
 
 cd "$(dirname "$0")/.." || exit
 
-protoc --java_out=common/src/main/java common/src/main/java/com/oceanbase/clogproxy/common/packet/protocol/logproxy.proto
-protoc --java_out=common/src/main/java common/src/main/java/com/oceanbase/clogproxy/common/packet/protocol/v1.proto
+protoc --java_out=common/src/main/java proto/logproxy.proto
+protoc --java_out=common/src/main/java proto/v1.proto
