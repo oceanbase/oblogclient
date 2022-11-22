@@ -75,8 +75,8 @@ See the Mulan PSL v2 for more details.
     <netty.version>4.1.77.Final</netty.version>
     <protobuf.version>3.19.6</protobuf.version>
     <lz4.version>1.8.0</lz4.version>
-    <slf4j.version>2.0.3</slf4j.version>
-    <logback.version>1.4.3</logback.version>
+    <slf4j.version>1.7.32</slf4j.version>
+    <logback.version>1.2.10</logback.version>
     <junit.version>4.13.1</junit.version>
   </properties>
 
