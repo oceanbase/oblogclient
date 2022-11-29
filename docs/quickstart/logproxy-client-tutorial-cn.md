@@ -230,6 +230,18 @@ LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf
 
 ### 版本兼容性
 
+##### 组件ID
+
+最初版本的 LogProxy 客户端使用 `'groupId'='com.oceanbase.logclient'`，`'artifactId'='logproxy-client'`，从 `1.1.0` 开始，更改组件 ID 为 `'groupId'='com.oceanbase'`，`'artifactId'='oblogclient-logproxy'`。如果你想使用旧版本的 LogProxy 客户端，可以在 Maven 中使用如下方式引入：
+
+```xml
+<dependency>
+  <groupId>com.oceanbase.logclient</groupId>
+  <artifactId>logproxy-client</artifactId>
+  <version>1.0.7</version>
+</dependency>
+```
+
 ##### 数据压缩
 
 LogProxy 社区版从 1.0.1 开始默认会对发送到客户端的数据进行压缩，正确解压缩需要使用客户端 1.0.4 或之后的版本。

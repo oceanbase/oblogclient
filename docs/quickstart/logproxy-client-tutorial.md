@@ -71,7 +71,7 @@ To connect to LogProxy, there are some options in `ObReaderConfig`:
                 <td style="word-wrap: break-word;">Empty</td>
                 <td>String</td>
                 <td>setClusterUrl</td>
-                <td>The url used to get information about OceanBase servers. Query with <code>show parameters like 'obconfig_url'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
+                <td>The url used to get information about servers of OceanBase Enterprise Edition. Query with <code>show parameters like 'obconfig_url'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
             </tr>
             <tr>
                 <td>rootserver_list</td>
@@ -79,7 +79,7 @@ To connect to LogProxy, there are some options in `ObReaderConfig`:
                 <td style="word-wrap: break-word;">Empty</td>
                 <td>String</td>
                 <td>setRsList</td>
-                <td>The OceanBase server list. Query with <code>show parameters like 'rootservice_list'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
+                <td>The server list of OceanBase Community Edition. Query with <code>show parameters like 'rootservice_list'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
             </tr>
             <tr>
                 <td>cluster_user</td>
@@ -229,6 +229,18 @@ LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf
 ```
 
 ### Version Compatibility
+
+#### GroupId and ArtifactId
+
+The initial version of LogProxy client is released with `'groupId'='com.oceanbase.logclient'` and `'artifactId'='logproxy-client'`, and we use `'groupId'='com.oceanbase'` and `'artifactId'='oblogclient-logproxy'` since `1.1.0`. If you want to use a legacy version of LogProxy client, you can add it to Maven as following:
+
+```xml
+<dependency>
+  <groupId>com.oceanbase.logclient</groupId>
+  <artifactId>logproxy-client</artifactId>
+  <version>1.0.7</version>
+</dependency>
+```
 
 #### Record Compression
 
