@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'scripts/**'
+      - '**.md'
+      - '.*'
 
 jobs:
   publish-snapshot:

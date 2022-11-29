@@ -1,27 +1,26 @@
 # LogProxyClient Tutorial
 
-[oblogproxy](https://github.com/oceanbase/oblogproxy) (OceanBase Log Proxy, hereinafter LogProxy) is a proxy service which can fetch incremental log data from OceanBase. This tutorial will show you how to use LogProxyClient to connect to LogProxy and get the log data.
+[oblogproxy](https://github.com/oceanbase/oblogproxy) (OceanBase Log Proxy, hereinafter LogProxy) is a proxy service which can fetch the clog (commit log) data from OceanBase. This tutorial will show you how to use LogProxy client to connect to LogProxy and get the log data.
 
 ## Preparation
 
-There are some requirements to use LogProxyClient:
+There are some requirements:
 
 1. JDK 1.8 or higher version installed.
 2. LogProxy started.
 3. SSL certificate files if SSL encryption is enabled.
-4. Maven or Gradle installed, otherwise you need download the jar file manually.
-
+4. Maven or Gradle installed, otherwise you need download the jar files manually.
 
 ## Binaries/Download
 
-Releases are available in the [Maven Central](https://mvnrepository.com/artifact/com.oceanbase.logclient/logproxy-client), you can also download the jar file manually from the [archive](https://repo1.maven.org/maven2/com/oceanbase/logclient/logproxy-client/).
+Releases are available in the [Maven Central](https://mvnrepository.com/artifact/com.oceanbase/oblogclient-logproxy), you can also download the jar file manually from the [archive](https://repo1.maven.org/maven2/com/oceanbase/oblogclient-logproxy/).
 
 Here is an example for Maven:
 
 ```xml
 <dependency>
-  <groupId>com.oceanbase.logclient</groupId>
-  <artifactId>logproxy-client</artifactId>
+  <groupId>com.oceanbase</groupId>
+  <artifactId>oblogclient-logproxy</artifactId>
   <version>x.y.z</version>
 </dependency>
 ```
@@ -30,8 +29,8 @@ If you'd rather like the latest snapshots of the upcoming major version, use our
 
 ```xml
 <dependency>
-  <groupId>com.oceanbase.logclient</groupId>
-  <artifactId>logproxy-client</artifactId>
+  <groupId>com.oceanbase</groupId>
+  <artifactId>oblogclient-logproxy</artifactId>
   <version>x.y.z-SNAPSHOT</version>
 </dependency>
 
@@ -51,37 +50,116 @@ If you'd rather like the latest snapshots of the upcoming major version, use our
 
 ### Basic Usage
 
-To connect to LogProxy, there are some parameters to set in `ObReaderConfig`:
+To connect to LogProxy, there are some options in `ObReaderConfig`:
 
-- *cluster_url*: Cluster config url used to set up the OBConfig service. Required for OceanBase Enterprise Edition.
-- *rootserver_list*: Root server list of OceanBase cluster in format `ip1:rpc_port1:sql_port1;ip2:rpc_port2:sql_port2`, IP address here must be able to be resolved by LogProxy. Required for OceanBase Community Edition.
-- *cluster_username*: Username for OceanBase, the format is `username@tenant_name#cluster_name` when connecting to [obproxy](https://github.com/oceanbase/obproxy) or `username@tenant_name` when directly connecting to OceanBase server.
-- *cluster_password*: Password for OceanBase when using configured `cluster_username`.
-- *first_start_timestamp*: Start timestamp in seconds, and zero means starting from now. Default is `0`.
-- *tb_white_list*: Table whitelist in format `tenant_name.database_name.table_name`. Pattern matching is provided by `fnmatch`, and multiple values can be separated by `|`. Default is `*.*.*`.
-- *tb_black_list*: Table blacklist in the same format with whitelist. Default is `|`.
-- *timezone*: Timezone offset from UTC. Default value is `+8:00`.
-- *working_mode*: Working mode. Can be `storage` (default value, supported from `obcdc` 3.1.3) or `memory`.
+<div class="highlight">
+    <table class="colwidths-auto docutils">
+        <thead>
+            <tr>
+                <th class="text-left" style="width: 10%">Option</th>
+                <th class="text-left" style="width: 8%">Required</th>
+                <th class="text-left" style="width: 7%">Default</th>
+                <th class="text-left" style="width: 10%">Type</th>
+                <th class="text-left" style="width: 15%">Setter</th>
+                <th class="text-left" style="width: 50%">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>cluster_url</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">Empty</td>
+                <td>String</td>
+                <td>setClusterUrl</td>
+                <td>The url used to get information about OceanBase servers. Query with <code>show parameters like 'obconfig_url'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
+            </tr>
+            <tr>
+                <td>rootserver_list</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">Empty</td>
+                <td>String</td>
+                <td>setRsList</td>
+                <td>The OceanBase server list. Query with <code>show parameters like 'rootservice_list'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
+            </tr>
+            <tr>
+                <td>cluster_user</td>
+                <td>true</td>
+                <td style="word-wrap: break-word;">Empty</td>
+                <td>String</td>
+                <td>setUsername</td>
+                <td>Username for OceanBase, the format is <code>username@tenant_name</code>.</td>
+            </tr>
+            <tr>
+                <td>cluster_password</td>
+                <td>true</td>
+                <td style="word-wrap: break-word;">Empty</td>
+                <td>String</td>
+                <td>setPassword</td>
+                <td>Password for OceanBase.</td>
+            </tr>
+            <tr>
+                <td>tb_white_list</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">*.*.*</td>
+                <td>String</td>
+                <td>setTableWhiteList</td>
+                <td>Table whitelist in format <code>tenant_name.database_name.table_name</code>. Pattern matching is provided by fnmatch, and multiple values can be separated by <code>|</code>. Note that the user should have at least the SELECT privilege on this whitelist.</td>
+            </tr>
+            <tr>
+                <td>tb_black_list</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">｜</td>
+                <td>String</td>
+                <td>setTableBlackList</td>
+                <td>Table blacklist in format <code>tenant_name.database_name.table_name</code>. Pattern matching is provided by fnmatch, and multiple values can be separated by <code>|</code>. </td>
+            </tr>
+            <tr>
+                <td>first_start_timestamp</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">0</td>
+                <td>Long</td>
+                <td>setStartTimestamp</td>
+                <td>Timestamp of the starting point of data in seconds, and zero means starting from now.</td>
+            </tr>
+            <tr>
+                <td>timezone</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">+08:00</td>
+                <td>String</td>
+                <td>setTimezone</td>
+                <td>Timezone used to convert data of temporal types.</td>
+            </tr>
+            <tr>
+                <td>working_mode</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">storage</td>
+                <td>String</td>
+                <td>setWorkingMode</td>
+                <td>Working mode of libobcdc, can be 'storage' or 'memory'.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-These parameters are used in `obcdc` (former `liboblog`), and the items not listed above can be passed to `obcdc` through the `ObReaderConfig` constructor with parameters.
+There are some other options that can be set with the constructor of `ObReaderConfig`, you can search obcdc on the [doc website](https://www.oceanbase.com/docs/) for more details.
 
 Here is an example to set `ObReaderConfig` with OceanBase Community Edition:
 
 ```java
 ObReaderConfig config = new ObReaderConfig();
 config.setRsList("127.0.0.1:2882:2881");
-config.setUsername("username");
+config.setUsername("user@tenant");
 config.setPassword("password");
 config.setStartTimestamp(0L);
 config.setTableWhiteList("tenant.*.*");
 ```
 
-If you want to work with OceanBase Enterprise Edition, you can set the `ObReaderConfig` with `cluster_url` like below:
+And you can set `ObReaderConfig` for OceanBase Enterprise Edition like below:
 
 ```java
 ObReaderConfig config = new ObReaderConfig();
 config.setClusterUrl("http://127.0.0.1:8080/services?Action=ObRootServiceInfo&User_ID=alibaba&UID=ocpmaster&ObRegion=tenant");
-config.setUsername("username");
+config.setUsername("user@tenant");
 config.setPassword("password");
 config.setStartTimestamp(0L);
 config.setTableWhiteList("tenant.*.*");
@@ -132,6 +210,8 @@ LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf
 
 The received log records are parsed to `LogMessage` in the client handler, you can see [LogMessage doc](../formats/logmessage.md) for more details.
 
+To get a full example, you can check the [LogProxyClientTest.java](../../oblogclient-logproxy/src/test/java/com/oceanbase/clogproxy/client/LogProxyClientTest.java).
+
 ### SSL Encryption
 
 If SSL verification is enabled at LogProxy, you should instance a LogProxyClient with [SslContext](https://netty.io/4.1/api/io/netty/handler/ssl/SslContext.html). For example:
@@ -148,31 +228,18 @@ ClientConf clientConf = ClientConf.builder().sslContext(sslContext).build();
 LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf);
 ```
 
-Here you need provide following files:
-- *ca.crt*: Trusted certificate for verifying the remote endpoint's certificate, should be same with LogProxy.
-- *client.crt*: Certificate of this client.
-- *client.key*: Private key of this client.
-
-See [manual](https://github.com/oceanbase/oblogproxy/blob/master/docs/manual.md) of LogProxy for more details about SSL encryption.
-
-## Version Compatibility
-
-The communication protocol between the `logproxy-client` and `oblogproxy` is forward compatible, and the latest version of `logproxy-client` can work with any version of `oblogproxy`. But for legacy versions, there are some restrictions in functionality.
-
-#### OceanBase Enterprise Edition
-
-To monitor change data from OceanBase EE, you need to configure `cluster_url` to replace the `rootserver_list` parameter for `obcdc`, which is supported from `1.0.4` of the client.
+### Version Compatibility
 
 #### Record Compression
 
-The log proxy compresses the record data by default from `1.0.1`, and the client fixed the bug in decompression process with [#33](https://github.com/oceanbase/oblogclient/pull/33) from `1.0.4`. So if you want to work with log proxy `1.0.1` or later version, you should use `1.0.4` or later version of the client.
+The log proxy compresses the record data by default from `1.0.1`, and to decompress the data properly, you should use `1.0.4` or later version of the client.
 
-#### Reuse Client Id
+#### Use Client Id
 
-The log proxy use `clientId` to identify a connection, and reuse it will make the log proxy reduce the use of hardware resources. In legacy versions of the client, there is a bug [#38](https://github.com/oceanbase/oblogclient/issues/38) which will cause connection close failure, and it's fixed in `1.0.4`. So you can only reuse a fixed `clientId` from `1.0.4` of the client.
+The LogProxy use `clientId` to identify a connection, if you want to use the client concurrently, or you want to reuse the `clientId`, you should use `1.0.4` or later version of the client.
 
-## Heartbeat and Troubleshooting
+## Troubleshooting
 
-Once the connection is established properly, LogProxy will start to fetch log messages from OceanBase and send them to LogProxyClient. When the connection is idle, LogProxy will send heartbeat messages to LogProxyClient.
+When the connection between LogProxy and the client is successfully established, LogProxy will send log data to the client. The log data here mainly includes heartbeat and data changes. Even if the database does not change within the monitoring scope, the LogProxy client should be able to receive heartbeat data.
 
-Note that when LogProxy receives the ObReaderConfig, it will only check the format but won't verify the content. So only when the LogProxyClient receives log messages or heartbeat messages can we be sure that the connection is established properly. If the connection doesn't work properly and there is no error message in log of LogProxyClient, you need to check the log of `oblogreader` at LogProxy side, which is under `$(logproxy_home)/run` by default.
+If the LogProxy client does not receive data and no error message appears after startup, in order to determine the cause of the issue, you should check the LogReader thread of the LogProxy for this connection, and the working space of LogReader is `run/ {clientId}/`.
