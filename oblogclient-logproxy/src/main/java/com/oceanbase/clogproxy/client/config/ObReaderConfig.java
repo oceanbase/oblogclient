@@ -62,7 +62,7 @@ public class ObReaderConfig extends AbstractConnectionConfig {
             new ConfigItem<>("first_start_timestamp_us", 0L);
 
     /** Timezone offset. */
-    private final ConfigItem<String> timezone = new ConfigItem<>("timezone", "+8:00");
+    private final ConfigItem<String> timezone = new ConfigItem<>("timezone", "+08:00");
 
     /** Working mode. */
     private final ConfigItem<String> workingMode = new ConfigItem<>("working_mode", "storage");
