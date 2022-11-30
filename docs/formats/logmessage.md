@@ -1,43 +1,136 @@
 # LogMessage
 
-LogMessage is a struct to store log messages, see the [class file](../../common/src/main/java/com/oceanbase/oms/logmessage/LogMessage.java) for its definition.
+[LogMessage.java](../../oblogclient-common/src/main/java/com/oceanbase/oms/logmessage/LogMessage.java) defines `LogMessage` as the structure of the log records. During the running of the program, the client will convert the received log data into LogMessage objects, and users can use them to customize their own processing logic.
 
-## LogMessage Struct
+## Struct
 
-A LogMessage object mainly has the following fields (getter):
+When we fetch log data from OceanBase, the data will firstly be serialized using [oblogmsg](https://github.com/oceanbase/oblogmsg), and eventually be converted into LogMessage struct in the client. For specific field information, please refer to oblogmsg.
 
-- *RawData*: Byte array that contains all details of the log message.
-- *DbType*: Type of source database, here we only use `OCEANBASE1`, which means OceanBase 1.0 or higher version.
-- *Opt*: Operation type, here should be one of `BEGIN`, `COMMIT`, `INSERT`, `UPDATE`, `DELETE`, `DDL`, `HEARTBEAT`.
-- *DbName*: Database name, here it is in format of `tenant_name.database_name`.
-- *TableName*: Table name.
-- *Timestamp*: Timestamp in seconds.
-- *OB10UniqueId*: Transaction id (string) of log message, only recorded in `BEGIN` or DML (`INSERT`, `UPDATE`, `DELETE`).
-- *FieldList*: A list of row fields.
+There are the common fields of LogMessage:
 
-## Field List in LogMessage
+<div class="highlight">
+    <table class="colwidths-auto docutils">
+        <thead>
+            <tr>
+                <th class="text-left" style="width: 20%">Field</th>
+                <th class="text-left" style="width: 20%">Getter</th>
+                <th class="text-left" style="width: 20%">Type</th>
+                <th class="text-left" style="width: 40%">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>byteBuf</td>
+                <td>getRawData</td>
+                <td>byte[]</td>
+                <td>The original log data in byte array format.</td>
+            </tr>
+            <tr>
+                <td>srcType</td>
+                <td>getDbType</td>
+                <td>DbTypeEnum</td>
+                <td>Type of datasource, OceanBase versions before 1.0 correspond to <code>OB_05</code>, versions 1.0 and later correspond to <code>OB_MYSQL</code> and <code>OB_ORACLE</code>.</td>
+            </tr>
+            <tr>
+                <td>op</td>
+                <td>getOpt</td>
+                <td>DataMessage.Record.Type</td>
+                <td>The type of log data, OceanBase mainly involves <code>BEGIN</code>, <code>COMMIT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, <code>DDL</code>, <code>HEARTBEAT</code>.</td>
+            </tr>
+            <tr>
+                <td>timestamp</td>
+                <td>getTimestamp</td>
+                <td>String</td>
+                <td>The timestamp of data change execution time.</td>
+            </tr>
+            <tr>
+                <td>dbName</td>
+                <td>getDbName</td>
+                <td>String</td>
+                <td>Database name of log data. Note that this value contains the tenant name in the format of <code>tenant_name.db_name</code>.</td>
+            </tr>
+            <tr>
+                <td>tableName</td>
+                <td>getTableName</td>
+                <td>String</td>
+                <td>Table name of log data.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-The item in *FieldList* of LogMessage is of type `DataMessage.Record.Field`, and one Field corresponding to a column of one row. A Field struct mainly contains fields as following:
+The field list of DML and DDL can be obtained through the `getFieldList` method. The following are commonly used fields in the Field struct:
 
-- *length*: The length of `value` field.
-- *primaryKey*: Flag of whether the column is the primary key.
-- *name*: Column name.
-- *type*: Type of the column, raw value is the const in `LogMessageTypeCode`.
-- *flag*: Flag of whether the Field is generated/parsed.
-- *encoding*: Encoding of the column.
-- *value*: Column value.
-- *prev*: Flag of whether the Field is the old value of the column.
-
-Note that the Field struct here contains the type information, which is different from MySQL binlog. The value of a Field is of `ByteString` type, which could be used as a byte array or a string, both of which can easily cast to other types.
-
-The content of Field list in the LogMessage is related to the operation type:
-
- - `BEGIN`、`COMMIT`、`HEARTBEAT`：null
- - `DDL`: One Field with ddl sql in value field.
- - `INSERT`: The column value list of the new row.
- - `UPDATE`: Both the old and new column values of the row. The list should be [field_0_old, field_0_new, field_1_old, field_1_new, ...].
- - `DELETE`: The column value list of the old row.
+<div class="highlight">
+    <table class="colwidths-auto docutils">
+        <thead>
+            <tr>
+                <th class="text-left" style="width: 10%">Field</th>
+                <th class="text-left" style="width: 20%">Getter</th>
+                <th class="text-left" style="width: 10%">Type</th>
+                <th class="text-left" style="width: 60%">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>primaryKey</td>
+                <td>isPrimary</td>
+                <td>boolean</td>
+                <td>Flag of whether this field is a primary key of not null unique key.</td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>getFieldname</td>
+                <td>String</td>
+                <td>Field name.</td>
+            </tr>
+            <tr>
+                <td>type</td>
+                <td>getType</td>
+                <td>DataMessage.Record.Field.Type</td>
+                <td>Field type.</td>
+            </tr>
+            <tr>
+                <td>encoding</td>
+                <td>getEncoding</td>
+                <td>String</td>
+                <td>Field encoding.</td>
+            </tr>
+            <tr>
+                <td>value</td>
+                <td>getValue</td>
+                <td>ByteString</td>
+                <td>Field value in ByteString type.</td>
+            </tr>
+            <tr>
+                <td>prev</td>
+                <td>isPrev</td>
+                <td>boolean</td>
+                <td>Flag of whether it is a old value. It is true if this field is the value before the change, and false if it is the value after the change.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 ## Usage
 
-You can see which projects use `logproxy-client` [here](https://github.com/oceanbase/oblogclient/network/dependents?package_id=UGFja2FnZS0yODMzMjE5Nzc1).
+Please refer to [LogProxyClientTest.java](../../oblogclient-logproxy/src/test/java/com/oceanbase/clogproxy/client/LogProxyClientTest.java).
+
+### Safe Checkpoint
+
+LogMessage provides `safeTimestamp` to indicate the safe checkpoint for data reception, that is to say, LogMessage committed earlier than this timestamp has been received by the client.
+
+When a application consumes data, it generally maintains a safe checkpoint for data processing. For LogMessage, we should use HEARTBEAT `timestamp` as the safe checkpoint. LogMessage contains two kinds of timestamp:
+- HEARTBEAT type: the value of the `timestamp` field is the timestamp corresponding to the safe checkpoint.
+- Other types: the value of the `timestamp` field is the execution time of the data change, and the `fileNameOffset` field corresponds to the latest HEARTBEAT timestamp. Since `libobcdc` does not guarantee that the fetched data changes are in timestamp order, so for DDL and DML types of LogMessage, `fileNameOffset` should be used as safe checkpoint instead of `timestamp`.
+
+The following code can be used to obtain the safe checkpoint corresponding to the current data:
+
+```java
+long checkpoint;
+if (DataMessage.Record.Type.HEARTBEAT.equals(message.getOpt())) {
+    checkpoint = Long.parseLong(message.getTimestamp());
+} else {
+    checkpoint = message.getFileNameOffset();
+}
+```
