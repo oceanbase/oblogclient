@@ -140,7 +140,9 @@ public class ClientHandlerV01 {
                     resetState();
                     logger.error("LogProxy refused handshake request: {}", message);
                     throw new LogProxyClientException(
-                            ErrorCode.NO_AUTH, "LogProxy refused handshake request: " + message);
+                            ErrorCode.NO_AUTH,
+                            "LogProxy refused handshake request: " + message,
+                            true);
                 } else {
                     dataNotEnough = true;
                 }

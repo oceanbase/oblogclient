@@ -144,7 +144,8 @@ public class ClientStream {
                                         triggerException(
                                                 new LogProxyClientException(
                                                         ErrorCode.E_MAX_RECONNECT,
-                                                        "Exceed max retry times"));
+                                                        "Exceed max retry times",
+                                                        true));
                                         break;
                                     }
                                     if (state == ReconnectState.RETRY) {

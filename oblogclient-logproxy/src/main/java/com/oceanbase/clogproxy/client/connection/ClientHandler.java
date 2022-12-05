@@ -225,7 +225,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             logger.error("LogProxy refused handshake request: {}", response.toString());
             throw new LogProxyClientException(
                     ErrorCode.NO_AUTH,
-                    "LogProxy refused handshake request: " + response.toString());
+                    "LogProxy refused handshake request: " + response.toString(),
+                    true);
         } else {
             dataNotEnough = true;
         }
