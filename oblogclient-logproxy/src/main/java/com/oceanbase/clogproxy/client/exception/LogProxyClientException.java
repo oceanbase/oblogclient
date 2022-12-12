@@ -10,7 +10,6 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.exception;
 
-
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 
 /**
@@ -21,6 +20,9 @@ public class LogProxyClientException extends RuntimeException {
 
     /** Error code. */
     private ErrorCode code = ErrorCode.NONE;
+
+    /*The flag of whether the client should stop the stream.*/
+    private boolean needStop = false;
 
     /**
      * Constructor with error code and message.
@@ -57,18 +59,53 @@ public class LogProxyClientException extends RuntimeException {
     }
 
     /**
+     * Constructor with error code and message.
+     *
+     * @param code Error code.
+     * @param message Error message.
+     * @param needStop The flag of whether the client should stop the stream.
+     */
+    public LogProxyClientException(ErrorCode code, String message, boolean needStop) {
+        super(message);
+        this.code = code;
+        this.needStop = needStop;
+    }
+
+    /**
+     * Constructor with error code and exception.
+     *
+     * @param code Error code.
+     * @param exception Exception instance.
+     * @param needStop The flag of whether the client should stop the stream.
+     */
+    public LogProxyClientException(ErrorCode code, Exception exception, boolean needStop) {
+        super(exception.getMessage(), exception.getCause());
+        this.code = code;
+        this.needStop = needStop;
+    }
+
+    /**
+     * Constructor with error code, error message and cause.
+     *
+     * @param code Error code.
+     * @param message Error message.
+     * @param throwable Cause.
+     * @param needStop The flag of whether the client should stop the stream.
+     */
+    public LogProxyClientException(
+        ErrorCode code, String message, Throwable throwable, boolean needStop) {
+        super(message, throwable);
+        this.code = code;
+        this.needStop = needStop;
+    }
+
+    /**
      * Identify whether the client should stop the stream.
      *
      * @return The flag of whether the client should stop the stream.
      */
     public boolean needStop() {
-        return (code == ErrorCode.E_MAX_RECONNECT)
-                || (code == ErrorCode.E_PROTOCOL)
-                || (code == ErrorCode.E_HEADER_TYPE)
-                || (code == ErrorCode.NO_AUTH)
-                || (code == ErrorCode.E_COMPRESS_TYPE)
-                || (code == ErrorCode.E_LEN)
-                || (code == ErrorCode.E_PARSE);
+        return needStop;
     }
 
     /**
