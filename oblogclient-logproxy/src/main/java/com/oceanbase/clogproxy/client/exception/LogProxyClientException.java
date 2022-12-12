@@ -10,6 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 package com.oceanbase.clogproxy.client.exception;
 
+
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 
 /**
@@ -93,7 +94,7 @@ public class LogProxyClientException extends RuntimeException {
      * @param needStop The flag of whether the client should stop the stream.
      */
     public LogProxyClientException(
-        ErrorCode code, String message, Throwable throwable, boolean needStop) {
+            ErrorCode code, String message, Throwable throwable, boolean needStop) {
         super(message, throwable);
         this.code = code;
         this.needStop = needStop;
