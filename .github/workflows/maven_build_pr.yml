@@ -1,9 +1,11 @@
-name: Maven Build
+name: Maven Build on Pull Request
 
 on:
   pull_request:
-    branches:
-      - master
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.*'
 
 jobs:
   build:

@@ -3,7 +3,7 @@ OceanBase 日志客户端
 
 [English](README.md) | 简体中文
 
-[![Build Status](https://github.com/oceanbase/oblogclient/actions/workflows/maven_publish_snapshot.yml/badge.svg?branch=master)](https://github.com/oceanbase/oblogclient/actions/workflows/maven_publish_snapshot.yml)
+[![Build Status](https://github.com/oceanbase/oblogclient/actions/workflows/maven_build_master.yml/badge.svg?branch=master)](https://github.com/oceanbase/oblogclient/actions/workflows/maven_build_master.yml)
 [![Release](https://img.shields.io/github/release/oceanbase/oblogclient.svg)](https://github.com/oceanbase/oblogclient/releases)
 [![License](https://img.shields.io/badge/license-Mulan%20PSL%20v2-green.svg)](LICENSE)
 
