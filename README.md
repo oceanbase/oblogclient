@@ -28,4 +28,4 @@ Communication
 
 License
 -------
-Mulan Permissive Software License, Version 2 (Mulan PSL v2). See the [LICENSE](LICENCE) file for details.
+Mulan Permissive Software License, Version 2 (Mulan PSL v2). See the [LICENSE](LICENSE) file for details.

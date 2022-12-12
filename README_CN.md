@@ -28,4 +28,4 @@ OceanBase 日志客户端是一个可用于获取 [OceanBase](https://github.com
 
 协议
 -------
-本项目使用[木兰宽松许可证, 第2版](LICENCE)。
+本项目使用[木兰宽松许可证, 第2版](LICENSE)。
