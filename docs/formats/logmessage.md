@@ -118,13 +118,17 @@ Please refer to [LogProxyClientTest.java](../../oblogclient-logproxy/src/test/ja
 
 ### Safe Checkpoint
 
-LogMessage provides `safeTimestamp` to indicate the safe checkpoint for data reception, that is to say, LogMessage committed earlier than this timestamp has been received by the client.
+LogMessage provides `safeTimestamp` to indicate the safe checkpoint, it is a timestamp in seconds, which means all the log messages committed earlier than this timestamp have been received by the client.
 
-When a application consumes data, it generally maintains a safe checkpoint for data processing. For LogMessage, we should use HEARTBEAT `timestamp` as the safe checkpoint. LogMessage contains two kinds of timestamp:
+```java
+long checkpoint = Long.parseLong(message.getSafeTimestamp());
+```
+
+For LogMessage of OceanBase, there are two kinds of timestamp:
 - HEARTBEAT type: the value of the `timestamp` field is the timestamp corresponding to the safe checkpoint.
 - Other types: the value of the `timestamp` field is the execution time of the data change, and the `fileNameOffset` field corresponds to the latest HEARTBEAT timestamp. Since `libobcdc` does not guarantee that the fetched data changes are in timestamp order, so for DDL and DML types of LogMessage, `fileNameOffset` should be used as safe checkpoint instead of `timestamp`.
 
-The following code can be used to obtain the safe checkpoint corresponding to the current data:
+So you can also get the safe checkpoint of OceanBase LogMessage by the following code:
 
 ```java
 long checkpoint;
