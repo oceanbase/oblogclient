@@ -118,13 +118,17 @@
 
 ### 安全位点
 
-LogMessage 提供了 `safeTimestamp` 来表示数据接收的安全位点，也就是说早于该秒级时间戳提交的 LogMessage 均已被客户端接收。
+LogMessage 提供了 `safeTimestamp` 来表示当前数据对应的安全位点，它是一个秒级的时间戳，含义为：早于该时间戳提交的 LogMessage 均已被客户端接收。
 
-业务应用在进行数据消费时，一般还要维护一个数据处理的安全位点。在 LogMessage 中，该安全位点需要借助心跳的 `timestamp` 来实现。 LogMessage 在时间存储上有两套逻辑：
+```java
+long checkpoint = Long.parseLong(message.getSafeTimestamp());
+```
+
+对于 OceanBase 而言，该安全位点是借助心跳的 `timestamp` 来实现的。 OceanBase 的 LogMessage 在时间存储上有两套逻辑：
 - 心跳类型：`timestamp` 字段值为安全位点对应的秒级时间戳。
 - 其他类型：`timestamp` 字段值为数据变动的提交时间，而 `fileNameOffset` 字段对应最近一次心跳信息的 `timestamp`。由于 libobcdc 并不保证拉取到的数据变动是严格按照时间顺序的，因此对于 DDL、DML 类型的 LogMessage，应当使用 `fileNameOffset` 而非 `timestamp` 作为安全位点。
 
-获取当前数据对应安全位点可以使用如下代码：
+因此，OceanBase LogMessage 的安全位点也可以借助以下代码获取:
 
 ```java
 long checkpoint;
