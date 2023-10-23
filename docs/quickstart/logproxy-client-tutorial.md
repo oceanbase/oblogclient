@@ -68,7 +68,7 @@ To connect to LogProxy, there are some options in `ObReaderConfig`:
             <tr>
                 <td>cluster_url</td>
                 <td>false</td>
-                <td style="word-wrap: break-word;">Empty</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setClusterUrl</td>
                 <td>The url used to get information about servers of OceanBase Enterprise Edition. Query with <code>show parameters like 'obconfig_url'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
@@ -76,7 +76,7 @@ To connect to LogProxy, there are some options in `ObReaderConfig`:
             <tr>
                 <td>rootserver_list</td>
                 <td>false</td>
-                <td style="word-wrap: break-word;">Empty</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setRsList</td>
                 <td>The server list of OceanBase Community Edition. Query with <code>show parameters like 'rootservice_list'</code> using user of `sys` tenant, and you can get it at the `value` field.</td>
@@ -84,18 +84,18 @@ To connect to LogProxy, there are some options in `ObReaderConfig`:
             <tr>
                 <td>cluster_user</td>
                 <td>true</td>
-                <td style="word-wrap: break-word;">Empty</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setUsername</td>
-                <td>Username for OceanBase, the format is <code>username@tenant_name</code>.</td>
+                <td>Username of OceanBase.</td>
             </tr>
             <tr>
                 <td>cluster_password</td>
                 <td>true</td>
-                <td style="word-wrap: break-word;">Empty</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setPassword</td>
-                <td>Password for OceanBase.</td>
+                <td>Password of OceanBase.</td>
             </tr>
             <tr>
                 <td>tb_white_list</td>
@@ -136,6 +136,38 @@ To connect to LogProxy, there are some options in `ObReaderConfig`:
                 <td>String</td>
                 <td>setWorkingMode</td>
                 <td>Working mode of libobcdc, can be 'storage' or 'memory'.</td>
+            </tr>
+            <tr>
+                <td>first_start_timestamp_us</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">0</td>
+                <td>Long</td>
+                <td>setStartTimestampUs</td>
+                <td>Timestamp of the starting point of data in microseconds, and zero means starting from now.</td>
+            </tr>
+            <tr>
+                <td>cluster_id</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>String</td>
+                <td>setClusterId</td>
+                <td>The cluster id of OceanBase.</td>
+            </tr>
+            <tr>
+                <td>sys_user</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>String</td>
+                <td>setSysUsername</td>
+                <td>The username of OceanBase sys tenant user.</td>
+            </tr>
+            <tr>
+                <td>sys_password</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>String</td>
+                <td>setSysPassword</td>
+                <td>The password of OceanBase sys tenant user.</td>
             </tr>
         </tbody>
     </table>
@@ -241,6 +273,10 @@ The initial version of LogProxy client is released with `'groupId'='com.oceanbas
   <version>1.0.7</version>
 </dependency>
 ```
+
+##### Whitelist and Blacklist
+
+Starting from version 4.x, libobcdc only supports to monitor the commit log of a non-sys tenant at the tenant level. Therefore, for OceanBase clusters in version 4.x, the whitelist only takes effect up to the tenant level, and blacklist does not work anymore.
 
 #### Record Compression
 

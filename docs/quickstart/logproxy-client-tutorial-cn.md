@@ -68,7 +68,7 @@
             <tr>
                 <td>cluster_url</td>
                 <td>否</td>
-                <td style="word-wrap: break-word;">空字符串</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setClusterUrl</td>
                 <td>用于获取 OceanBase 集群节点信息的 url，当且仅当使用企业版的 OceanBase 时需要设置。使用 sys 用户执行 <code>show parameters like 'obconfig_url'</code> 时，返回的 value 字段即为该值。</td>
@@ -76,7 +76,7 @@
             <tr>
                 <td>rootserver_list</td>
                 <td>否</td>
-                <td style="word-wrap: break-word;">空字符串</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setRsList</td>
                 <td>OceanBase 集群的节点列表，当且仅当使用社区版的 OceanBase 时需要设置。使用 sys 用户执行 <code>show parameters like 'rootservice_list'</code> 时，返回的 value 字段即为该值。</td>
@@ -84,7 +84,7 @@
             <tr>
                 <td>cluster_user</td>
                 <td>是</td>
-                <td style="word-wrap: break-word;">空字符串</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setUsername</td>
                 <td>连接 OceanBase 的用户名，格式一般为 <code>用户名@租户名</code>。</td>
@@ -92,7 +92,7 @@
             <tr>
                 <td>cluster_password</td>
                 <td>是</td>
-                <td style="word-wrap: break-word;">空字符串</td>
+                <td style="word-wrap: break-word;"></td>
                 <td>String</td>
                 <td>setPassword</td>
                 <td>连接 OceanBase 的密码。</td>
@@ -136,6 +136,38 @@
                 <td>String</td>
                 <td>setWorkingMode</td>
                 <td>libobcdc 的工作模式，可选值为 "storage" 和 "memory"。</td>
+            </tr>
+            <tr>
+                <td>first_start_timestamp_us</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">0</td>
+                <td>Long</td>
+                <td>setStartTimestampUs</td>
+                <td>订阅数据的起点时间戳，单位是微秒。为 0 时将从当前时刻开始。</td>
+            </tr>
+            <tr>
+                <td>cluster_id</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>String</td>
+                <td>setClusterId</td>
+                <td>OceanBase 集群的 cluster id。</td>
+            </tr>
+            <tr>
+                <td>sys_user</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>String</td>
+                <td>setSysUsername</td>
+                <td>设置 OceanBase 集群的 sys 租户用户的用户名。</td>
+            </tr>
+            <tr>
+                <td>sys_password</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>String</td>
+                <td>setSysPassword</td>
+                <td>设置 OceanBase 集群的 sys 租户用户的密码。</td>
             </tr>
         </tbody>
     </table>
@@ -241,6 +273,10 @@ LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf
   <version>1.0.7</version>
 </dependency>
 ```
+
+##### 黑白名单
+
+从 4.x 版本开始，libobcdc 仅支持在租户级别监控非 sys 租户的 clog。 因此，对于OceanBase 4.x 版本的集群，白名单仅在租户级别生效，而黑名单则不再起作用。
 
 ##### 数据压缩
 
