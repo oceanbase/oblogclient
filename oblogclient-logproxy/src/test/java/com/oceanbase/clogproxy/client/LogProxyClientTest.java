@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.oceanbase.OceanBaseCEContainer;
+import org.testcontainers.utility.MountableFile;
 
 public class LogProxyClientTest {
 
@@ -53,14 +53,18 @@ public class LogProxyClientTest {
     private static final String TEST_PASSWORD = "test_password";
 
     @ClassRule
-    public static final OceanBaseCEContainer OB_SERVER =
-            new OceanBaseCEContainer("oceanbase/oceanbase-ce:4.2.0.0")
+    public static final GenericContainer<?> OB_SERVER =
+            new GenericContainer<>("oceanbase/oceanbase-ce:4.2.0.0")
                     .withNetworkMode("host")
                     .withEnv("MODE", "slim")
                     .withEnv("OB_ROOT_PASSWORD", SYS_PASSWORD)
-                    .withInitScript("sql/docker_init.sql")
+                    .withEnv("OB_DATAFILE_SIZE", "1G")
+                    .withEnv("OB_LOG_DISK_SIZE", "4G")
+                    .withCopyFileToContainer(
+                            MountableFile.forClasspathResource("sql/docker_init.sql"),
+                            "/root/boot/init.d/init.sql")
                     .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
-                    .withStartupTimeout(Duration.ofMinutes(3))
+                    .withStartupTimeout(Duration.ofMinutes(4))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
 
     @ClassRule
@@ -75,7 +79,7 @@ public class LogProxyClientTest {
     @Test
     public void testLogProxyClient() throws Exception {
         String tenant = "test";
-        String db = OB_SERVER.getDatabaseName();
+        String db = "test";
         Duration connectTimeout = Duration.ofSeconds(30);
 
         // Can get it with "show parameters like 'rootservice_list'"
@@ -158,7 +162,9 @@ public class LogProxyClientTest {
 
         try (Connection connection =
                         DriverManager.getConnection(
-                                OB_SERVER.getJdbcUrl(), "root@test", TEST_PASSWORD);
+                                "jdbc:oceanbase://" + OB_SERVER.getHost() + ":2881/test",
+                                "root@test",
+                                TEST_PASSWORD);
                 Statement statement = connection.createStatement()) {
             statement.execute(ddl);
             statement.execute("INSERT INTO t_product VALUES (1, 'meat', 123.45)");
