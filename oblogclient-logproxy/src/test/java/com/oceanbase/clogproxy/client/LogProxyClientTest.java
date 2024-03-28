@@ -23,53 +23,87 @@ import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.oms.logmessage.DataMessage;
 import com.oceanbase.oms.logmessage.LogMessage;
-import java.util.stream.Collectors;
-import org.junit.Ignore;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.oceanbase.OceanBaseCEContainer;
 
-@Ignore
 public class LogProxyClientTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(LogProxyClientTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientTest.class);
+
+    private static final String SYS_PASSWORD = "sys_password";
+    private static final String TEST_PASSWORD = "test_password";
+
+    @ClassRule
+    public static final OceanBaseCEContainer OB_SERVER =
+            new OceanBaseCEContainer("oceanbase/oceanbase-ce:4.2.1_bp3")
+                    .withNetworkMode("host")
+                    .withEnv("MODE", "slim")
+                    .withEnv("FASTBOOT", "true")
+                    .withEnv("OB_ROOT_PASSWORD", SYS_PASSWORD)
+                    .withInitScript("sql/docker_init.sql")
+                    .withStartupTimeout(Duration.ofMinutes(1))
+                    .withLogConsumer(new Slf4jLogConsumer(LOG));
+
+    @ClassRule
+    public static final GenericContainer<?> LOG_PROXY =
+            new GenericContainer<>("whhe/oblogproxy:2.0.1")
+                    .withNetworkMode("host")
+                    .withEnv("OB_SYS_PASSWORD", SYS_PASSWORD)
+                    .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
+                    .withStartupTimeout(Duration.ofMinutes(1))
+                    .withLogConsumer(new Slf4jLogConsumer(LOG));
 
     @Test
-    public void testLogProxyClient() {
-        // Can get it with "show parameters like 'obconfig_url'"
-        String clusterUrl =
-                "http://127.0.0.1:8080/services"
-                        + "?Action=ObRootServiceInfo"
-                        + "&User_ID=alibaba"
-                        + "&UID=ocpmaster"
-                        + "&ObRegion=obcluster";
+    public void testLogProxyClient() throws Exception {
+        String tenant = "test";
+        String db = OB_SERVER.getDatabaseName();
+        Duration connectTimeout = Duration.ofSeconds(30);
 
         // Can get it with "show parameters like 'rootservice_list'"
         String rsList = "127.0.0.1:2882:2881";
 
         ObReaderConfig config = new ObReaderConfig();
-
-        // Either 'rsList' or 'clusterUrl' should be not empty, will try to use 'clusterUrl' firstly
         config.setRsList(rsList);
-        // config.setClusterUrl(clusterUrl);
-        config.setUsername("root@test_tenant");
-        config.setPassword("pswd");
+        config.setUsername("root@" + tenant);
+        config.setPassword(TEST_PASSWORD);
         config.setStartTimestamp(0L);
-        config.setTableWhiteList("test_tenant.test_db.*");
-        config.setTableBlackList("test_tenant.test_db.test_table");
-        config.setTimezone("+8:00");
+        config.setTableWhiteList(tenant + ".*.*");
+        config.setTimezone("+08:00");
         config.setWorkingMode("memory");
 
         ClientConf clientConf =
                 ClientConf.builder()
                         .transferQueueSize(1000)
-                        .connectTimeoutMs(3000)
-                        .maxReconnectTimes(100)
+                        .connectTimeoutMs((int) connectTimeout.toMillis())
+                        .maxReconnectTimes(0)
                         .ignoreUnknownRecordType(true)
-                        .clientId("test")
                         .build();
 
         LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf);
+
+        BlockingQueue<LogMessage> messageQueue = new LinkedBlockingQueue<>(4);
+
+        AtomicBoolean started = new AtomicBoolean(false);
+        CountDownLatch latch = new CountDownLatch(1);
 
         client.addListener(
                 new RecordListener() {
@@ -77,42 +111,29 @@ public class LogProxyClientTest {
                     @Override
                     public void notify(LogMessage message) {
                         switch (message.getOpt()) {
+                            case HEARTBEAT:
+                                LOG.info(
+                                        "Received heartbeat with checkpoint {}",
+                                        message.getCheckpoint());
+                                if (started.compareAndSet(false, true)) {
+                                    latch.countDown();
+                                }
+                                break;
+                            case BEGIN:
+                                LOG.info("Received transaction begin: {}", message);
+                                break;
+                            case COMMIT:
+                                LOG.info("Received transaction commit: {}", message);
+                                break;
                             case INSERT:
                             case UPDATE:
                             case DELETE:
-                                // note that the db name contains prefix '{tenant}.'
-                                logger.info(
-                                        "Received log message of type {}: db: {}, table: {}, checkpoint {}",
-                                        message.getOpt(),
-                                        message.getDbName(),
-                                        message.getTableName(),
-                                        message.getCheckpoint());
-                                // old fields for type 'UPDATE', 'DELETE'
-                                logger.info(
-                                        "Old field values: {}",
-                                        message.getFieldList().stream()
-                                                .filter(DataMessage.Record.Field::isPrev)
-                                                .collect(Collectors.toList()));
-                                // new fields for type 'UPDATE', 'INSERT'
-                                logger.info(
-                                        "New field values: {}",
-                                        message.getFieldList().stream()
-                                                .filter(field -> !field.isPrev())
-                                                .collect(Collectors.toList()));
-                                break;
-                            case HEARTBEAT:
-                                logger.info(
-                                        "Received heartbeat message with checkpoint {}",
-                                        message.getCheckpoint());
-                                break;
-                            case BEGIN:
-                            case COMMIT:
-                                logger.info("Received transaction message {}", message.getOpt());
-                                break;
                             case DDL:
-                                logger.info(
-                                        "Received log message with DDL: {}",
-                                        message.getFieldList().get(0).getValue().toString());
+                                try {
+                                    messageQueue.put(message);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException("Failed to add message to queue", e);
+                                }
                                 break;
                             default:
                                 throw new IllegalArgumentException(
@@ -122,10 +143,110 @@ public class LogProxyClientTest {
 
                     @Override
                     public void onException(LogProxyClientException e) {
-                        logger.error(e.getMessage());
+                        Assert.fail("Got exception: " + e.getMessage());
                     }
                 });
         client.start();
-        client.join();
+
+        if (!latch.await(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+            Assert.fail("Timeout to receive heartbeat message");
+        }
+
+        String table = "t_product";
+        String ddl =
+                "CREATE TABLE t_product (id INT(10) PRIMARY KEY, name VARCHAR(20), weight DECIMAL(20, 10))";
+
+        try (Connection connection =
+                        DriverManager.getConnection(
+                                OB_SERVER.getJdbcUrl(), "root@test", TEST_PASSWORD);
+                Statement statement = connection.createStatement()) {
+            statement.execute(ddl);
+            statement.execute("INSERT INTO t_product VALUES (1, 'meat', 123.45)");
+            statement.execute("UPDATE t_product SET weight = 234.56 WHERE id = 1");
+            statement.execute("DELETE t_product WHERE id = 1");
+        }
+
+        while (messageQueue.size() < 4) {
+            Thread.sleep(1000);
+        }
+
+        LogMessage message = messageQueue.take();
+        Assert.assertEquals(message.getOpt(), DataMessage.Record.Type.DDL);
+        Assert.assertEquals(message.getFieldList().get(0).getValue().toString(), ddl);
+
+        verify(
+                messageQueue.take(),
+                DataMessage.Record.Type.INSERT,
+                tenant,
+                db,
+                table,
+                Collections.emptyMap(),
+                new HashMap<String, String>() {
+                    {
+                        put("id", "1");
+                        put("name", "meat");
+                        put("weight", "123.45");
+                    }
+                });
+
+        verify(
+                messageQueue.take(),
+                DataMessage.Record.Type.UPDATE,
+                tenant,
+                db,
+                table,
+                new HashMap<String, String>() {
+                    {
+                        put("id", "1");
+                        put("name", "meat");
+                        put("weight", "123.45");
+                    }
+                },
+                new HashMap<String, String>() {
+                    {
+                        put("id", "1");
+                        put("name", "meat");
+                        put("weight", "234.56");
+                    }
+                });
+
+        verify(
+                messageQueue.take(),
+                DataMessage.Record.Type.DELETE,
+                tenant,
+                db,
+                table,
+                new HashMap<String, String>() {
+                    {
+                        put("id", "1");
+                        put("name", "meat");
+                        put("weight", "234.56");
+                    }
+                },
+                Collections.emptyMap());
+
+        client.stop();
+    }
+
+    private void verify(
+            LogMessage message,
+            DataMessage.Record.Type type,
+            String tenant,
+            String db,
+            String table,
+            Map<String, String> before,
+            Map<String, String> after) {
+        Assert.assertEquals(message.getOpt(), type);
+        Assert.assertEquals(message.getDbName(), tenant + "." + db);
+        Assert.assertEquals(message.getTableName(), table);
+
+        for (DataMessage.Record.Field field : message.getFieldList()) {
+            String expected =
+                    field.isPrev()
+                            ? before.get(field.getFieldname())
+                            : after.get(field.getFieldname());
+            String actual = field.getValue() == null ? null : field.getValue().toString();
+            Assert.assertEquals(expected, actual);
+        }
     }
 }
