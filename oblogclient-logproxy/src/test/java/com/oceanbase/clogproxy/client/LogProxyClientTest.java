@@ -169,7 +169,7 @@ public class LogProxyClientTest {
             statement.execute(ddl);
             statement.execute("INSERT INTO t_product VALUES (1, 'meat', 123.45)");
             statement.execute("UPDATE t_product SET weight = 234.56 WHERE id = 1");
-            statement.execute("DELETE t_product WHERE id = 1");
+            statement.execute("DELETE FROM t_product WHERE id = 1");
         }
 
         while (messageQueue.size() < 4) {
