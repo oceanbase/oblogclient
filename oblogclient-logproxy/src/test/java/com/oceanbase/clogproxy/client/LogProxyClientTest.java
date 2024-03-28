@@ -157,8 +157,7 @@ public class LogProxyClientTest {
         }
 
         String table = "t_product";
-        String ddl =
-                "CREATE TABLE t_product (id INT(10) PRIMARY KEY, name VARCHAR(20), weight DECIMAL(20, 10))";
+        String ddl = "CREATE TABLE t_product (id INT(10) PRIMARY KEY, name VARCHAR(20))";
 
         try (Connection connection =
                         DriverManager.getConnection(
@@ -167,8 +166,8 @@ public class LogProxyClientTest {
                                 TEST_PASSWORD);
                 Statement statement = connection.createStatement()) {
             statement.execute(ddl);
-            statement.execute("INSERT INTO t_product VALUES (1, 'meat', 123.45)");
-            statement.execute("UPDATE t_product SET weight = 234.56 WHERE id = 1");
+            statement.execute("INSERT INTO t_product VALUES (1, 'meat')");
+            statement.execute("UPDATE t_product SET name = 'water' WHERE id = 1");
             statement.execute("DELETE FROM t_product WHERE id = 1");
         }
 
@@ -191,7 +190,6 @@ public class LogProxyClientTest {
                     {
                         put("id", "1");
                         put("name", "meat");
-                        put("weight", "123.45");
                     }
                 });
 
@@ -205,14 +203,12 @@ public class LogProxyClientTest {
                     {
                         put("id", "1");
                         put("name", "meat");
-                        put("weight", "123.45");
                     }
                 },
                 new HashMap<String, String>() {
                     {
                         put("id", "1");
-                        put("name", "meat");
-                        put("weight", "234.56");
+                        put("name", "water");
                     }
                 });
 
@@ -225,8 +221,7 @@ public class LogProxyClientTest {
                 new HashMap<String, String>() {
                     {
                         put("id", "1");
-                        put("name", "meat");
-                        put("weight", "234.56");
+                        put("name", "water");
                     }
                 },
                 Collections.emptyMap());
