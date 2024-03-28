@@ -54,18 +54,18 @@ public class LogProxyClientTest {
 
     @ClassRule
     public static final OceanBaseCEContainer OB_SERVER =
-            new OceanBaseCEContainer("oceanbase/oceanbase-ce:4.2.1_bp3")
+            new OceanBaseCEContainer("oceanbase/oceanbase-ce:4.2.0.0")
                     .withNetworkMode("host")
                     .withEnv("MODE", "slim")
-                    .withEnv("FASTBOOT", "true")
                     .withEnv("OB_ROOT_PASSWORD", SYS_PASSWORD)
                     .withInitScript("sql/docker_init.sql")
-                    .withStartupTimeout(Duration.ofMinutes(1))
+                    .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
+                    .withStartupTimeout(Duration.ofMinutes(3))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
 
     @ClassRule
     public static final GenericContainer<?> LOG_PROXY =
-            new GenericContainer<>("whhe/oblogproxy:2.0.1")
+            new GenericContainer<>("whhe/oblogproxy:1.1.3_4x")
                     .withNetworkMode("host")
                     .withEnv("OB_SYS_PASSWORD", SYS_PASSWORD)
                     .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
