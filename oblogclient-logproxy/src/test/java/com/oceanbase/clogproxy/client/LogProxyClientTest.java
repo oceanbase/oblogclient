@@ -98,7 +98,7 @@ public class LogProxyClientTest {
                         .ignoreUnknownRecordType(true)
                         .build();
 
-        LogProxyClient client = new LogProxyClient("127.0.0.1", 2983, config, clientConf);
+        LogProxyClient client = new LogProxyClient(LOG_PROXY.getHost(), 2983, config, clientConf);
 
         BlockingQueue<LogMessage> messageQueue = new LinkedBlockingQueue<>(4);
 
