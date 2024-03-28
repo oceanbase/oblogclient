@@ -22,14 +22,13 @@ import com.oceanbase.clogproxy.common.config.SharedConf;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import io.netty.handler.ssl.SslContext;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /** The class that defines the constants that are used to generate the connection. */
 public class ClientConf extends SharedConf implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /** Client version. */
-    public static final String VERSION = "1.1.0";
 
     /** Queue size for storing records received from log proxy. */
     private final int transferQueueSize;
@@ -224,6 +223,21 @@ public class ClientConf extends SharedConf implements Serializable {
                     clientId,
                     ignoreUnknownRecordType,
                     sslContext);
+        }
+    }
+
+    public String getVersion() {
+        try {
+            return new String(
+                            Files.readAllBytes(
+                                    Paths.get(
+                                            getClass()
+                                                    .getResource(
+                                                            "com/oceanbase/clogproxy/client/version.txt")
+                                                    .toURI())))
+                    .trim();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read project version", e);
         }
     }
 }

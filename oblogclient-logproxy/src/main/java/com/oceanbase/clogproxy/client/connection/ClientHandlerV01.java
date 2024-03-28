@@ -423,10 +423,11 @@ public class ClientHandlerV01 {
         byteBuf.writeInt(length);
         byteBuf.writeBytes(params.getClientId().getBytes());
 
-        length = ClientConf.VERSION.length();
+        String version = config.getVersion();
+        length = version.length();
         byteBuf.capacity(byteBuf.capacity() + length + 4);
         byteBuf.writeInt(length);
-        byteBuf.writeBytes(ClientConf.VERSION.getBytes());
+        byteBuf.writeBytes(version.getBytes());
 
         length = params.getConfigurationString().length();
         byteBuf.capacity(byteBuf.capacity() + length + 4);

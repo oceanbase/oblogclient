@@ -412,7 +412,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         .setLogType(params.getLogType().code())
                         .setIp(CLIENT_IP)
                         .setId(params.getClientId())
-                        .setVersion(ClientConf.VERSION)
+                        .setVersion(config.getVersion())
                         .setEnableMonitor(params.isEnableMonitor())
                         .setConfiguration(params.getConfigurationString())
                         .build();
