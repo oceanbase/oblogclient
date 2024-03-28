@@ -133,6 +133,7 @@ public class ClientStream {
     public void start() {
         // if status listener exist, enable monitor
         context.params().setEnableMonitor(!statusListeners.isEmpty());
+        retryTimes = 0;
 
         if (started.compareAndSet(false, true)) {
             thread =
@@ -245,13 +246,13 @@ public class ClientStream {
     private ReconnectState reconnect() {
         // reconnect flag mark, tiny load for checking
         if (reconnect.compareAndSet(true, false)) {
-            logger.info("Try to reconnect");
+            logger.info("Try to connect");
 
             try {
                 if (context.config().getMaxReconnectTimes() != -1
-                        && retryTimes >= context.config().getMaxReconnectTimes()) {
+                        && retryTimes > context.config().getMaxReconnectTimes()) {
                     logger.error(
-                            "Failed to reconnect, exceed max reconnect retry time: {}",
+                            "Failed to connect, exceed max reconnect retry time: {}",
                             context.config().getMaxReconnectTimes());
                     return ReconnectState.EXIT;
                 }
@@ -263,35 +264,35 @@ public class ClientStream {
                 // when stopped, context.recordQueue may not empty, just use checkpointString to do
                 // reconnection.
                 if (StringUtils.isNotEmpty(checkpointString)) {
-                    logger.warn("reconnect set checkpoint: {}", checkpointString);
+                    logger.warn("update checkpoint: {}", checkpointString);
                     context.params().updateCheckpoint(checkpointString);
                 }
 
                 connection = ConnectionFactory.instance().createConnection(context);
                 if (connection != null) {
-                    logger.info("Reconnect successfully");
-                    retryTimes = 0;
+                    logger.info("Connect successfully");
                     return ReconnectState.SUCCESS;
                 }
 
                 logger.error(
-                        "Failed to reconnect, retry count: {}, max: {}",
-                        ++retryTimes,
+                        "Failed to connect, retry count: {}, max: {}",
+                        retryTimes,
                         context.config().getMaxReconnectTimes());
                 // not success, retry next time
                 reconnect.set(true);
                 return ReconnectState.RETRY;
             } catch (Exception e) {
                 logger.error(
-                        "Failed to reconnect, retry count: {}, max: {}, message: {}",
-                        ++retryTimes,
+                        "Failed to connect, retry count: {}, max: {}, message: {}",
+                        retryTimes,
                         context.config().getMaxReconnectTimes(),
-                        e);
+                        e.getMessage());
                 // not success, retry next time
                 reconnect.set(true);
                 return ReconnectState.RETRY;
             } finally {
                 reconnecting.set(false);
+                retryTimes++;
             }
         }
         return ReconnectState.SUCCESS;
