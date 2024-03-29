@@ -218,6 +218,8 @@ under the License.
             <!-- Tests -->
             <exclude>**/*.key</exclude>
             <exclude>**/*.crt</exclude>
+            <!-- Text files -->
+            <exclude>**/*.txt</exclude>
           </excludes>
         </configuration>
       </plugin>
