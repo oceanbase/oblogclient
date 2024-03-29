@@ -18,11 +18,10 @@ package com.oceanbase.clogproxy.client.util;
 
 import com.oceanbase.clogproxy.common.util.NetworkUtil;
 
-import sun.misc.IOUtils;
-
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
+import java.util.Scanner;
 
 /** The class used to generate client id. */
 public class ClientUtil {
@@ -31,7 +30,10 @@ public class ClientUtil {
         try (InputStream inputStream =
                 ClientUtil.class.getResourceAsStream(
                         "/com/oceanbase/clogproxy/client/version.txt")) {
-            return new String(IOUtils.readAllBytes(Objects.requireNonNull(inputStream))).trim();
+            return new Scanner(Objects.requireNonNull(inputStream))
+                    .useDelimiter(System.lineSeparator())
+                    .next()
+                    .trim();
         } catch (Exception e) {
             throw new RuntimeException("Failed to read project version", e);
         }
