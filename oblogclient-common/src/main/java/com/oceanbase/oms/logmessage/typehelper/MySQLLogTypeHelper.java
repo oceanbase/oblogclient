@@ -16,11 +16,12 @@
 
 package com.oceanbase.oms.logmessage.typehelper;
 
-import static com.oceanbase.oms.logmessage.DataMessage.Record.UTF8MB4_ENCODING;
-
 import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.DataMessage;
+
 import org.apache.commons.lang3.StringUtils;
+
+import static com.oceanbase.oms.logmessage.DataMessage.Record.UTF8MB4_ENCODING;
 
 public class MySQLLogTypeHelper extends LogTypeHelper {
     public static final MySQLLogTypeHelper MYSQL_LOG_TYPE_HELPER = new MySQLLogTypeHelper();

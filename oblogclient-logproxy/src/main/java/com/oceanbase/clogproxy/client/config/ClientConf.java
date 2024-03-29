@@ -16,11 +16,12 @@
 
 package com.oceanbase.clogproxy.client.config;
 
-
 import com.oceanbase.clogproxy.client.util.ClientUtil;
 import com.oceanbase.clogproxy.common.config.SharedConf;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
+
 import io.netty.handler.ssl.SslContext;
+
 import java.io.Serializable;
 
 /** The class that defines the constants that are used to generate the connection. */

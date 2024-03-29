@@ -16,7 +16,6 @@
 
 package com.oceanbase.clogproxy.client.config;
 
-
 import java.io.Serializable;
 import java.util.Map;
 

@@ -16,17 +16,18 @@
 
 package com.oceanbase.clogproxy.client.config;
 
-
 import com.oceanbase.clogproxy.client.util.Validator;
 import com.oceanbase.clogproxy.common.config.SharedConf;
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.CryptoUtil;
 import com.oceanbase.clogproxy.common.util.Hex;
-import java.util.HashMap;
-import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** This is a configuration class for connection to log proxy. */
 public class ObReaderConfig extends AbstractConnectionConfig {

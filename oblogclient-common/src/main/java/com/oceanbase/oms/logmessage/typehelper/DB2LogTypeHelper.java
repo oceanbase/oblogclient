@@ -16,10 +16,10 @@
 
 package com.oceanbase.oms.logmessage.typehelper;
 
-import static com.oceanbase.oms.logmessage.LogMessage.UTF8_ENCODING;
-
 import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.DataMessage;
+
+import static com.oceanbase.oms.logmessage.LogMessage.UTF8_ENCODING;
 
 public class DB2LogTypeHelper extends LogTypeHelper {
     public static final DB2LogTypeHelper DB2_LOG_TYPE_HELPER = new DB2LogTypeHelper();

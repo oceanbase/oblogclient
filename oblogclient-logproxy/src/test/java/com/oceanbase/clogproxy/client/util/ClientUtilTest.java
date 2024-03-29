@@ -16,7 +16,6 @@
 
 package com.oceanbase.clogproxy.client.util;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 

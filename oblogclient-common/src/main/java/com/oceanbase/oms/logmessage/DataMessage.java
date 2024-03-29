@@ -16,10 +16,12 @@
 
 package com.oceanbase.oms.logmessage;
 
-
 import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.typehelper.LogTypeHelper;
 import com.oceanbase.oms.logmessage.typehelper.LogTypeHelperFactory;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
 
 /** Message contains database updating data. */
 public class DataMessage extends Message {

@@ -16,19 +16,20 @@
 
 package com.oceanbase.clogproxy.client.connection;
 
-
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.clogproxy.client.listener.StatusListener;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a stream of log client. Stream means a channel of log transmission here.

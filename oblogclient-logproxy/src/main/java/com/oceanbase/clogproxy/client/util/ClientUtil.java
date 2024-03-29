@@ -16,12 +16,13 @@
 
 package com.oceanbase.clogproxy.client.util;
 
-
 import com.oceanbase.clogproxy.common.util.NetworkUtil;
+
+import sun.misc.IOUtils;
+
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
-import sun.misc.IOUtils;
 
 /** The class used to generate client id. */
 public class ClientUtil {

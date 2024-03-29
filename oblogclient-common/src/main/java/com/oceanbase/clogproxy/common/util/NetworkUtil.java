@@ -16,11 +16,11 @@
 
 package com.oceanbase.clogproxy.common.util;
 
-
 import io.netty.channel.Channel;
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.*;
 import java.util.Enumeration;
-import org.apache.commons.lang3.StringUtils;
 
 /** Utils class for network. */
 public class NetworkUtil {

@@ -16,7 +16,6 @@
 
 package com.oceanbase.oms.logmessage.typehelper;
 
-
 import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.DataMessage;
 

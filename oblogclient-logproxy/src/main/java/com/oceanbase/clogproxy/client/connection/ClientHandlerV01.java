@@ -16,8 +16,6 @@
 
 package com.oceanbase.clogproxy.client.connection;
 
-
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
@@ -29,14 +27,17 @@ import com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto;
 import com.oceanbase.clogproxy.common.packet.protocol.V1Proto;
 import com.oceanbase.clogproxy.common.util.NetworkUtil;
 import com.oceanbase.oms.logmessage.LogMessage;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
-import java.util.concurrent.BlockingQueue;
 import net.jpountz.lz4.LZ4FastDecompressor;
 import org.apache.commons.lang3.Conversion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.BlockingQueue;
 
 /** Compatible for legacy V0 and V1 only, however you should not use */
 public class ClientHandlerV01 {

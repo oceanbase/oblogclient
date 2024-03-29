@@ -16,7 +16,6 @@
 
 package com.oceanbase.oms.logmessage;
 
-
 import com.oceanbase.oms.logmessage.typehelper.LogMessageTypeCode;
 
 /** This interface defined a kind of listener for field parsing. */

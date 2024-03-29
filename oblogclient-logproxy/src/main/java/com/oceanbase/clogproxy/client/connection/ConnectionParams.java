@@ -16,10 +16,10 @@
 
 package com.oceanbase.clogproxy.client.connection;
 
-
 import com.oceanbase.clogproxy.client.config.ConnectionConfig;
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 

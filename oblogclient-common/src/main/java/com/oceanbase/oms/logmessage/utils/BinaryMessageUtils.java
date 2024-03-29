@@ -16,11 +16,12 @@
 
 package com.oceanbase.oms.logmessage.utils;
 
-
 import com.oceanbase.oms.logmessage.ByteString;
 import com.oceanbase.oms.logmessage.enums.DataType;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;

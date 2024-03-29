@@ -16,9 +16,9 @@
 
 package com.oceanbase.clogproxy.client.config;
 
-
 import com.oceanbase.clogproxy.common.packet.LogType;
 import com.oceanbase.clogproxy.common.util.TypeTrait;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

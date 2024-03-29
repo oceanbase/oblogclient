@@ -16,11 +16,11 @@
 
 package com.oceanbase.clogproxy.client.connection;
 
-
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.util.NamedThreadFactory;
 import com.oceanbase.clogproxy.client.util.NettyEventLoopUtil;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -30,6 +30,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.AttributeKey;
+
 import java.net.InetSocketAddress;
 
 /** This is a factory class of {@link Connection}. */

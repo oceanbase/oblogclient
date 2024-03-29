@@ -16,7 +16,6 @@
 
 package com.oceanbase.clogproxy.client.util;
 
-
 import java.util.Map;
 
 /** Utils class used to validate arguments. */

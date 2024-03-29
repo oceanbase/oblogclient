@@ -16,7 +16,6 @@
 
 package com.oceanbase.clogproxy.client;
 
-
 import com.oceanbase.clogproxy.client.config.AbstractConnectionConfig;
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.connection.ClientStream;

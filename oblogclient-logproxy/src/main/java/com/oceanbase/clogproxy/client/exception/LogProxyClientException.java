@@ -16,7 +16,6 @@
 
 package com.oceanbase.clogproxy.client.exception;
 
-
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 
 /**

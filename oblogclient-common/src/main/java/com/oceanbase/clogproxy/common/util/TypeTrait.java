@@ -16,9 +16,9 @@
 
 package com.oceanbase.clogproxy.common.util;
 
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
-import org.apache.commons.lang3.StringUtils;
 
 /** Utils class to check and convert data types. */
 public class TypeTrait {

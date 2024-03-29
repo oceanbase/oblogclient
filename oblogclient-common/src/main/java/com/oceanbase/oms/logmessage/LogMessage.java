@@ -16,14 +16,18 @@
 
 package com.oceanbase.oms.logmessage;
 
-
 import com.oceanbase.oms.common.enums.DbTypeEnum;
 import com.oceanbase.oms.logmessage.enums.DataType;
 import com.oceanbase.oms.logmessage.typehelper.LogTypeHelper;
 import com.oceanbase.oms.logmessage.typehelper.LogTypeHelperFactory;
 import com.oceanbase.oms.logmessage.utils.BinaryMessageUtils;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
@@ -34,9 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.CRC32;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LogMessage extends DataMessage.Record {
     private static final Logger log = LoggerFactory.getLogger(LogMessage.class);

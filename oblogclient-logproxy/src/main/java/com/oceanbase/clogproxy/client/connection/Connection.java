@@ -16,13 +16,14 @@
 
 package com.oceanbase.clogproxy.client.connection;
 
-
 import com.oceanbase.clogproxy.common.util.NetworkUtil;
+
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** This class represents a connection which contains a netty channel. */
 public class Connection {

@@ -16,14 +16,15 @@
 
 package com.oceanbase.clogproxy.client.connection;
 
-import static com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.RuntimeStatus;
-
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.common.packet.HeaderType;
 import com.oceanbase.oms.logmessage.LogMessage;
+
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto.RuntimeStatus;
 
 /** This class represents the context of client stream. */
 public class StreamContext {

@@ -16,7 +16,6 @@
 
 package com.oceanbase.clogproxy.client.listener;
 
-
 import com.oceanbase.clogproxy.common.packet.protocol.LogProxyProto;
 
 /** This interface defined a kind of listener for {@link LogProxyProto.RuntimeStatus} response. */

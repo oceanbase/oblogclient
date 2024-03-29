@@ -16,7 +16,6 @@
 
 package com.oceanbase.clogproxy.common.util;
 
-
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.apache.commons.codec.DecoderException;
