@@ -32,7 +32,7 @@ under the License.
     </modules>
 
     <properties>
-        <revision>1.1.1</revision>
+        <revision>1.1.2-SNAPSHOT</revision>
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
