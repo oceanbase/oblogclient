@@ -18,17 +18,31 @@ package com.oceanbase.clogproxy.client.util;
 
 
 import com.oceanbase.clogproxy.common.util.NetworkUtil;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.util.Objects;
+import sun.misc.IOUtils;
 
 /** The class used to generate client id. */
-public class ClientIdGenerator {
+public class ClientUtil {
+
+    public static String getClientVersion() {
+        try (InputStream inputStream =
+                ClientUtil.class.getResourceAsStream(
+                        "/com/oceanbase/clogproxy/client/version.txt")) {
+            return new String(IOUtils.readAllBytes(Objects.requireNonNull(inputStream)));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read project version", e);
+        }
+    }
+
     /**
      * Generate a new client id in format "LocalIP"."PID"."currentTimestamp". Pattern may be
      * changed, never depend on the content of this.
      *
      * @return Client id string.
      */
-    public static String generate() {
+    public static String generateClientId() {
         return NetworkUtil.getLocalIp()
                 + "_"
                 + getProcessId()
