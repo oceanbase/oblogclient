@@ -30,7 +30,7 @@ public class ClientUtil {
         try (InputStream inputStream =
                 ClientUtil.class.getResourceAsStream(
                         "/com/oceanbase/clogproxy/client/version.txt")) {
-            return new String(IOUtils.readAllBytes(Objects.requireNonNull(inputStream)));
+            return new String(IOUtils.readAllBytes(Objects.requireNonNull(inputStream))).trim();
         } catch (Exception e) {
             throw new RuntimeException("Failed to read project version", e);
         }
