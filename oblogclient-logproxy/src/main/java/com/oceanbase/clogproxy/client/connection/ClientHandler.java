@@ -21,6 +21,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
+import com.oceanbase.clogproxy.client.util.ClientUtil;
 import com.oceanbase.clogproxy.common.packet.CompressType;
 import com.oceanbase.clogproxy.common.packet.HeaderType;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
@@ -412,7 +413,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                         .setLogType(params.getLogType().code())
                         .setIp(CLIENT_IP)
                         .setId(params.getClientId())
-                        .setVersion(ClientConf.VERSION)
+                        .setVersion(ClientUtil.getClientVersion())
                         .setEnableMonitor(params.isEnableMonitor())
                         .setConfiguration(params.getConfigurationString())
                         .build();

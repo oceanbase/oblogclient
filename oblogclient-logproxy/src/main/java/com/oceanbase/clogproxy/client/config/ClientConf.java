@@ -17,7 +17,7 @@
 package com.oceanbase.clogproxy.client.config;
 
 
-import com.oceanbase.clogproxy.client.util.ClientIdGenerator;
+import com.oceanbase.clogproxy.client.util.ClientUtil;
 import com.oceanbase.clogproxy.common.config.SharedConf;
 import com.oceanbase.clogproxy.common.packet.ProtocolVersion;
 import io.netty.handler.ssl.SslContext;
@@ -27,9 +27,6 @@ import java.io.Serializable;
 public class ClientConf extends SharedConf implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /** Client version. */
-    public static final String VERSION = "1.1.0";
 
     /** Queue size for storing records received from log proxy. */
     private final int transferQueueSize;
@@ -152,7 +149,7 @@ public class ClientConf extends SharedConf implements Serializable {
         private int idleTimeoutS = 15;
         private int nettyDiscardAfterReads = 16;
         private int protocolVersion = ProtocolVersion.V2.code();
-        private String clientId = ClientIdGenerator.generate();
+        private String clientId = ClientUtil.generateClientId();
         private boolean ignoreUnknownRecordType = false;
         private SslContext sslContext = null;
 
