@@ -24,9 +24,13 @@ import io.netty.handler.ssl.SslContext;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The class that defines the constants that are used to generate the connection. */
 public class ClientConf extends SharedConf implements Serializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(ClientConf.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -226,18 +230,26 @@ public class ClientConf extends SharedConf implements Serializable {
         }
     }
 
+    private String version;
+
     public String getVersion() {
+        if (version != null) {
+            return version;
+        }
         try {
-            return new String(
-                            Files.readAllBytes(
-                                    Paths.get(
-                                            getClass()
-                                                    .getResource(
-                                                            "com/oceanbase/clogproxy/client/version.txt")
-                                                    .toURI())))
-                    .trim();
+            version =
+                    new String(
+                                    Files.readAllBytes(
+                                            Paths.get(
+                                                    getClass()
+                                                            .getResource(
+                                                                    "com/oceanbase/clogproxy/client/version.txt")
+                                                            .toURI())))
+                            .trim();
         } catch (Exception e) {
             throw new RuntimeException("Failed to read project version", e);
         }
+        logger.info("Client version: {}", version);
+        return version;
     }
 }
