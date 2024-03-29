@@ -15,249 +15,276 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.oceanbase</groupId>
-  <artifactId>oblogclient</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>com.oceanbase</groupId>
+    <artifactId>oblogclient</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
 
-  <name>${project.groupId}:${project.artifactId}</name>
-  <description>OceanBase Log Client.</description>
-  <url>https://github.com/oceanbase/oblogclient</url>
-
-  <licenses>
-    <license>
-      <name>Apache-2.0</name>
-      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <developers>
-    <developer>
-      <name>Si Jiang</name>
-      <email>cmbjiangsi5@163.com</email>
-      <url>https://github.com/hitandrun-zz</url>
-      <organization>OceanBase</organization>
-      <timezone>8</timezone>
-    </developer>
-    <developer>
-      <name>Fankux</name>
-      <email>fankux@gmail.com</email>
-      <url>https://github.com/fankux</url>
-      <organization>OceanBase</organization>
-      <timezone>8</timezone>
-    </developer>
-    <developer>
-      <name>He Wang</name>
-      <email>wanghechn@qq.com</email>
-      <url>https://github.com/whhe</url>
-      <organization>OceanBase</organization>
-      <timezone>8</timezone>
-    </developer>
-  </developers>
-
-  <scm>
-    <connection>scm:git:https://github.com/oceanbase/oblogclient.git</connection>
-    <developerConnection>scm:git:https://github.com/oceanbase/oblogclient.git</developerConnection>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>OceanBase Log Client.</description>
     <url>https://github.com/oceanbase/oblogclient</url>
-    <tag>HEAD</tag>
-  </scm>
 
-  <properties>
-    <encoding>UTF-8</encoding>
-    <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-    <java.version>1.8</java.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <developers>
+        <developer>
+            <name>Si Jiang</name>
+            <email>cmbjiangsi5@163.com</email>
+            <url>https://github.com/hitandrun-zz</url>
+            <organization>OceanBase</organization>
+            <timezone>8</timezone>
+        </developer>
+        <developer>
+            <name>Fankux</name>
+            <email>fankux@gmail.com</email>
+            <url>https://github.com/fankux</url>
+            <organization>OceanBase</organization>
+            <timezone>8</timezone>
+        </developer>
+        <developer>
+            <name>He Wang</name>
+            <email>wanghechn@qq.com</email>
+            <url>https://github.com/whhe</url>
+            <organization>OceanBase</organization>
+            <timezone>8</timezone>
+        </developer>
+    </developers>
 
-    <commons-lang.version>3.12.0</commons-lang.version>
-    <commons-codec.version>1.15</commons-codec.version>
-    <netty.version>4.1.77.Final</netty.version>
-    <protobuf.version>3.19.6</protobuf.version>
-    <lz4.version>1.8.0</lz4.version>
-    <slf4j.version>1.7.32</slf4j.version>
-    <log4j.version>2.17.1</log4j.version>
-  </properties>
+    <scm>
+        <connection>scm:git:https://github.com/oceanbase/oblogclient.git</connection>
+        <developerConnection>scm:git:https://github.com/oceanbase/oblogclient.git</developerConnection>
+        <url>https://github.com/oceanbase/oblogclient</url>
+        <tag>HEAD</tag>
+    </scm>
 
-  <modules>
-    <module>oblogclient-common</module>
-    <module>oblogclient-logproxy</module>
-  </modules>
+    <properties>
+        <revision>1.1.1-SNAPSHOT</revision>
+        <encoding>UTF-8</encoding>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>${log4j.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>${log4j.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- API bridge between log4j 1 and 2 -->
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
-      <version>${log4j.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-    </snapshotRepository>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <name>Nexus Release Repository</name>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
+        <commons-lang.version>3.12.0</commons-lang.version>
+        <commons-codec.version>1.15</commons-codec.version>
+        <netty.version>4.1.77.Final</netty.version>
+        <protobuf.version>3.19.6</protobuf.version>
+        <lz4.version>1.8.0</lz4.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <log4j.version>2.17.1</log4j.version>
+    </properties>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.3.1</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <failOnWarnings>true</failOnWarnings>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <version>0.12</version>
-        <inherited>false</inherited>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <excludeSubProjects>false</excludeSubProjects>
-          <numUnapprovedLicenses>0</numUnapprovedLicenses>
-          <licenses>
-            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-              <licenseFamilyCategory>AL2</licenseFamilyCategory>
-              <licenseFamilyName>Apache License 2.0</licenseFamilyName>
-              <notes/>
-              <patterns>
-                <pattern>Licensed to the Apache Software Foundation (ASF) under one</pattern>
-              </patterns>
-            </license>
-          </licenses>
-          <licenseFamilies>
-            <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-              <familyName>Apache License 2.0</familyName>
-            </licenseFamily>
-          </licenseFamilies>
-          <excludes>
-            <!-- Additional files like .gitignore etc.-->
-            <exclude>**/.*/**</exclude>
-            <!-- Generated content -->
-            <exclude>**/target/**</exclude>
-            <!-- Build files -->
-            <exclude>**/*.iml</exclude>
-            <!-- Docs -->
-            <exclude>**/*.md</exclude>
-            <!-- Tests -->
-            <exclude>**/*.key</exclude>
-            <exclude>**/*.crt</exclude>
-            <!-- Text files -->
-            <exclude>**/*.txt</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.4.2</version>
-        <configuration>
-          <java>
-            <excludes>
-              <!-- Generated files. -->
-              <exclude>**/LogProxyProto.java</exclude>
-              <exclude>**/V1Proto.java</exclude>
-            </excludes>
-            <googleJavaFormat>
-              <version>1.7</version>
-              <style>AOSP</style>
-            </googleJavaFormat>
-            <importOrder />
-            <removeUnusedImports />
-          </java>
-        </configuration>
-        <executions>
-          <execution>
-            <id>spotless-check</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <modules>
+        <module>oblogclient-common</module>
+        <module>oblogclient-logproxy</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- API bridge between log4j 1 and 2 -->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <failOnWarnings>true</failOnWarnings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.12</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludeSubProjects>false</excludeSubProjects>
+                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                    <licenses>
+                        <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                            <licenseFamilyCategory>AL2</licenseFamilyCategory>
+                            <licenseFamilyName>Apache License 2.0</licenseFamilyName>
+                            <notes/>
+                            <patterns>
+                                <pattern>Licensed to the Apache Software Foundation (ASF) under one</pattern>
+                            </patterns>
+                        </license>
+                    </licenses>
+                    <licenseFamilies>
+                        <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+                            <familyName>Apache License 2.0</familyName>
+                        </licenseFamily>
+                    </licenseFamilies>
+                    <excludes>
+                        <!-- Additional files like .gitignore etc.-->
+                        <exclude>**/.*/**</exclude>
+                        <!-- Generated content -->
+                        <exclude>**/target/**</exclude>
+                        <!-- Build files -->
+                        <exclude>**/*.iml</exclude>
+                        <!-- Docs -->
+                        <exclude>**/*.md</exclude>
+                        <!-- Tests -->
+                        <exclude>**/*.key</exclude>
+                        <exclude>**/*.crt</exclude>
+                        <!-- Text files -->
+                        <exclude>**/*.txt</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <java>
+                        <excludes>
+                            <!-- Generated files. -->
+                            <exclude>**/LogProxyProto.java</exclude>
+                            <exclude>**/V1Proto.java</exclude>
+                        </excludes>
+                        <googleJavaFormat>
+                            <version>1.7</version>
+                            <style>AOSP</style>
+                        </googleJavaFormat>
+                        <importOrder/>
+                        <removeUnusedImports/>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>spotless-check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <phase>clean</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

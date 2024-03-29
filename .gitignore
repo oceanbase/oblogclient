@@ -4,5 +4,4 @@
 *.iws
 */target/
 target
-
-
+.flattened-pom.xml
