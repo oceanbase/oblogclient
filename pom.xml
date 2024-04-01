@@ -258,6 +258,7 @@ under the License.
             </plugin>
         </plugins>
     </build>
+    <url>https://github.com/oceanbase/oblogclient</url>
 
     <licenses>
         <license>
