@@ -234,6 +234,8 @@ public class LogProxyClientTest {
 
     @Test
     public void testLogProxyClientOnException() throws Exception {
+        String exceptionMessage = "Something is going wrong";
+
         final AtomicReference<LogProxyClientException> exception = new AtomicReference<>();
 
         LogProxyClient client = client();
@@ -242,7 +244,7 @@ public class LogProxyClientTest {
 
                     @Override
                     public void notify(LogMessage logMessage) {
-                        throw new RuntimeException("Something is going wrong");
+                        throw new RuntimeException(exceptionMessage);
                     }
 
                     @Override
@@ -251,19 +253,22 @@ public class LogProxyClientTest {
                             // assume the exception handler takes a long time
                             Thread.sleep(5000L);
                         } catch (InterruptedException interruptedException) {
-                            LOG.error(interruptedException.getMessage());
+                            Assert.fail(interruptedException.getMessage());
                         }
                         exception.set(e);
                     }
                 });
 
         client.start();
+        Assert.assertNull(exception.get());
+
         client.join();
 
         LogProxyClientException clientException = exception.get();
         Assert.assertNotNull(clientException);
-        LOG.info("Caught exception: {}, cause: {}", clientException, clientException.getCause());
-        Assert.assertTrue(clientException.getMessage().contains("Something is going wrong"));
+
+        LOG.info("Caught exception: {}", clientException.toString());
+        Assert.assertEquals(clientException.getMessage(), exceptionMessage);
     }
 
     private void verify(
