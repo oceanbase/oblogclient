@@ -262,6 +262,7 @@ public class LogProxyClientTest {
 
         LogProxyClientException clientException = exception.get();
         Assert.assertNotNull(clientException);
+        LOG.info("Caught exception: {}, cause: {}", clientException, clientException.getCause());
         Assert.assertTrue(clientException.getMessage().contains("Something is going wrong"));
     }
 

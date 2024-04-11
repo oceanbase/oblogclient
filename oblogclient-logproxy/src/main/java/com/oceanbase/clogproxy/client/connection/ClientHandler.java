@@ -462,11 +462,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
         if (stream != null) {
             if (cause instanceof LogProxyClientException) {
+                stream.triggerException((LogProxyClientException) cause);
                 if (((LogProxyClientException) cause).needStop()) {
-                    stream.triggerException((LogProxyClientException) cause);
                     stream.stop();
                 }
-
             } else {
                 stream.triggerReconnect();
             }
