@@ -45,11 +45,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LogProxyClientTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientTest.class);
 
+    private static final String LOG_PROXY_HOST = "localhost";
+    private static final int LOG_PROXY_PORT = 2983;
     private static final String RS_LIST = "127.0.0.1:2882:2881";
     private static final String TEST_TENANT = "test";
     private static final String TEST_USERNAME = "root@" + TEST_TENANT;
@@ -103,18 +106,19 @@ public class LogProxyClientTest {
                 .build();
     }
 
+    private LogProxyClient client() {
+        return new LogProxyClient(LOG_PROXY_HOST, LOG_PROXY_PORT, config(), clientConf());
+    }
+
     @Test
     public void testLogProxyClient() throws Exception {
         String table = "t_product";
 
-        LogProxyClient client =
-                new LogProxyClient(LOG_PROXY.getHost(), 2983, config(), clientConf());
-
         BlockingQueue<LogMessage> messageQueue = new LinkedBlockingQueue<>(4);
-
         AtomicBoolean started = new AtomicBoolean(false);
         CountDownLatch latch = new CountDownLatch(1);
 
+        LogProxyClient client = client();
         client.addListener(
                 new RecordListener() {
 
@@ -226,6 +230,39 @@ public class LogProxyClientTest {
                 Collections.emptyMap());
 
         client.stop();
+    }
+
+    @Test
+    public void testLogProxyClientOnException() throws Exception {
+        final AtomicReference<LogProxyClientException> exception = new AtomicReference<>();
+
+        LogProxyClient client = client();
+        client.addListener(
+                new RecordListener() {
+
+                    @Override
+                    public void notify(LogMessage logMessage) {
+                        throw new RuntimeException("Something is going wrong");
+                    }
+
+                    @Override
+                    public void onException(LogProxyClientException e) {
+                        try {
+                            // assume the exception handler takes a long time
+                            Thread.sleep(5000L);
+                        } catch (InterruptedException interruptedException) {
+                            LOG.error(interruptedException.getMessage());
+                        }
+                        exception.set(e);
+                    }
+                });
+
+        client.start();
+        client.join();
+
+        LogProxyClientException clientException = exception.get();
+        Assert.assertNotNull(clientException);
+        Assert.assertTrue(clientException.getMessage().contains("Something is going wrong"));
     }
 
     private void verify(
