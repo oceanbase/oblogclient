@@ -18,6 +18,7 @@ package com.oceanbase.clogproxy.client;
 
 import com.oceanbase.clogproxy.client.config.ClientConf;
 import com.oceanbase.clogproxy.client.config.ObReaderConfig;
+import com.oceanbase.clogproxy.client.enums.ErrorCode;
 import com.oceanbase.clogproxy.client.exception.LogProxyClientException;
 import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.oms.logmessage.DataMessage;
@@ -84,31 +85,6 @@ public class LogProxyClientTest {
                     .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
                     .withStartupTimeout(Duration.ofMinutes(1))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
-
-    private ObReaderConfig config() {
-        ObReaderConfig config = new ObReaderConfig();
-        config.setRsList(RS_LIST);
-        config.setUsername(TEST_USERNAME);
-        config.setPassword(TEST_PASSWORD);
-        config.setStartTimestamp(0L);
-        config.setTableWhiteList(TEST_TENANT + "." + TEST_DATABASE + ".*");
-        config.setTimezone("+08:00");
-        config.setWorkingMode("memory");
-        return config;
-    }
-
-    private ClientConf clientConf() {
-        return ClientConf.builder()
-                .transferQueueSize(1000)
-                .connectTimeoutMs((int) CONNECT_TIMEOUT.toMillis())
-                .maxReconnectTimes(0)
-                .ignoreUnknownRecordType(true)
-                .build();
-    }
-
-    private LogProxyClient client() {
-        return new LogProxyClient(LOG_PROXY_HOST, LOG_PROXY_PORT, config(), clientConf());
-    }
 
     @Test
     public void testLogProxyClient() throws Exception {
@@ -269,6 +245,69 @@ public class LogProxyClientTest {
 
         LOG.info("Caught exception: {}", clientException.toString());
         Assert.assertEquals(clientException.getMessage(), exceptionMessage);
+    }
+
+    @Test
+    public void testLogProxyClientReconnect() {
+        int maxReconnectTimes = 3;
+
+        ClientConf clientConf =
+                ClientConf.builder()
+                        .transferQueueSize(10)
+                        .connectTimeoutMs(1000)
+                        .maxReconnectTimes(maxReconnectTimes)
+                        .ignoreUnknownRecordType(true)
+                        .build();
+
+        LogProxyClient client =
+                new LogProxyClient("invalid_host", LOG_PROXY_PORT, config(), clientConf);
+
+        final AtomicReference<LogProxyClientException> exception = new AtomicReference<>();
+
+        client.addListener(
+                new RecordListener() {
+                    @Override
+                    public void notify(LogMessage logMessage) {}
+
+                    @Override
+                    public void onException(LogProxyClientException e) {
+                        exception.set(e);
+                    }
+                });
+
+        client.start();
+        client.join();
+
+        LogProxyClientException clientException = exception.get();
+        Assert.assertNotNull(clientException);
+
+        LOG.info("Caught exception: {}", clientException.toString());
+        Assert.assertEquals(clientException.getCode(), ErrorCode.E_MAX_RECONNECT);
+    }
+
+    private LogProxyClient client() {
+        return new LogProxyClient(LOG_PROXY_HOST, LOG_PROXY_PORT, config(), clientConf());
+    }
+
+    private ObReaderConfig config() {
+        ObReaderConfig config = new ObReaderConfig();
+        config.setRsList(RS_LIST);
+        config.setUsername(TEST_USERNAME);
+        config.setPassword(TEST_PASSWORD);
+        config.setStartTimestamp(0L);
+        config.setTableWhiteList(TEST_TENANT + "." + TEST_DATABASE + ".*");
+        config.setTimezone("+08:00");
+        config.setWorkingMode("memory");
+        return config;
+    }
+
+    private ClientConf clientConf() {
+        return ClientConf.builder()
+                .transferQueueSize(1000)
+                .connectTimeoutMs((int) CONNECT_TIMEOUT.toMillis())
+                .maxReconnectTimes(0)
+                .ignoreUnknownRecordType(true)
+                .build();
     }
 
     private void verify(
