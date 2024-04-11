@@ -126,11 +126,14 @@ public class ClientStream {
      * @param e An exception.
      */
     public void triggerException(LogProxyClientException e) {
+        if (e == null) {
+            return;
+        }
         for (RecordListener listener : listeners) {
             try {
                 listener.onException(e);
             } catch (Throwable throwable) {
-                logger.error("Failed to notify listener on exception", throwable);
+                logger.error("Failed to notify listener on exception: {}, cause: {}", e, throwable);
             }
         }
     }
