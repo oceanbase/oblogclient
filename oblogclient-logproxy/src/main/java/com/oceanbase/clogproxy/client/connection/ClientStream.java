@@ -121,19 +121,21 @@ public class ClientStream {
     }
 
     /**
-     * Call {@link RecordListener#onException(LogProxyClientException)} asynchronously.
+     * Call {@link RecordListener#onException(LogProxyClientException)} synchronously.
      *
      * @param e An exception.
      */
     public void triggerException(LogProxyClientException e) {
-        // use thread make sure non-blocking
-        new Thread(
-                        () -> {
-                            for (RecordListener listener : listeners) {
-                                listener.onException(e);
-                            }
-                        })
-                .start();
+        if (e == null) {
+            return;
+        }
+        for (RecordListener listener : listeners) {
+            try {
+                listener.onException(e);
+            } catch (Throwable throwable) {
+                logger.error("Failed to notify listener on exception: {}, cause: {}", e, throwable);
+            }
+        }
     }
 
     /** Start the process thread. */

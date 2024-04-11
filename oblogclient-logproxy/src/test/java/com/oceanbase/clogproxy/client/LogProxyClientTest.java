@@ -45,13 +45,21 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LogProxyClientTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientTest.class);
 
+    private static final String LOG_PROXY_HOST = "localhost";
+    private static final int LOG_PROXY_PORT = 2983;
+    private static final String RS_LIST = "127.0.0.1:2882:2881";
+    private static final String TEST_TENANT = "test";
+    private static final String TEST_USERNAME = "root@" + TEST_TENANT;
     private static final String SYS_PASSWORD = "sys_password";
     private static final String TEST_PASSWORD = "test_password";
+    private static final String TEST_DATABASE = "test";
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(30);
 
     @ClassRule
     public static final GenericContainer<?> OB_SERVER =
@@ -77,39 +85,40 @@ public class LogProxyClientTest {
                     .withStartupTimeout(Duration.ofMinutes(1))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
 
-    @Test
-    public void testLogProxyClient() throws Exception {
-        String tenant = "test";
-        String db = "test";
-        Duration connectTimeout = Duration.ofSeconds(30);
-
-        // Can get it with "show parameters like 'rootservice_list'"
-        String rsList = "127.0.0.1:2882:2881";
-
+    private ObReaderConfig config() {
         ObReaderConfig config = new ObReaderConfig();
-        config.setRsList(rsList);
-        config.setUsername("root@" + tenant);
+        config.setRsList(RS_LIST);
+        config.setUsername(TEST_USERNAME);
         config.setPassword(TEST_PASSWORD);
         config.setStartTimestamp(0L);
-        config.setTableWhiteList(tenant + ".*.*");
+        config.setTableWhiteList(TEST_TENANT + "." + TEST_DATABASE + ".*");
         config.setTimezone("+08:00");
         config.setWorkingMode("memory");
+        return config;
+    }
 
-        ClientConf clientConf =
-                ClientConf.builder()
-                        .transferQueueSize(1000)
-                        .connectTimeoutMs((int) connectTimeout.toMillis())
-                        .maxReconnectTimes(0)
-                        .ignoreUnknownRecordType(true)
-                        .build();
+    private ClientConf clientConf() {
+        return ClientConf.builder()
+                .transferQueueSize(1000)
+                .connectTimeoutMs((int) CONNECT_TIMEOUT.toMillis())
+                .maxReconnectTimes(0)
+                .ignoreUnknownRecordType(true)
+                .build();
+    }
 
-        LogProxyClient client = new LogProxyClient(LOG_PROXY.getHost(), 2983, config, clientConf);
+    private LogProxyClient client() {
+        return new LogProxyClient(LOG_PROXY_HOST, LOG_PROXY_PORT, config(), clientConf());
+    }
+
+    @Test
+    public void testLogProxyClient() throws Exception {
+        String table = "t_product";
 
         BlockingQueue<LogMessage> messageQueue = new LinkedBlockingQueue<>(4);
-
         AtomicBoolean started = new AtomicBoolean(false);
         CountDownLatch latch = new CountDownLatch(1);
 
+        LogProxyClient client = client();
         client.addListener(
                 new RecordListener() {
 
@@ -153,11 +162,10 @@ public class LogProxyClientTest {
                 });
         client.start();
 
-        if (!latch.await(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        if (!latch.await(CONNECT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
             Assert.fail("Timeout to receive heartbeat message");
         }
 
-        String table = "t_product";
         String ddl = "CREATE TABLE t_product (id INT(10) PRIMARY KEY, name VARCHAR(20))";
 
         try (Connection connection =
@@ -183,8 +191,6 @@ public class LogProxyClientTest {
         verify(
                 messageQueue.take(),
                 DataMessage.Record.Type.INSERT,
-                tenant,
-                db,
                 table,
                 Collections.emptyMap(),
                 new HashMap<String, String>() {
@@ -197,8 +203,6 @@ public class LogProxyClientTest {
         verify(
                 messageQueue.take(),
                 DataMessage.Record.Type.UPDATE,
-                tenant,
-                db,
                 table,
                 new HashMap<String, String>() {
                     {
@@ -216,8 +220,6 @@ public class LogProxyClientTest {
         verify(
                 messageQueue.take(),
                 DataMessage.Record.Type.DELETE,
-                tenant,
-                db,
                 table,
                 new HashMap<String, String>() {
                     {
@@ -230,16 +232,53 @@ public class LogProxyClientTest {
         client.stop();
     }
 
+    @Test
+    public void testLogProxyClientOnException() throws Exception {
+        String exceptionMessage = "Something is going wrong";
+
+        final AtomicReference<LogProxyClientException> exception = new AtomicReference<>();
+
+        LogProxyClient client = client();
+        client.addListener(
+                new RecordListener() {
+
+                    @Override
+                    public void notify(LogMessage logMessage) {
+                        throw new RuntimeException(exceptionMessage);
+                    }
+
+                    @Override
+                    public void onException(LogProxyClientException e) {
+                        try {
+                            // assume the exception handler takes a long time
+                            Thread.sleep(5000L);
+                        } catch (InterruptedException interruptedException) {
+                            Assert.fail(interruptedException.getMessage());
+                        }
+                        exception.set(e);
+                    }
+                });
+
+        client.start();
+        Assert.assertNull(exception.get());
+
+        client.join();
+
+        LogProxyClientException clientException = exception.get();
+        Assert.assertNotNull(clientException);
+
+        LOG.info("Caught exception: {}", clientException.toString());
+        Assert.assertEquals(clientException.getMessage(), exceptionMessage);
+    }
+
     private void verify(
             LogMessage message,
             DataMessage.Record.Type type,
-            String tenant,
-            String db,
             String table,
             Map<String, String> before,
             Map<String, String> after) {
         Assert.assertEquals(message.getOpt(), type);
-        Assert.assertEquals(message.getDbName(), tenant + "." + db);
+        Assert.assertEquals(message.getDbName(), TEST_TENANT + "." + TEST_DATABASE);
         Assert.assertEquals(message.getTableName(), table);
 
         for (DataMessage.Record.Field field : message.getFieldList()) {
