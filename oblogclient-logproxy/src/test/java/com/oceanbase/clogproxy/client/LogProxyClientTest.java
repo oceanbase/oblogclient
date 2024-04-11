@@ -50,8 +50,13 @@ public class LogProxyClientTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientTest.class);
 
+    private static final String RS_LIST = "127.0.0.1:2882:2881";
+    private static final String TEST_TENANT = "test";
+    private static final String TEST_USERNAME = "root@" + TEST_TENANT;
     private static final String SYS_PASSWORD = "sys_password";
     private static final String TEST_PASSWORD = "test_password";
+    private static final String TEST_DATABASE = "test";
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(30);
 
     @ClassRule
     public static final GenericContainer<?> OB_SERVER =
@@ -77,33 +82,33 @@ public class LogProxyClientTest {
                     .withStartupTimeout(Duration.ofMinutes(1))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
 
-    @Test
-    public void testLogProxyClient() throws Exception {
-        String tenant = "test";
-        String db = "test";
-        Duration connectTimeout = Duration.ofSeconds(30);
-
-        // Can get it with "show parameters like 'rootservice_list'"
-        String rsList = "127.0.0.1:2882:2881";
-
+    private ObReaderConfig config() {
         ObReaderConfig config = new ObReaderConfig();
-        config.setRsList(rsList);
-        config.setUsername("root@" + tenant);
+        config.setRsList(RS_LIST);
+        config.setUsername(TEST_USERNAME);
         config.setPassword(TEST_PASSWORD);
         config.setStartTimestamp(0L);
-        config.setTableWhiteList(tenant + ".*.*");
+        config.setTableWhiteList(TEST_TENANT + "." + TEST_DATABASE + ".*");
         config.setTimezone("+08:00");
         config.setWorkingMode("memory");
+        return config;
+    }
 
-        ClientConf clientConf =
-                ClientConf.builder()
-                        .transferQueueSize(1000)
-                        .connectTimeoutMs((int) connectTimeout.toMillis())
-                        .maxReconnectTimes(0)
-                        .ignoreUnknownRecordType(true)
-                        .build();
+    private ClientConf clientConf() {
+        return ClientConf.builder()
+                .transferQueueSize(1000)
+                .connectTimeoutMs((int) CONNECT_TIMEOUT.toMillis())
+                .maxReconnectTimes(0)
+                .ignoreUnknownRecordType(true)
+                .build();
+    }
 
-        LogProxyClient client = new LogProxyClient(LOG_PROXY.getHost(), 2983, config, clientConf);
+    @Test
+    public void testLogProxyClient() throws Exception {
+        String table = "t_product";
+
+        LogProxyClient client =
+                new LogProxyClient(LOG_PROXY.getHost(), 2983, config(), clientConf());
 
         BlockingQueue<LogMessage> messageQueue = new LinkedBlockingQueue<>(4);
 
@@ -153,11 +158,10 @@ public class LogProxyClientTest {
                 });
         client.start();
 
-        if (!latch.await(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        if (!latch.await(CONNECT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
             Assert.fail("Timeout to receive heartbeat message");
         }
 
-        String table = "t_product";
         String ddl = "CREATE TABLE t_product (id INT(10) PRIMARY KEY, name VARCHAR(20))";
 
         try (Connection connection =
@@ -183,8 +187,6 @@ public class LogProxyClientTest {
         verify(
                 messageQueue.take(),
                 DataMessage.Record.Type.INSERT,
-                tenant,
-                db,
                 table,
                 Collections.emptyMap(),
                 new HashMap<String, String>() {
@@ -197,8 +199,6 @@ public class LogProxyClientTest {
         verify(
                 messageQueue.take(),
                 DataMessage.Record.Type.UPDATE,
-                tenant,
-                db,
                 table,
                 new HashMap<String, String>() {
                     {
@@ -216,8 +216,6 @@ public class LogProxyClientTest {
         verify(
                 messageQueue.take(),
                 DataMessage.Record.Type.DELETE,
-                tenant,
-                db,
                 table,
                 new HashMap<String, String>() {
                     {
@@ -233,13 +231,11 @@ public class LogProxyClientTest {
     private void verify(
             LogMessage message,
             DataMessage.Record.Type type,
-            String tenant,
-            String db,
             String table,
             Map<String, String> before,
             Map<String, String> after) {
         Assert.assertEquals(message.getOpt(), type);
-        Assert.assertEquals(message.getDbName(), tenant + "." + db);
+        Assert.assertEquals(message.getDbName(), TEST_TENANT + "." + TEST_DATABASE);
         Assert.assertEquals(message.getTableName(), table);
 
         for (DataMessage.Record.Field field : message.getFieldList()) {
