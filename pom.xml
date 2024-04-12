@@ -159,6 +159,8 @@ under the License.
                         <exclude>**/target/**</exclude>
                         <!-- Build files -->
                         <exclude>**/*.iml</exclude>
+                        <!-- Resource files -->
+                        <exclude>**/resources/**</exclude>
                         <!-- Docs -->
                         <exclude>**/*.md</exclude>
                         <!-- Tests -->
