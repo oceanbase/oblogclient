@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Properties;
 
@@ -36,17 +38,19 @@ public class LogProxyClientDemo {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientDemo.class);
 
-    public static Properties loadProperties(String filename) throws IOException {
+    public static void main(String[] args) {
         Properties properties = new Properties();
         try (InputStream inputStream =
-                LogProxyClientDemo.class.getClassLoader().getResourceAsStream(filename)) {
+                args.length > 0
+                        ? Files.newInputStream(Paths.get(args[0]))
+                        : LogProxyClientDemo.class
+                                .getClassLoader()
+                                .getResourceAsStream("application.properties")) {
             properties.load(inputStream);
+        } catch (IOException e) {
+            LOG.error("Failed to load properties files", e);
+            return;
         }
-        return properties;
-    }
-
-    public static void main(String[] args) throws Exception {
-        Properties properties = loadProperties("application.properties");
         LOG.info("Loaded properties: {}", properties);
 
         ObReaderConfig obReaderConfig = new ObReaderConfig();
