@@ -19,7 +19,7 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.oceanbase.samples</groupId>
-    <artifactId>oblogclient</artifactId>
+    <artifactId>oblogclient-sample</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
@@ -69,7 +69,7 @@ under the License.
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.oceanbase.samples.LogProxyClientDemo</mainClass>
+                            <mainClass>com.oceanbase.samples.LogProxyClientSample</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -93,9 +93,9 @@ under the License.
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <finalName>oblogclient-sample</finalName>
                             <shadeTestJar>false</shadeTestJar>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <dependencyReducedPomLocation>${project.basedir}/target/dependency-reduced-pom.xml
                             </dependencyReducedPomLocation>

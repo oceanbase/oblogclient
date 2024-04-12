@@ -34,16 +34,16 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Properties;
 
-public class LogProxyClientDemo {
+public class LogProxyClientSample {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientDemo.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientSample.class);
 
     public static void main(String[] args) {
         Properties properties = new Properties();
         try (InputStream inputStream =
                 args.length > 0
                         ? Files.newInputStream(Paths.get(args[0]))
-                        : LogProxyClientDemo.class
+                        : LogProxyClientSample.class
                                 .getClassLoader()
                                 .getResourceAsStream("application.properties")) {
             properties.load(inputStream);

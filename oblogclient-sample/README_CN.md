@@ -26,5 +26,5 @@ OceanBase 日志客户端示例
 您也可以在修改完配置文件之后，将其放置在 jar 包所在目录下，然后通过如下命令运行示例程序：
 
 ```shell
-java -jar oblogclient-0.0.1-SNAPSHOT-jar-with-dependencies.jar application.properties
+java -jar oblogclient-sample.jar application.properties
 ```

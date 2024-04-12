@@ -1,10 +1,9 @@
-OceanBase Log Client Demo
+OceanBase Log Client Sample
 -------------------------
 
 English | [简体中文](README_CN.md)
 
-This is a demo for oblogclient. You can use it to subscribe to the log data of your OceanBase database by modifying the
-configuration file `application.properties`.
+This is a sample for oblogclient. You can use it to subscribe to the log data of your OceanBase database by modifying the configuration file `application.properties`.
 
 | Property                     | Description                                                                                                                                                                                |
 |------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -12,7 +11,7 @@ configuration file `application.properties`.
 | password                     | The password                                                                                                                                                                               |
 | logproxy.host                | IP or hostname of logproxy service                                                                                                                                                         |
 | logproxy.port                | The port of the logproxy service                                                                                                                                                           |
-| logproxy.client_id           | The client id used by the client in the demo. If it is empty, the application will automatically generate it by IP address and timestamp                                                   |
+| logproxy.client_id           | The client id used by the client. If it is empty, the application will automatically generate it by IP address and timestamp                                                               |
 | logproxy.connect_timeout     | logproxy client connection timeout                                                                                                                                                         |
 | logproxy.max_reconnect_times | The maximum number of retries for logproxy client connections                                                                                                                              |
 | libobcdc.rootservice_list    | Required by OceanBase CE, which can be queried through `show parameters like 'rootservice_list'`                                                                                           |
@@ -24,9 +23,8 @@ configuration file `application.properties`.
 
 After the configuration file is modified, you can use the IDE for debugging and running.
 
-You can also modify the configuration file, place it in the directory where the jar package is located, and then run it
-through the following command:
+You can also modify the configuration file, place it in the directory where the jar package is located, and then run it through the following command:
 
 ```shell
-java -jar oblogclient-0.0.1-SNAPSHOT-jar-with-dependencies.jar application.properties
+java -jar oblogclient-sample.jar application.properties
 ```
