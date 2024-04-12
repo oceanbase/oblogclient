@@ -40,18 +40,14 @@ under the License.
             <groupId>com.oceanbase</groupId>
             <artifactId>oblogclient-logproxy</artifactId>
             <version>${oblogclient.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -93,7 +89,7 @@ under the License.
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>oblogclient-sample</finalName>
+                            <finalName>oblogclient-sample-${oblogclient.version}</finalName>
                             <shadeTestJar>false</shadeTestJar>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <createDependencyReducedPom>true</createDependencyReducedPom>

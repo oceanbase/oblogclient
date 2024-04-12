@@ -26,5 +26,5 @@ After the configuration file is modified, you can use the IDE for debugging and 
 You can also modify the configuration file, place it in the directory where the jar package is located, and then run it through the following command:
 
 ```shell
-java -jar oblogclient-sample.jar application.properties
+java -jar oblogclient-sample-${project.version}.jar application.properties
 ```
