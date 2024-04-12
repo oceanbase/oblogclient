@@ -23,7 +23,7 @@ OceanBase 日志客户端示例
 
 配置文件修改完成后，即可借助 IDE 进行调试运行。
 
-您也可以在修改完配置文件之后，将其放置在 jar 包所在目录下，然后通过如下命令运行示例程序：
+我们会在每次发版时放出最新的示例程序 jar 包，如果您想通过 jar 包运行示例程序，可以在 [Releases](https://github.com/oceanbase/oblogclient/releases) 页面下载 jar 包，并将修改后的 [配置文件](./src/main/resources/application.properties) 放置在 jar 包所在目录下，然后通过如下命令运行示例程序：
 
 ```shell
 java -jar oblogclient-sample-${project.version}.jar application.properties

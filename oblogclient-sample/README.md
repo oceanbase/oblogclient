@@ -23,7 +23,7 @@ This is a sample for oblogclient. You can use it to subscribe to the log data of
 
 After the configuration file is modified, you can use the IDE for debugging and running.
 
-You can also modify the configuration file, place it in the directory where the jar package is located, and then run it through the following command:
+We will release a sample jar package file for every version. If you want to run it through the jar package, you can download it on the [Releases](https://github.com/oceanbase/oblogclient/releases) page, modify the [application.properties](./src/main/resources/application.properties) and place it in the directory where the jar package is located, and then run it through the following command:
 
 ```shell
 java -jar oblogclient-sample-${project.version}.jar application.properties
