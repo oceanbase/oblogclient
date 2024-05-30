@@ -81,7 +81,6 @@ public class LogProxyClientTest {
     public static final GenericContainer<?> LOG_PROXY =
             new GenericContainer<>("whhe/oblogproxy:1.1.3_4x")
                     .withNetworkMode("host")
-                    .withEnv("OB_SYS_PASSWORD", SYS_PASSWORD)
                     .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
                     .withStartupTimeout(Duration.ofMinutes(1))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
@@ -294,6 +293,8 @@ public class LogProxyClientTest {
         config.setRsList(RS_LIST);
         config.setUsername(TEST_USERNAME);
         config.setPassword(TEST_PASSWORD);
+        config.setSysUsername("root");
+        config.setSysPassword(SYS_PASSWORD);
         config.setStartTimestamp(0L);
         config.setTableWhiteList(TEST_TENANT + "." + TEST_DATABASE + ".*");
         config.setTimezone("+08:00");
