@@ -9,6 +9,8 @@ OceanBase 日志客户端示例
 |------------------------------|---------------------------------------------------------------|
 | username                     | 需要订阅的业务租户的用户名                                                 |
 | password                     | 订阅用户的密码                                                       |
+| sys.username                 | sys 用户名。如果设置了，LogProxy配置文件中的值将被覆盖。                            |
+| sys.password                 | sys 用户的密码。如果设置了，LogProxy配置文件中的值将被覆盖。                          |
 | logproxy.host                | logproxy 服务的 ip 或域名                                           |
 | logproxy.port                | logproxy 服务的端口                                                |
 | logproxy.client_id           | 示例中客户端使用的 client id，为空时程序将自动生成                                |
