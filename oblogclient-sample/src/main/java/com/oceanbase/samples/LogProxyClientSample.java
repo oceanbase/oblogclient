@@ -24,6 +24,7 @@ import com.oceanbase.clogproxy.client.listener.RecordListener;
 import com.oceanbase.clogproxy.client.util.ClientUtil;
 import com.oceanbase.oms.logmessage.LogMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,13 @@ public class LogProxyClientSample {
         obReaderConfig.setUsername(properties.getProperty("username"));
         obReaderConfig.setPassword(properties.getProperty("password"));
 
+        String sysUser = properties.getProperty("sys.username");
+        String sysPassword = properties.getProperty("sys.password");
+        if (StringUtils.isNoneBlank(sysUser) && StringUtils.isNoneBlank(sysPassword)) {
+            obReaderConfig.setSysUsername(sysUser);
+            obReaderConfig.setSysPassword(sysPassword);
+        }
+
         obReaderConfig.setRsList(properties.getProperty("libobcdc.rootservice_list"));
         obReaderConfig.setClusterUrl(properties.getProperty("libobcdc.obconfig_url"));
         obReaderConfig.setTableWhiteList(properties.getProperty("libobcdc.tb_white_list"));
@@ -67,8 +75,7 @@ public class LogProxyClientSample {
         LOG.info("ObReaderConfig info: {}", obReaderConfig);
 
         String clientId = properties.getProperty("logproxy.client_id");
-        clientId =
-                clientId == null || clientId.isEmpty() ? ClientUtil.generateClientId() : clientId;
+        clientId = StringUtils.isBlank(clientId) ? ClientUtil.generateClientId() : clientId;
         int connectTimeoutMs =
                 (int) Duration.parse(properties.getProperty("logproxy.connect_timeout")).toMillis();
         int maxReconnectTimes =
