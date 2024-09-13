@@ -222,7 +222,114 @@ client.join();
 
 The method `LogProxyClient.start()` will start a new thread which serving with a netty socket to receive data from LogProxy.
 
-There are also some configurations for the client in `ClientConf`, if you don't want to use its default values, you can customize a `ClientConf` and pass it to the corresponding constructor to create the client instance.
+There are also some configurations for the client in `ClientConf`:
+
+<div class="highlight">
+    <table class="colwidths-auto docutils">
+        <thead>
+            <tr>
+                <th class="text-left" style="width: 10%">Option</th>
+                <th class="text-left" style="width: 8%">Required</th>
+                <th class="text-left" style="width: 7%">Default</th>
+                <th class="text-left" style="width: 10%">Type</th>
+                <th class="text-left" style="width: 15%">Setter</th>
+                <th class="text-left" style="width: 50%">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>clientId</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">system-generated</td>
+                <td>String</td>
+                <td>clientId</td>
+                <td>User defined client id.</td>
+            </tr>
+            <tr>
+                <td>transferQueueSize</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">20000</td>
+                <td>Int</td>
+                <td>transferQueueSize</td>
+                <td>Queue size for storing records received from log proxy.</td>
+            </tr>
+            <tr>
+                <td>connectTimeoutMs</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">5000</td>
+                <td>Int</td>
+                <td>connectTimeoutMs</td>
+                <td>Connection timeout in milliseconds.</td>
+            </tr>
+            <tr>
+                <td>readWaitTimeMs</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">2000</td>
+                <td>Int</td>
+                <td>readWaitTimeMs</td>
+                <td>Reading queue timeout in milliseconds.</td>
+            </tr>
+            <tr>
+                <td>retryIntervalS</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">2</td>
+                <td>Int</td>
+                <td>retryIntervalS</td>
+                <td>Time to sleep in seconds when retrying.</td>
+            </tr>
+            <tr>
+                <td>idleTimeoutS</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">15</td>
+                <td>Int</td>
+                <td>idleTimeoutS</td>
+                <td>Idle timeout in seconds for netty handler.</td>
+            </tr>
+            <tr>
+                <td>maxReconnectTimes</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">-1</td>
+                <td>Int</td>
+                <td>maxReconnectTimes</td>
+                <td>Maximum number of retries after disconnect, if not data income lasting idleTimeoutS, a reconnection will be triggered.</td>
+            </tr>
+            <tr>
+                <td>nettyDiscardAfterReads</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">16</td>
+                <td>Int</td>
+                <td>nettyDiscardAfterReads</td>
+                <td>Maximum number of reads, after which data will be discarded.</td>
+            </tr>
+            <tr>
+                <td>ignoreUnknownRecordType</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">false</td>
+                <td>boolean</td>
+                <td>ignoreUnknownRecordType</td>
+                <td>Ignore unknown or unsupported record type with a warning log instead of throwing an exception.</td>
+            </tr>
+            <tr>
+                <td>protocolVersion</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;">2</td>
+                <td>Int</td>
+                <td>protocolVersion</td>
+                <td>protocol version.</td>
+            </tr>
+            <tr>
+                <td>sslContext</td>
+                <td>false</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>SslContext</td>
+                <td>sslContext</td>
+                <td>Netty ssl context.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+If you don't want to use its default values, you can customize a `ClientConf` and pass it to the corresponding constructor to create the client instance.
 
 ```java
 ClientConf clientConf =

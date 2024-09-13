@@ -222,7 +222,114 @@ client.join();
 
 调用函数 `LogProxyClient.start()` 会启动一个新的线程，该线程将使用 Netty 建立一个到 LogProxy 的连接，并通过该连接接收日志数据。
 
-LogProxy 客户端还可以通过 `ClientConf` 配置一些客户端行为相关的参数，如下所示是一个使用自定义 `ClientConf` 的例子：
+LogProxy 客户端还可以通过 `ClientConf` 配置一些客户端行为相关的参数：
+
+<div class="highlight">
+    <table class="colwidths-auto docutils">
+        <thead>
+            <tr>
+                <th class="text-left" style="width: 10%">参数名</th>
+                <th class="text-left" style="width: 8%">是否必需</th>
+                <th class="text-left" style="width: 7%">默认值</th>
+                <th class="text-left" style="width: 10%">类型</th>
+                <th class="text-left" style="width: 15%">设置函数</th>
+                <th class="text-left" style="width: 50%">参数说明</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>clientId</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">system-generated</td>
+                <td>String</td>
+                <td>clientId</td>
+                <td>User defined client id.</td>
+            </tr>
+            <tr>
+                <td>transferQueueSize</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">20000</td>
+                <td>Int</td>
+                <td>transferQueueSize</td>
+                <td>用于缓冲从LogProxy接收的记录的队列大小。</td>
+            </tr>
+            <tr>
+                <td>connectTimeoutMs</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">5000</td>
+                <td>Int</td>
+                <td>connectTimeoutMs</td>
+                <td>连接超时时间（以毫秒为单位）。</td>
+            </tr>
+            <tr>
+                <td>readWaitTimeMs</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">2000</td>
+                <td>Int</td>
+                <td>readWaitTimeMs</td>
+                <td>读取队列的超时时间（以毫秒为单位）。</td>
+            </tr>
+            <tr>
+                <td>retryIntervalS</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">2</td>
+                <td>Int</td>
+                <td>retryIntervalS</td>
+                <td>重试之间的间隔时间（以秒为单位）。</td>
+            </tr>
+            <tr>
+                <td>idleTimeoutS</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">15</td>
+                <td>Int</td>
+                <td>idleTimeoutS</td>
+                <td>Netty handler空闲超时时间（以秒为单位）。</td>
+            </tr>
+            <tr>
+                <td>maxReconnectTimes</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">-1</td>
+                <td>Int</td>
+                <td>maxReconnectTimes</td>
+                <td>断开连接后的最大重试次数，如果持续idleTimeoutS所配置的时间后，仍没有数据收入，则会触发重新连接。</td>
+            </tr>
+            <tr>
+                <td>nettyDiscardAfterReads</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">16</td>
+                <td>Int</td>
+                <td>nettyDiscardAfterReads</td>
+                <td>Netty尝试读取的最大次数，超过此次数的数据将被丢弃。</td>
+            </tr>
+            <tr>
+                <td>ignoreUnknownRecordType</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">false</td>
+                <td>boolean</td>
+                <td>ignoreUnknownRecordType</td>
+                <td>使用warning级别的日志记录未知或不受支持的消息类型，而不是抛出异常。</td>
+            </tr>
+            <tr>
+                <td>protocolVersion</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;">2</td>
+                <td>Int</td>
+                <td>protocolVersion</td>
+                <td>协议版本。</td>
+            </tr>
+            <tr>
+                <td>sslContext</td>
+                <td>否</td>
+                <td style="word-wrap: break-word;"></td>
+                <td>SslContext</td>
+                <td>sslContext</td>
+                <td>Netty ssl 上下文。</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+如下所示是一个使用自定义 `ClientConf` 的例子：
 
 ```java
 ClientConf clientConf =
