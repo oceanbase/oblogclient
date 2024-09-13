@@ -143,7 +143,7 @@ public class ClientConf extends SharedConf implements Serializable {
     /** ClientConf builder with default values. */
     public static class Builder {
         private int transferQueueSize = 20000;
-        private int connectTimeoutMs = 5000;
+        private int connectTimeoutMs = 60000;
         private int readWaitTimeMs = 2000;
         private int retryIntervalS = 2;
         private int maxReconnectTimes = -1;

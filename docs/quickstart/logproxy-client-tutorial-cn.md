@@ -256,7 +256,7 @@ LogProxy 客户端还可以通过 `ClientConf` 配置一些客户端行为相关
             <tr>
                 <td>connectTimeoutMs</td>
                 <td>否</td>
-                <td style="word-wrap: break-word;">5000</td>
+                <td style="word-wrap: break-word;">60000</td>
                 <td>Int</td>
                 <td>connectTimeoutMs</td>
                 <td>连接超时时间（以毫秒为单位）。</td>
