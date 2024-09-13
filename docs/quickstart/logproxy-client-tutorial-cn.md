@@ -240,10 +240,10 @@ LogProxy 客户端还可以通过 `ClientConf` 配置一些客户端行为相关
             <tr>
                 <td>clientId</td>
                 <td>否</td>
-                <td style="word-wrap: break-word;">system-generated</td>
+                <td style="word-wrap: break-word;">系统生成</td>
                 <td>String</td>
                 <td>clientId</td>
-                <td>User defined client id.</td>
+                <td>用户自定义客户端id，默认由系统自动生成。</td>
             </tr>
             <tr>
                 <td>transferQueueSize</td>
@@ -291,7 +291,7 @@ LogProxy 客户端还可以通过 `ClientConf` 配置一些客户端行为相关
                 <td style="word-wrap: break-word;">-1</td>
                 <td>Int</td>
                 <td>maxReconnectTimes</td>
-                <td>断开连接后的最大重试次数，如果持续idleTimeoutS所配置的时间后，仍没有数据收入，则会触发重新连接。</td>
+                <td>断开连接后的最大重试次数，如果持续idleTimeoutS所配置的时间后，仍没有收到数据，则会触发重新连接。默认值-1代表无限重试。</td>
             </tr>
             <tr>
                 <td>nettyDiscardAfterReads</td>
@@ -315,7 +315,7 @@ LogProxy 客户端还可以通过 `ClientConf` 配置一些客户端行为相关
                 <td style="word-wrap: break-word;">2</td>
                 <td>Int</td>
                 <td>protocolVersion</td>
-                <td>协议版本。</td>
+                <td>与LogProxy服务（cdc模式）的通信协议版本。当前默认值即最新版本V2。</td>
             </tr>
             <tr>
                 <td>sslContext</td>
