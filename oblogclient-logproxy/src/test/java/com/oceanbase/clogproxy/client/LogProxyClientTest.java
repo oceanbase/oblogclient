@@ -30,12 +30,15 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.MountableFile;
+import org.testcontainers.oceanbase.OceanBaseCEContainer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Collections;
@@ -52,35 +55,31 @@ public class LogProxyClientTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogProxyClientTest.class);
 
-    private static final String LOG_PROXY_HOST = "localhost";
     private static final int LOG_PROXY_PORT = 2983;
-    private static final String RS_LIST = "127.0.0.1:2882:2881";
     private static final String TEST_TENANT = "test";
-    private static final String TEST_USERNAME = "root@" + TEST_TENANT;
     private static final String SYS_PASSWORD = "sys_password";
-    private static final String TEST_PASSWORD = "test_password";
-    private static final String TEST_DATABASE = "test";
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(30);
 
+    @ClassRule public static final Network NETWORK = Network.newNetwork();
+
     @ClassRule
-    public static final GenericContainer<?> OB_SERVER =
-            new GenericContainer<>("oceanbase/oceanbase-ce:4.2.0.0")
-                    .withNetworkMode("host")
-                    .withEnv("MODE", "slim")
-                    .withEnv("OB_ROOT_PASSWORD", SYS_PASSWORD)
-                    .withEnv("OB_DATAFILE_SIZE", "1G")
-                    .withEnv("OB_LOG_DISK_SIZE", "4G")
-                    .withCopyFileToContainer(
-                            MountableFile.forClasspathResource("sql/docker_init.sql"),
-                            "/root/boot/init.d/init.sql")
-                    .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
+    public static final OceanBaseCEContainer OB_SERVER =
+            new OceanBaseCEContainer("oceanbase/oceanbase-ce:4.2.1.8-108000022024072217")
+                    .withNetwork(NETWORK)
+                    .withMode(OceanBaseCEContainer.Mode.MINI)
+                    .withEnv("OB_CLUSTER_NAME", "oblogclient-logproxy-ci")
+                    .withEnv("OB_SYS_PASSWORD", SYS_PASSWORD)
+                    .withTenantName(TEST_TENANT)
+                    .withPassword("123456")
                     .withStartupTimeout(Duration.ofMinutes(4))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
 
+    @SuppressWarnings("resource")
     @ClassRule
     public static final GenericContainer<?> LOG_PROXY =
-            new GenericContainer<>("whhe/oblogproxy:1.1.3_4x")
-                    .withNetworkMode("host")
+            new GenericContainer<>("oceanbase/oblogproxy-ce:latest")
+                    .withNetwork(NETWORK)
+                    .withExposedPorts(LOG_PROXY_PORT)
                     .waitingFor(Wait.forLogMessage(".*boot success!.*", 1))
                     .withStartupTimeout(Duration.ofMinutes(1))
                     .withLogConsumer(new Slf4jLogConsumer(LOG));
@@ -143,11 +142,7 @@ public class LogProxyClientTest {
 
         String ddl = "CREATE TABLE t_product (id INT(10) PRIMARY KEY, name VARCHAR(20))";
 
-        try (Connection connection =
-                        DriverManager.getConnection(
-                                "jdbc:oceanbase://" + OB_SERVER.getHost() + ":2881/test",
-                                "root@test",
-                                TEST_PASSWORD);
+        try (Connection connection = getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(ddl);
             statement.execute("INSERT INTO t_product VALUES (1, 'meat')");
@@ -284,19 +279,38 @@ public class LogProxyClientTest {
         Assert.assertEquals(clientException.getCode(), ErrorCode.E_MAX_RECONNECT);
     }
 
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+                OB_SERVER.getJdbcUrl(), OB_SERVER.getUsername(), OB_SERVER.getPassword());
+    }
+
+    private String getRsList() {
+        try (Connection connection = getConnection();
+                Statement statement = connection.createStatement()) {
+            ResultSet rs = statement.executeQuery("SHOW PARAMETERS LIKE 'rootservice_list'");
+            return rs.next() ? rs.getString("VALUE") : null;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to query rs list", e);
+        }
+    }
+
     private LogProxyClient client() {
-        return new LogProxyClient(LOG_PROXY_HOST, LOG_PROXY_PORT, config(), clientConf());
+        return new LogProxyClient(
+                LOG_PROXY.getHost(),
+                LOG_PROXY.getMappedPort(LOG_PROXY_PORT),
+                config(),
+                clientConf());
     }
 
     private ObReaderConfig config() {
         ObReaderConfig config = new ObReaderConfig();
-        config.setRsList(RS_LIST);
-        config.setUsername(TEST_USERNAME);
-        config.setPassword(TEST_PASSWORD);
+        config.setRsList(getRsList());
+        config.setUsername(OB_SERVER.getUsername());
+        config.setPassword(OB_SERVER.getPassword());
         config.setSysUsername("root");
         config.setSysPassword(SYS_PASSWORD);
         config.setStartTimestamp(0L);
-        config.setTableWhiteList(TEST_TENANT + "." + TEST_DATABASE + ".*");
+        config.setTableWhiteList(TEST_TENANT + "." + OB_SERVER.getDatabaseName() + ".*");
         config.setTimezone("+08:00");
         config.setWorkingMode("memory");
         return config;
@@ -318,7 +332,7 @@ public class LogProxyClientTest {
             Map<String, String> before,
             Map<String, String> after) {
         Assert.assertEquals(message.getOpt(), type);
-        Assert.assertEquals(message.getDbName(), TEST_TENANT + "." + TEST_DATABASE);
+        Assert.assertEquals(message.getDbName(), TEST_TENANT + "." + OB_SERVER.getDatabaseName());
         Assert.assertEquals(message.getTableName(), table);
 
         for (DataMessage.Record.Field field : message.getFieldList()) {
