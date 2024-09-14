@@ -32,7 +32,7 @@ public class ClientConfTest {
     public void testBuilderDefaultValues() {
         ClientConf clientConf = ClientConf.builder().build();
         Assert.assertEquals(clientConf.getTransferQueueSize(), 20000);
-        Assert.assertEquals(clientConf.getConnectTimeoutMs(), 5000);
+        Assert.assertEquals(clientConf.getConnectTimeoutMs(), 60000);
         Assert.assertEquals(clientConf.getReadWaitTimeMs(), 2000);
         Assert.assertEquals(clientConf.getRetryIntervalS(), 2);
         Assert.assertEquals(clientConf.getMaxReconnectTimes(), -1);

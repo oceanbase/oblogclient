@@ -256,7 +256,7 @@ There are also some configurations for the client in `ClientConf`:
             <tr>
                 <td>connectTimeoutMs</td>
                 <td>false</td>
-                <td style="word-wrap: break-word;">5000</td>
+                <td style="word-wrap: break-word;">60000</td>
                 <td>Int</td>
                 <td>connectTimeoutMs</td>
                 <td>Connection timeout in milliseconds.</td>
